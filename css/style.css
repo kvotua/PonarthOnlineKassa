@@ -256,7 +256,7 @@ left: 30px;*/
 }  */
 
 
-.radio-btn {
+.radio-btn{
     font-family: 'Lato', sans-serif;
     font-size: 14px;
     font-weight: 400;
@@ -399,7 +399,7 @@ left: 30px;*/
     object-fit: cover;
 }
 
-.choice-container h2{
+h2{
     width: 60px;
     height: 14px;
 
@@ -414,7 +414,6 @@ left: 30px;*/
     position: absolute;
     left: 42px;
     bottom: 114px;
-
 }
 
 .text{
@@ -455,14 +454,13 @@ left: 30px;*/
     left: 33px;
 }
 
-.btn-container {
+.btn-container{
     display: inline-block;
     position: absolute;
     left: 18px;
     bottom: 31px;
 
     padding-right: 4;
-
 }
 
 .radio-btn-volume1{
@@ -667,7 +665,7 @@ left: 30px;*/
     object-fit: cover;
 }
 
-.info-container h1{
+.name{
     font-size: 24px;
     font-family: 'Montserrat', sans-serif; 
     font-weight: 400;
@@ -685,7 +683,7 @@ left: 30px;*/
 .info-container p{
     font-size: 16px;
     font-family: 'Lato', sans-serif;
-    font-weight: ;
+    font-weight: 300;
     line-height: 24px;
     color: #FCF9F2;
 
@@ -695,4 +693,81 @@ left: 30px;*/
     position:absolute;
     top: 457px;
     left: 30px;
+}
+
+.info-container span{
+    font-weight: bold;
+}
+
+.btn-container2{
+    display: inline-block;
+    position: absolute;
+    left: 30px;
+    bottom: 170px;
+}
+
+.radio-btn-volume{
+    margin-right: 8px;
+
+    width: 35px;
+    height: 35px;
+    padding: auto;
+    gap: 10px;
+    border-radius: 12px;
+
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
+
+    background-color: #636363;
+    color: #121111;
+}
+
+.radio-btn-volume.selected {
+    background-color: #F9D03F;
+    color: #121111
+}
+
+.radio-btn-volume.inactive {
+    background-color: #636363;
+    color: #121111;
+}
+
+.sum{
+    font-size: 24px;
+    font-family: 'Montserrat', sans-serif; 
+    font-weight: 400;
+    line-height: 29.26px;
+    color: #FCF9F2; 
+
+    width: 152px;
+    height: 29px;
+
+    position: absolute;
+    bottom: 75px;
+    left: 30px;
+}
+
+.go-to-cart{
+    font-size: 18px;
+    font-family: 'Montserrat', sans-serif; 
+    font-weight: 400;
+    line-height: 24.94px;
+    text-align: center;
+    color: #F8D040;
+
+    width: 315px;
+    height: 56px;
+    position: absolute;
+    top: 741px;
+    left: 30px;
+    gap: 0px;
+    border-radius: 12px;
+    border: 1px solid #F8D040;
+
+    background-color: #2B271A;
+    box-shadow: 0px 4px 24px 4px #F9D14033;
+
+
 }

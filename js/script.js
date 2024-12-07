@@ -87,6 +87,34 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Вторая страница
+    // Устанавливаем класс inactive для всех кнопок, кроме той, которая имеет класс selected
+    radioButtonsVolume.forEach(button => {
+        if (!button.classList.contains('selected')) {
+            button.classList.add('inactive');
+        }
+    });
+
+    radioButtonsVolume.forEach(button => {
+        button.addEventListener('click', function () {
+            // Удаляем классы selected и inactive со всех кнопок
+            radioButtonsVolume.forEach(btn => {
+                btn.classList.remove('selected');
+                btn.classList.remove('inactive');
+            });
+
+            // Добавляем класс selected к выбранной кнопке
+            this.classList.add('selected');
+
+            // Добавляем класс inactive к остальным кнопкам
+            radioButtonsVolume.forEach(btn => {
+                if (btn !== this) {
+                    btn.classList.add('inactive');
+                }
+            });
+        });
+    });
+
     // const cartButton = document.querySelector('.cart-button');
     // let itemCount = 2;
 
