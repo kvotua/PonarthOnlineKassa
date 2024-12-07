@@ -44,7 +44,7 @@ html, body {
     height: 0px;
     border-radius: 50%;
 
-    box-shadow: 0 0 200px 80px rgba(249, 208, 63, 0.13);
+    box-shadow: 0 0 200px 80px rgb(249, 209, 63);
     backdrop-filter: blur(80px);
     pointer-events: none;
     z-index: -1;
@@ -135,7 +135,7 @@ html, body {
 height: 44px;
 top: 124px;
 left: 30px; */
-h1 {
+.choice-container h1 {
     font-family: 'Montserrat', sans-serif; 
     color:#FCF9F2;
     font-size: 36px;
@@ -157,7 +157,7 @@ h1 {
 height: 24px;
 top: 180px;
 left: 30px;*/
-label {
+.choice-container label {
     font-family: 'Lato', sans-serif;
     font-size: 16px;
     font-weight: 50;
@@ -169,7 +169,7 @@ label {
     top: 180px;
 }
 
-span {
+.choice-container span {
     font-family: 'Lato', sans-serif;
     font-size: 16px;
     font-weight: 500;
@@ -395,9 +395,11 @@ span {
     position: absolute;
     bottom: 137px;
     left: 36px;
+
+    object-fit: cover;
 }
 
-h2{
+.choice-container h2{
     width: 60px;
     height: 14px;
 
@@ -610,3 +612,87 @@ h2{
 .cart-button[data-count="0"]::after {
     display: none; Скрываем значок, если количество равно 0
 }    */
+
+
+
+/* ВСЕ НАСТРОЙКИ ДЛЯ СТРАНИЦЫ 2 */
+
+.info-container{
+    z-index: 1; /* Помещаем контент над фоном */
+    background: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон для контента */
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 375px;
+    height: 812px;
+
+    max-width: 400px; 
+    padding: 30px;
+    box-sizing: border-box;
+    background: #171616;
+    border-radius: 40px;
+    overflow: hidden;
+    border: 1px solid rgba(105, 105, 105, 1);
+    box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* кнопка возврата на первую страницу */
+.back-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 24px;
+    height: 24px;
+
+    padding: 4px 0px 0px 0px;
+
+    position: absolute;
+    top: 30px;
+    left: 30px;
+
+    background-color: transparent; 
+}
+
+.beer-bigicon{
+    width: 204px;
+    height: 258px;  
+
+    position: absolute;
+    top: 128px;
+    left: 86px;
+
+    object-fit: cover;
+}
+
+.info-container h1{
+    font-size: 24px;
+    font-family: 'Montserrat', sans-serif; 
+    font-weight: 400;
+    line-height: 29.26px;
+    color: #FCF9F2; 
+
+    width: 278px;
+    height: 29px;
+
+    position: absolute;
+    top: 416px;
+    left: 30px;
+}
+
+.info-container p{
+    font-size: 16px;
+    font-family: 'Lato', sans-serif;
+    font-weight: ;
+    line-height: 24px;
+    color: #FCF9F2;
+
+    width: 253px;
+    height: 120px;
+
+    position:absolute;
+    top: 457px;
+    left: 30px;
+}
