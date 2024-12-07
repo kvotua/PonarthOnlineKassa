@@ -7,10 +7,6 @@ input::-ms-clear{display: none;}
 button{cursor: pointer;}
 button::-moz-focus-inner{padding:0;border:0;} 
 
-
-
-
-
 body {
     font-family: 'Lato', sans-serif; 
     margin: 0;
@@ -30,7 +26,6 @@ html, body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-
 
     /* height: 100%; 
     overflow: hidden; 
@@ -88,9 +83,7 @@ html, body {
     justify-content: space-between;
     width: 375px;
     height: 812px;
-/* 
-    height: 100vh;   
-    width: 100%;  */
+
     max-width: 400px; 
     padding: 30px;
     box-sizing: border-box;
@@ -100,8 +93,6 @@ html, body {
     border: 1px solid rgba(105, 105, 105, 1);
     box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
 }
-
-
 
 /* изображение логотипа */
 .logo {
@@ -129,34 +120,20 @@ html, body {
     color: #fff
 }
 
-
-
-/* width: 270px;
-height: 44px;
-top: 124px;
-left: 30px; */
 .choice-container h1 {
     font-family: 'Montserrat', sans-serif; 
     color:#FCF9F2;
     font-size: 36px;
     font-weight: 500;
-    /* margin-top: 124px; */
 
-    /* font-weight: 400; */
     line-height: 43.88px;
     text-align: left;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
     position: absolute;
     top: 124px;
-
 }
 
-
-/* width: 278px;
-height: 24px;
-top: 180px;
-left: 30px;*/
 .choice-container label {
     font-family: 'Lato', sans-serif;
     font-size: 16px;
@@ -536,8 +513,20 @@ h2{
     text-decoration-skip-ink: none;
 }
 
-.count-volume2{
-    width: 8px;
+.counter-container1{
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    width: 61px;
+    height: 17.27px;
+
+    background-color: transparent;
+    
+    position: absolute;
+    bottom: 0.27px;
+    left: 41px;
+
+    /* width: 8px;
     height: 13px;
 
     position: absolute;
@@ -550,7 +539,71 @@ h2{
     line-height: 16.8px;
     text-align: left;
     text-underline-position: from-font;
-    text-decoration-skip-ink: none;
+    text-decoration-skip-ink: none; */
+}
+
+.circle-1{
+    width: 16.27px;
+    height: 16.27px;
+
+    border-radius: 50%;
+    border: 1px solid #696969;
+
+    /* выравнивание по центру */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position:relative;
+}
+
+.circle-1.selected{
+    border-color: #F9D03F;
+}
+
+/* .counter1{
+    width: 8px;
+    height: 13px;
+
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16.8px;
+    text-align: center;
+    color: #F9D03F;
+} */
+
+.counter-container2{
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    width: 61px;
+    height: 17.27px;
+
+    background-color: transparent;
+    
+    position: absolute;
+    bottom: 0.27px;
+    left: 41px;
+}
+
+.circle-2{
+    width: 16.27px;
+    height: 16.27px;
+
+    border-radius: 50%;
+    border: 1px solid #696969;
+
+    /* выравнивание по центру */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position:relative;
+}
+
+.circle-2.selected{
+    border-color: #F9D03F;
 }
 
 .bottom-panel {
@@ -610,6 +663,8 @@ h2{
 .cart-button[data-count="0"]::after {
     display: none; Скрываем значок, если количество равно 0
 }    */
+
+
 
 
 
@@ -768,4 +823,87 @@ h2{
 
     background-color: #2B271A;
     box-shadow: 0px 4px 24px 4px #F9D14033;
+}
+
+.counter-container3{
+    /* распределение элементов по краям контейнера */
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    width: 92px;
+    height: 24px;
+
+    background-color: transparent;
+    
+    position: absolute;
+    top: 654px;
+    left: 66px;
+}
+
+.subtract{
+    background-color: transparent;
+}
+
+.add{
+    background-color: transparent;
+}
+
+.circle{
+    width: 24px;
+    height: 24px;
+
+    border-radius: 50%;
+    border: 1px solid #696969;
+
+    /* выравнивание по центру */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position:relative;
+}
+
+.horizontal-line{
+    width: 12px;
+    height: 1.5px;
+    border-radius: 1px;    
+
+    background: #696969
+}
+
+.vertical-line{
+    width: 1.5px;
+    height: 12px;
+    border-radius: 1px;
+
+    background: #696969;
+
+    position: absolute; 
+    top: 50%; 
+    left: 51%;
+    transform: translate(-50%, -50%); 
+}
+
+.circle.selected{
+    border-color: #F9D03F;
+}
+
+.horizontal-line.selected{
+    background: #F9D03F;
+}
+
+.vertical-line.selected{
+    background: #F9D03F;
+}
+
+.counter3{
+    width: 9px;
+    height: 13px;
+
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16.8px;
+    text-align: center;
+    color: #F9D03F;
 }
