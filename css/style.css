@@ -724,12 +724,12 @@ h2{
     color: #121111;
 }
 
-.radio-btn-volume.selected {
+.radio-btn-volume.selected{
     background-color: #F9D03F;
     color: #121111
 }
 
-.radio-btn-volume.inactive {
+.radio-btn-volume.inactive{
     background-color: #636363;
     color: #121111;
 }
@@ -768,6 +768,4 @@ h2{
 
     background-color: #2B271A;
     box-shadow: 0px 4px 24px 4px #F9D14033;
-
-
 }

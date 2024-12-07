@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Вторая страница
+    const radioButtonsVolume = document.querySelectorAll('.radio-btn-volume');
     // Устанавливаем класс inactive для всех кнопок, кроме той, которая имеет класс selected
     radioButtonsVolume.forEach(button => {
         if (!button.classList.contains('selected')) {
@@ -114,6 +115,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+
+
 
     // const cartButton = document.querySelector('.cart-button');
     // let itemCount = 2;
