@@ -22,11 +22,6 @@ body {
 }
 
 html, body {
-    /* height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden; */
-
     height: 100%; 
     overflow: hidden; 
     width: 100vw;
@@ -45,7 +40,6 @@ html, body {
     z-index: -1;
 } 
 
-/* Верхний левый круг */
 .euler-top-left {
     width: 338px;
     height: 338px;
@@ -55,11 +49,10 @@ html, body {
     border-radius: 50%;
     background: rgba(249, 208, 63, 0.04);
     box-shadow: 0px 4px 25px 0px rgb(249, 209, 63);
-    filter: blur(80px); /* Добавляем размытие */
-    z-index: -1; /* Помещаем пятно за контент */
+    filter: blur(80px); 
+    z-index: -1; 
 }
 
-/* Нижний правый круг */
 .euler-bottom-right {
     width: 190px;
     height: 190px;
@@ -69,14 +62,13 @@ html, body {
     border-radius: 50%;;
     background: rgba(249, 208, 63, 0.05);
     box-shadow: 0px 4px 25px 0px rgb(249, 209, 63);
-    filter: blur(50px); /* Добавляем размытие */
-    z-index: -1; /* Помещаем пятно за контент */
+    filter: blur(50px); 
+    z-index: -1; 
 }
 
 .choice-container {
-    z-index: 1; /* Помещаем контент над фоном */
-    background: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон для контента */
-
+    z-index: 1; 
+    background: rgba(0, 0, 0, 0.5); 
     position: relative;
     display: flex;
     flex-direction: column;
@@ -101,73 +93,54 @@ html, body {
     }
 }
 
-/* изображение логотипа */
+@media (max-height: 700px) {
+    .choice-container {
+        padding: 10px 30px;
+    }
+}
+
 .logo {
     width: 89px;
     height: 69px;
     margin-bottom: 20px; 
     margin-top: 35px;
     align-self: center; 
-    /* width: 86px;
-    height: 69px;
-    margin-bottom: 141px; 
-    margin-top: 5px;
-    align-self: center; 
-    position: relative; */
 }
 
-/* кнопка поиска */
 .search-button {
     width: 24px;
     height: 24px;
 
-    padding: 4px 0px 0px 0px;
-    gap: 0px;
-    opacity: 0px;
-
     position: absolute;
     top: 30px;
-    left: 321px;
-    background-color: #171616;
+    right: 30px;
+
+    background-color: transparent;
     color: #fff
 }
 
-.choice-container h1 {
-    /* font-family: 'Montserrat', sans-serif; 
+h1{
+    font-family: 'Montserrat', sans-serif; 
+    color:#FCF9F2;
     font-size: 36px;
     font-weight: 400;
     line-height: 43.88px;
     text-align: left;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
-    color: #FCF9F2; */
-
-    font-family: 'Montserrat', sans-serif; 
-    color:#FCF9F2;
-    font-size: 36px;
-    font-weight: 500;
-
-    line-height: 43.88px;
-    text-align: left;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none;
-    position: absolute;
-    top: 124px;
 }
 
-.choice-container label {
+.choice-container label{
     font-family: 'Lato', sans-serif;
     font-size: 16px;
-    font-weight: 50;
-    line-height: 24px;
+    font-weight: 100;
     text-align: left;
-    color: #FCF9F2;
-    margin-bottom: 20px;
-    position:absolute;
-    top: 180px;
+    color: #FCF9F2; 
+
+    margin-top: 12px;
 }
 
-.choice-container span {
+.choice-container span{
     font-family: 'Lato', sans-serif;
     font-size: 16px;
     font-weight: 500;
@@ -193,19 +166,17 @@ html, body {
     text-align: center; 
     text-underline-position: from-font;
     text-decoration-skip-ink: none; 
-    
+    color: #808080;
 
     width: 91px;
     height: 35px;
-    top: 234px;
-    left: 26px;
-    padding: 9px 15px 9px 15px;
-    gap: 10px;
     border-radius: 12px;
-
+    gap: 10px;
+    padding: 9px 15px 9px 15px;
 
     background-color: #171616;
-    color: #808080;
+
+    margin-top: 20px;
 }
 
 .radio-btn.selected {
@@ -214,24 +185,21 @@ html, body {
 }
 
 .radio-btn.inactive {
-    background-color: #171616;
+    background-color: transparent;
     color: #808080;
 }
 
 .photo-ponarth{
-    width: 314px;
+    width: auto;
     height: 163px;
     border-radius: 12px;
-
-    position: absolute;
-    top: 295px;
-    left: 31px;
-
-    /* маштаб изображения */
     object-fit: cover;
+
+    margin-top: 80px;
+
 }
 
-.new{
+.stock{
     font-family: 'Lato', sans-serif;
     font-size: 12px;
     font-weight: 400;
@@ -239,93 +207,66 @@ html, body {
     text-align: left;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
-
-    display: flex;
-    justify-content: center; 
-    align-items: center; 
-
-    width: 14px;
-    height: 14px;
-
     color:#FFFFFF;
-    background: #FF5454;
 
+    width: 14px;
+    height: 14px;
     padding: 9px 15px 9px 15px;
     gap: 10px;
     border-radius: 12px;
-
-    position: absolute;
-    bottom: 201px;
-    left: -6px;
-
-    
-}
-
-.hit{
-    font-family: 'Lato', sans-serif;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 14.4px;
-    text-align: left;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none;
 
     display: flex;
     justify-content: center; 
     align-items: center; 
+    position: absolute; 
+    top: -13px; 
+    left: -6px; 
+}
 
-    width: 14px;
-    height: 14px;
-
-    color: #FFFFFF;
-    background: #3DB39E;
-
-    padding: 9px 15px 9px 15px;
-    gap: 10px;
-    border-radius: 12px;
-
-    position: absolute;
-    bottom: 201px;
-    left: -9px;
+.beer-selection{
+    display: flex;
+    justify-content: space-between;
+    /* align-items: center; */
+    height: 100%;
+    width: 100%;
+    padding-top: 30px;
+    padding-bottom: 40px;
 }
 
 .beer-1 {
     width: 143px;
     height: 213px;
     border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-
-    display: inline-block;
-    position: absolute;
-    top: 489px;
-    left: 30px;
     background-color: #212121;
+    position: relative;
+
 }
 
 .beer-2 {
     width: 143px;
     height: 213px;
     border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     
-
-
-    display: inline-block;
-    position: absolute;
-    top: 489px;
-    left: 202px;
     background-color: #212121;
+    position: relative;
 }
 
 .light-beer{
     width: 71px;
     height: 89px;
-
-
-    position: absolute;
-    bottom: 137px;
-    left: 36px;
-
     object-fit: cover;
+    
+    display: flex;
+    justify-self: center;
+    justify-content: space-between;
+    margin-top: -14px;
 }
 
 h2{
@@ -336,13 +277,11 @@ h2{
     font-size: 14px;
     font-weight: 400;
     line-height: 17.07px;
-    text-align: left;
+    text-align: center;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
 
-    position: absolute;
-    left: 42px;
-    bottom: 114px;
+    margin-top: 7px;
 }
 
 .text{
@@ -351,18 +290,14 @@ h2{
 
     font-family: 'Lato', sans-serif;
     color:#FCF9F2;
-
-
     font-size: 12px;
-    font-weight: 300;
+    font-weight: 100;
     line-height: 14.4px;
     text-align: left;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
 
-    position: absolute;
-    bottom: 92px;
-    left: 16px;
+    margin-top: 7px;
 }
 
 .cost{
@@ -378,18 +313,14 @@ h2{
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
 
-    position: absolute;
-    bottom: 67px;
-    left: 33px;
+    margin-top: 7px;
+    margin-bottom: 10px;
 }
 
 .btn-container{
     display: inline-block;
-    position: absolute;
-    left: 18px;
-    bottom: 31px;
-
     padding-right: 4;
+    margin-bottom: 14px;
 }
 
 .radio-btn-volume1{
@@ -452,10 +383,6 @@ h2{
     width: 8px;
     height: 13px;
 
-    position: absolute;
-    left: 68px;
-    bottom: 4px;
-
     font-family: 'Lato', sans-serif;
     font-size: 14px;
     font-weight: 400;
@@ -471,37 +398,16 @@ h2{
     align-items: center; 
     width: 61px;
     height: 17.27px;
-
     background-color: transparent;
-    
-    position: absolute;
-    bottom: 0.27px;
-    left: 41px;
-
-    /* width: 8px;
-    height: 13px;
-
-    position: absolute;
-    left: 68px;
-    bottom: 4px;
-
-    font-family: 'Lato', sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 16.8px;
-    text-align: left;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none; */
+    margin-bottom: 0.27px;
 }
 
 .circle-1{
     width: 16.27px;
     height: 16.27px;
-
     border-radius: 50%;
     border: 1px solid #696969;
 
-    /* выравнивание по центру */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -534,18 +440,6 @@ h2{
     border-color: #F9D03F;
 }
 
-/* .counter1{
-    width: 8px;
-    height: 13px;
-
-    font-family: 'Lato', sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 16.8px;
-    text-align: center;
-    color: #F9D03F;
-} */
-
 .counter-container2{
     display: flex;
     justify-content: space-between; 
@@ -554,27 +448,19 @@ h2{
     height: 17.27px;
 
     background-color: transparent;
-    
-    position: absolute;
-    bottom: 0.27px;
-    left: 41px;
 }
 
 .circle-2{
     width: 16.27px;
     height: 16.27px;
-
     border-radius: 50%;
     border: 1px solid #696969;
 
-    /* выравнивание по центру */
     display: flex;
     justify-content: center;
     align-items: center;
-
     position:relative;
 }
-
 
 .horizontal-line.selected{
     background: #F9D03F;
@@ -598,16 +484,18 @@ h2{
 
 .bottom-panel {
     box-sizing: content-box;
-    width: 375px;
+    width: 100%;
     height: 70px;
-    margin-bottom: -30px;
-    margin-left: -30px;
-
     background-color: #121111;
     box-shadow: 0px -16px 35px 6px #00000099;
 
-    position: absolute;
-    top: 742px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+
+    position: fixed; 
+    bottom: 0;
+    left: 0;
 }
 
 .cart{
@@ -616,13 +504,11 @@ h2{
     height: 52px;
     z-index: 2;
     align-items: center;
-    justify-content: center; /* Выравниваем элементы по центру */
+    justify-content: center; 
     cursor: pointer;
 
-    /* Добавляем позиционирование */
     position: absolute; 
-    bottom: 33px;
-    left: 161px;
+    top: -15px;
 
     border-radius: 50%;
     background: rgba(249, 208, 63, 1);

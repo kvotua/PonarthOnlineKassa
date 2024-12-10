@@ -59,14 +59,6 @@ html, body {
     z-index: -1; /* Помещаем пятно за контент */
 }
 
-@media (max-width: 500px) {
-    .choice-container {
-        border: none;
-        box-shadow: none;
-        position: static;
-    }
-}
-
 /* изображение логотипа */
 .logo {
     width: 89px;
@@ -79,7 +71,7 @@ html, body {
     margin-bottom: 141px; 
     margin-top: 5px;
     align-self: center; 
-    position: relative; */
+    position: relative; */ 
 }
 
 /* ВСЕ НАСТРОЙКИ ДЛЯ СТРАНИЦЫ 2 */
@@ -92,17 +84,35 @@ html, body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 375px;
-    height: 812px;
-
+    height: 100vh;
+    width: 100%; 
     max-width: 400px; 
-    padding: 30px;
+    padding: 20px;
     box-sizing: border-box;
+    /* position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 375px;
+    height: 812px; */
+
+    /* max-width: 400px; 
+    padding: 30px;
+    box-sizing: border-box; */
+
     background: #171616;
-    border-radius: 40px;
+    border-radius: 20px;
     overflow: hidden;
     border: 1px solid rgba(105, 105, 105, 1);
     box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 500px) {
+    .info-container {
+        border: none;
+        box-shadow: none;
+        position: static;
+    }
 }
 
 /* кнопка возврата на первую страницу */
@@ -123,18 +133,26 @@ html, body {
     background-color: transparent; 
 }
 
-.beer-bigicon{
+.beer-image{
+    /* width: 89px;
+    height: 69px;
+    margin-bottom: 20px; 
+    margin-top: 35px;
+    align-self: center;  */
+
     width: 204px;
     height: 258px;  
 
-    position: absolute;
+    align-self: center;
+    /* margin-bottom: 30px; */
+    /* position: absolute;
     top: 128px;
-    left: 86px;
+    left: 86px; */
 
     object-fit: cover;
 }
 
-.name{
+.name-cost{
     font-size: 24px;
     font-family: 'Montserrat', sans-serif; 
     font-weight: 400;
@@ -144,9 +162,10 @@ html, body {
     width: 278px;
     height: 29px;
 
-    position: absolute;
+
+    /* position: absolute;
     top: 416px;
-    left: 30px;
+    left: 30px; */
 }
 
 .info-container p{
@@ -213,9 +232,12 @@ html, body {
     width: 152px;
     height: 29px;
 
-    position: absolute;
+    margin-bottom: 0px;
+    margin-top: 400px;
+
+    /* position: absolute;
     bottom: 75px;
-    left: 30px;
+    left: 30px; */
 }
 
 .go-to-cart{
@@ -226,15 +248,18 @@ html, body {
     text-align: center;
     color: #F8D040;
 
-    width: 315px;
+    width: 100%;
+    max-width: 400px;
     height: 56px;
-    position: absolute;
-    top: 741px;
-    left: 30px;
-    gap: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+    margin-bottom: 10px;
+    cursor: pointer;
+
     border-radius: 12px;
     border: 1px solid #F8D040;
-
     background-color: #2B271A;
     box-shadow: 0px 4px 24px 4px #F9D14033;
 }
