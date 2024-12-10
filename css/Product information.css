@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
-/*Обнуление*/
 *{padding: 0;margin: 0;border: 0;}
 input::-ms-clear{display: none;}
 button{cursor: pointer;}
@@ -22,11 +21,6 @@ body {
 }
 
 html, body {
-    /* height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden; */
-
     height: 100%; 
     overflow: hidden; 
     width: 100vw;
@@ -45,7 +39,6 @@ html, body {
     z-index: -1;
 } 
 
-/* Верхний левый круг */
 .euler-top-left {
     width: 338px;
     height: 338px;
@@ -55,50 +48,31 @@ html, body {
     border-radius: 50%;
     background: rgba(249, 208, 63, 0.04);
     box-shadow: 0px 4px 25px 0px rgb(249, 209, 63);
-    filter: blur(80px); /* Добавляем размытие */
-    z-index: -1; /* Помещаем пятно за контент */
+    filter: blur(80px); 
+    z-index: -1; 
 }
 
-/* изображение логотипа */
 .logo {
     width: 89px;
     height: 69px;
     margin-bottom: 20px; 
     margin-top: 35px;
-    align-self: center; 
-    /* width: 86px;
-    height: 69px;
-    margin-bottom: 141px; 
-    margin-top: 5px;
-    align-self: center; 
-    position: relative; */ 
+    align-self: center;  
 }
 
-/* ВСЕ НАСТРОЙКИ ДЛЯ СТРАНИЦЫ 2 */
-
 .info-container{
-    z-index: 1; /* Помещаем контент над фоном */
-    background: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон для контента */
+    z-index: 1; 
+    background: rgba(0, 0, 0, 0.5); 
 
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     height: 100vh;
     width: 100%; 
     max-width: 400px; 
-    padding: 20px;
-    box-sizing: border-box;
-    /* position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 375px;
-    height: 812px; */
-
-    /* max-width: 400px; 
     padding: 30px;
-    box-sizing: border-box; */
+    box-sizing: border-box;
+    position: relative;
 
     background: #171616;
     border-radius: 20px;
@@ -115,41 +89,28 @@ html, body {
     }
 }
 
-/* кнопка возврата на первую страницу */
 .back-btn{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
     width: 24px;
     height: 24px;
+    background-color: transparent; 
 
     padding: 4px 0px 0px 0px;
 
     position: absolute;
     top: 30px;
     left: 30px;
-
-    background-color: transparent; 
 }
 
 .beer-image{
-    /* width: 89px;
-    height: 69px;
-    margin-bottom: 20px; 
-    margin-top: 35px;
-    align-self: center;  */
-
     width: 204px;
     height: 258px;  
-
-    align-self: center;
-    /* margin-bottom: 30px; */
-    /* position: absolute;
-    top: 128px;
-    left: 86px; */
-
     object-fit: cover;
+
+    display: flex;
+    justify-content: center;
+    align-self: center;
+
+    margin-bottom: 30px;
 }
 
 .name-cost{
@@ -162,36 +123,25 @@ html, body {
     width: 278px;
     height: 29px;
 
-
-    /* position: absolute;
-    top: 416px;
-    left: 30px; */
+    margin-bottom: 12px;
 }
 
 .info-container p{
     font-size: 16px;
     font-family: 'Lato', sans-serif;
-    font-weight: 300;
+    font-weight: 100;
     line-height: 24px;
     color: #FCF9F2;
 
     width: 253px;
     height: 120px;
 
-    position:absolute;
-    top: 457px;
-    left: 30px;
-}
-
-.info-container span{
-    font-weight: bold;
+    margin-bottom: 30px;
 }
 
 .btn-container2{
     display: inline-block;
-    position: absolute;
-    left: 30px;
-    bottom: 170px;
+    margin-bottom: 12px;
 }
 
 .radio-btn-volume{
@@ -222,50 +172,7 @@ html, body {
     color: #121111;
 }
 
-.sum{
-    font-size: 24px;
-    font-family: 'Montserrat', sans-serif; 
-    font-weight: 400;
-    line-height: 29.26px;
-    color: #FCF9F2; 
-
-    width: 152px;
-    height: 29px;
-
-    margin-bottom: 0px;
-    margin-top: 400px;
-
-    /* position: absolute;
-    bottom: 75px;
-    left: 30px; */
-}
-
-.go-to-cart{
-    font-size: 18px;
-    font-family: 'Montserrat', sans-serif; 
-    font-weight: 400;
-    line-height: 24.94px;
-    text-align: center;
-    color: #F8D040;
-
-    width: 100%;
-    max-width: 400px;
-    height: 56px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: auto;
-    margin-bottom: 10px;
-    cursor: pointer;
-
-    border-radius: 12px;
-    border: 1px solid #F8D040;
-    background-color: #2B271A;
-    box-shadow: 0px 4px 24px 4px #F9D14033;
-}
-
 .counter-container3{
-    /* распределение элементов по краям контейнера */
     display: flex;
     justify-content: space-between; 
     align-items: center; 
@@ -273,10 +180,9 @@ html, body {
     height: 24px;
 
     background-color: transparent;
-    
-    position: absolute;
-    top: 654px;
-    left: 66px;
+
+    margin-left: 36px;
+    margin-bottom: 30px;
 }
 
 .subtract{
@@ -290,15 +196,12 @@ html, body {
 .circle{
     width: 24px;
     height: 24px;
-
     border-radius: 50%;
     border: 1px solid #696969;
 
-    /* выравнивание по центру */
     display: flex;
     justify-content: center;
     align-items: center;
-
     position:relative;
 }
 
@@ -345,4 +248,42 @@ html, body {
     line-height: 16.8px;
     text-align: center;
     color: #F9D03F;
+}
+
+.sum{
+    font-size: 24px;
+    font-family: 'Montserrat', sans-serif; 
+    font-weight: 400;
+    line-height: 29.26px;
+    color: #FCF9F2; 
+
+    width: 152px;
+    height: 29px;
+
+    margin-bottom: 5px;
+}
+
+
+.go-to-cart{
+    font-size: 18px;
+    font-family: 'Montserrat', sans-serif; 
+    font-weight: 400;
+    line-height: 24.94px;
+    text-align: center;
+    color: #F8D040;
+
+    width: 100%;
+    max-width: 400px;
+    height: 56px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin-bottom: 0px;
+    cursor: pointer;
+
+    border-radius: 12px;
+    border: 1px solid #F8D040;
+    background-color: #2B271A;
+    box-shadow: 0px 4px 24px 4px #F9D14033;
 }
