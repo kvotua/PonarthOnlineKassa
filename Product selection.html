@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Здравствуйте!</title>
+    <link rel="stylesheet" href="css/Product selection.css">
+    <!-- использование иконок Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Подключение Boxicons -->
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
+
+</head>
+
+<body>
+    <div class="choice-container">
+        <div class="euler-top-left"></div>
+        <div class="euler-bottom-right"></div>
+        <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
+
+        <button class="search-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="feather feather-search">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </button>
+
+        <h1>Здравствуйте!</h1>
+        <label>На вашем бонусном счету <span>200 монет.</span></label>
+
+        <div class="button-container">
+            <button class="radio-btn selected">Классика</button>
+            <button class="radio-btn">Крафт</button>
+            <button class="radio-btn">Закуска</button>
+        </div>
+
+        <img src="img/photo_ponarth.jpg" class="photo-ponarth" alt="Фото Понарт">
+
+        <div class="beer-selection">
+
+            <div class="beer-1">
+                <div class="stock" style="background: #FF5454;">NEW</div>
+                <a href="Product information.html">
+                    <img class="light-beer" alt="Светлое пиво" src="img/light_beer.png">
+                </a>
+                <h2>Светлое</h2>
+                <p class="text">Классический светл...</p>
+                <h2 class="cost">75 р. - 0,5 л</h2>
+                <div class="btn-container">
+                    <button class="radio-btn-volume1">0,5</button>
+                    <button class="radio-btn-volume1 selected">1</button>
+                    <button class="radio-btn-volume1">1,5</button>
+                    <button class="radio-btn-volume1">2</button>
+                </div>
+                <div class="counter-container1">
+                    <button class="subtract">
+                        <div class="circle-1">
+                            <div class="horizontal-line"></div>
+                        </div>
+                    </button>
+
+                    <span class="counter1">0</span>
+
+                    <button class="add">
+                        <div class="circle-1 selected">
+                            <div class="horizontal-line selected"></div>
+                            <div class="vertical-line selected"></div>
+                        </div>
+                    </button>
+                </div>
+
+            </div>
+            <div class="beer-2">
+                <div class="stock" style="background:#3DB39E" : #3DB39E">HIT</div>
+                <img src="img/light_beer.png" class="light-beer">
+                <h2>Светлое</h2>
+                <p class="text">Классический светл...</p>
+                <h2 class="cost">75 р. - 0,5 л</h2>
+
+                <div class="btn-container">
+                    <button class="radio-btn-volume2">0,5</button>
+                    <button class="radio-btn-volume2 selected" selected>1</button>
+                    <button class="radio-btn-volume2">1,5</button>
+                    <button class="radio-btn-volume2">2</button>
+                </div>
+
+                <div class="counter-container2">
+                    <button class="subtract">
+                        <div class="circle-2">
+                            <div class="horizontal-line"></div>
+                        </div>
+                    </button>
+
+                    <span class="counter2">0</span>
+
+                    <button class="add">
+                        <div class="circle-2 selected">
+                            <div class="horizontal-line selected"></div>
+                            <div class="vertical-line selected"></div>
+                        </div>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="bottom-panel">
+            <button class="cart">
+                <i class='bx bx-cart-alt'></i>
+            </button>
+        </div>
+        <script src="js/script.js"></script>
+    </div>
+</body>
+
+</html>

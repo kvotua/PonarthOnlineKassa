@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="registration.css">
+</head>
+<body>
+    <div class="registration-container">
+        <div class="euler-top-left"></div>
+        <div class="euler-bottom-right"></div>
+        <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
+        <h1>Оформить бонусную карту?</h1>
+        <label>Зарегистрируйтесь в программе лояльности и получайте кэшбек 10% приобретая продукцию Понарт. Это займёт пару минут.</label>
+        <form class="registration" action="/submit" method="POST">
+            <div class="FIO">
+                <input type="text" id="first" name="first" placeholder="Фамилия" required><br>
+                <input type="text" id="second" name="second" placeholder="Имя" required><br>
+                <input type="text" id="third" name="third" placeholder="Отчество"><br>
+            </div>
+            <label id="cbday">Введите дату рождения:</label>
+            <div class="custom-date">
+                <input type="date" id="bday" name="bday" placeholder="12.12.2022" required>
+            </div>
+
+            <label>Укажите ваш пол</label>
+            <div class="gender-selection">
+                <label>
+                    <input type="radio" name="gender" value="male">
+                    <span><span>М</span></span>
+                </label>
+                <label>
+                    <input type="radio" name="gender" value="female">
+                    <span><span>Ж</span></span>
+                </label>
+            </div>
+            
+
+            <label class="custom-checkbox" for="agree">
+                Даю согласие на обработку персональных данных
+                <input type="checkbox" id="agree" name="agree" required>
+                <span></span>                
+            </label>
+
+            <div class="buttons">
+                <button type="submit">Оформить карту</button>
+                <button type="button" onclick="window.location.href='/greet.html'">В другой раз</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

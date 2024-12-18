@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Информация о товаре</title>
+    <link rel="stylesheet" href="css/Product information.css">
+    <!-- использование иконки Eva Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/eva-icons@1.1.3/style/eva-icons.css" rel="stylesheet">
+
+<body>
+    <div class="info-container">
+        <div class="euler-top-left"></div>
+        <img src="https://iss.ponarth.com/i/logo_white_mini.png" class="logo">
+
+        <a href="Product selection.html" class="back-btn">
+            <i data-eva="arrow-ios-back-outline" data-eva-fill="#ffffff" data-eva-width="24" data-eva-height="24"></i>
+        </a>
+
+        <img src="img/light_beer.png" class="beer-image">
+
+        <h2 class="name-cost">Светлое | 75 руб - 0,5 л</h2>
+
+        <p>Классический фильтрованный лагер обладает великолепным вкусом и ароматом.
+            <br>
+            <br>
+            <b>OG</b> - 15; IBU - 20; ABV - 10
+        </p>
+
+        <div class="btn-container2">
+            <button class="radio-btn-volume">0,5</button>
+            <button class="radio-btn-volume selected">1</button>
+            <button class="radio-btn-volume">1,5</button>
+            <button class="radio-btn-volume">2</button>
+        </div>
+
+        <div class="counter-container3">
+            <button class="subtract">
+                <div class="circle">
+                    <div class="horizontal-line"></div>
+                </div>
+            </button>
+
+            <span class="counter3">2</span>
+
+            <button class="add">
+                <div class="circle selected">
+                    <div class="horizontal-line selected"></div>
+                    <div class="vertical-line selected"></div>
+                </div>
+            </button>
+        </div>
+
+        <h2 class="sum">Итого: 225 р.</h2>
+
+        <button class="go-to-cart">Перейти в корзину</button>
+
+        <script src="js/script.js"></script>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/eva-icons@1.1.3/eva.min.js"></script>
+    <script>
+        eva.replace();
+    </script>
+</body>
+
+</html>

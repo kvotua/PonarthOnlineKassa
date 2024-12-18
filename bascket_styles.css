@@ -1,0 +1,536 @@
+* {
+    margin: 0; 
+    padding: 0;
+    border: 0;
+}
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #171616;
+    backdrop-filter: blur(60px);
+    position: relative; 
+    
+}
+
+/*BACKGROUND START*/
+.background {
+    height: 100vh;
+    width: 100%; 
+    max-width: 400px; 
+    /* top: 0;
+    left: 0; */
+    background: #171616;
+    backdrop-filter: blur(30px);
+    border-radius: 40px;
+    overflow: hidden;
+    border: 1px solid rgba(105, 105, 105, 1);
+    box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+}
+
+.shadow-top {
+    position: absolute;
+    width: 338px;
+    height: 338px;
+    left: -105px;
+    top: -167px;
+    background: rgba(249, 208, 63, 0.04);
+    box-shadow: 0px 4px 25px rgba(249, 208, 63, 0.08);
+    filter: blur(60px);
+}
+/*BACKGROUND END*/
+
+/* HEADER START */
+.back {
+    position: absolute;
+    left: 30px;
+    top: 30px;
+    bottom: 20.83%;
+    cursor: pointer;
+}
+
+
+.logotip {
+    position: absolute;
+    border: none;
+    position: absolute;
+    width: 86px;
+    height: 69px;
+    left: 141px;
+    top: 35px;
+}
+/* HEADER END */
+
+
+/* UR BASCKET START */
+.bascket {
+    position: absolute;
+    width: 280px;
+    height: 44px;
+    left: 30px;
+    top: 124px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 44px;
+    color: #FCF9F2;
+}
+
+/* CARDS START */
+.rectangle1 {
+    position: absolute;
+    width: 315px;
+    height: 56px;
+    left: 30px;
+    top: 190px;
+    border-radius: 12px;
+    background: #1F1F1F;
+}
+.rectangle2 {
+    position: absolute;
+    width: 315px;
+    height: 56px;
+    left: 30px;
+    top: 267px;
+    border-radius: 12px;
+    background: #1F1F1F;
+}
+.rectangle3 {
+    
+    position: absolute;
+    width: 315px;
+    height: 56px;
+    left: 30px;
+    top: 341px;
+    border-radius: 12px;
+    background: #1F1F1F;
+}
+.pivo1 {
+    position: absolute;
+    width: 30px;
+    height: 38px;
+    top: 198px;
+    left: 29px;
+    object-fit: cover;
+}
+.pivo2 {
+    position: absolute;
+    width: 30px;
+    height: 38px;
+    left: 29px;
+    top: 276px;
+    object-fit: cover;
+}
+.pivo3 {
+    position: absolute;
+    width: 30px;
+    height: 38px;
+    left: 29px;
+    top: 350px;
+    object-fit: cover;
+}
+
+.circle1 {
+    position: absolute;
+    left: 43px;
+    top: 223px;
+}
+.circle2 {
+    position: absolute;
+    left: 43px;
+    top: 301px;
+}
+.circle3 {
+    position: absolute;
+    left: 43px;
+    top: 375px;
+}
+
+.light1 {
+    position: absolute;
+    width: 68px;
+    height: 20px;
+    left: 73px;
+    top: 207px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: #FCF9F2;
+}
+
+.light2 {
+    position: absolute;
+    width: 68px;
+    height: 20px;
+    left: 74px;
+    top: 285px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: #FCF9F2;
+}
+
+.light3 {
+    position: absolute;
+    width: 68px;
+    height: 20px;
+    left: 74px;
+    top: 359px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: #FCF9F2;
+}
+
+.plus_minus1 {
+    position: relative;
+    display: flex;
+    width: 66.5px;
+    height: 20px;
+    left: 155px;
+    top: 207px;
+}
+.plus_minus2 {
+    position: absolute;
+    display: flex;
+    width: 66.5px;
+    height: 20px;
+    left: 155px;
+    top: 285px;
+}
+.plus_minus3 {
+    position: absolute;
+    display: flex;
+    width: 66.5px;
+    height: 20px;
+    left: 155px;
+    top: 359px;
+}
+
+.minus, .plus {
+    cursor: pointer;
+}
+.minus {
+    position: absolute;
+    width: 17.73px;
+    height: 17.73px;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.plus {
+    position: absolute;
+    width: 17.73px;
+    height: 17.73px;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+
+}
+.amount {
+    position: absolute;
+    width: 9px;
+    height: 18px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #F9D03F;
+}
+
+.price1 {
+    position: absolute;
+    width: 46px;
+    height: 20px;
+    left: 248px;
+    top: 207px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: #FCF9F2;
+}
+.price2 {
+    position: absolute;
+    width: 46px;
+    height: 20px;
+    left: 248px;
+    top: 285px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: #FCF9F2;
+}
+.price3 {
+    position: absolute;
+    width: 46px;
+    height: 20px;
+    left: 248px;
+    top: 359px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: #FCF9F2;
+}
+
+.delete1 {
+    position: absolute;
+    left: 320px;
+    top: 217.54px;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+.delete2 {
+    position: absolute;
+    left: 321px;
+    top: 295.54px;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+.delete3 {
+    position: absolute;
+    left: 321px;
+    top: 369.54px;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+/* UR BASCKET END */
+
+/* SNACKS START */
+.snack {
+    position: absolute;
+    width: 271px;
+    height: 88px;
+    left: 30px;
+    top: 418px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 44px;
+    color: #FCF9F2;
+}
+
+.card1 {
+    position: absolute;
+    width: 117px;
+    height: 175px;
+    left: 8px;
+    top: 535px;
+    background: #1F1F1F;
+    border-radius: 12px;
+}
+.card1-img {
+    position: absolute;
+    width: 71px;
+    height: 89px;
+    left: 30px;
+    top: 535px;
+    object-fit: cover;
+}
+.card1-name {
+    position: absolute;
+    width: 106px;
+    height: 15px;
+    left: 13px;
+    top: 636px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FCF9F2;
+}
+.card1-price {
+    position: absolute;
+    width: 85px;
+    height: 15px;
+    left: 23px;
+    top: 656px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FCF9F2;
+}
+.card1-choice {
+    position: absolute;
+    width: 84px;
+    height: 17.27px;
+    left: 23px;
+    top: 683px;
+}
+
+.card2 {
+    position: absolute;
+    width: 117px;
+    height: 175px;
+    left: 136px;
+    top: 535px;
+    background: #1F1F1F;
+    border-radius: 12px;
+}
+.card2-img {
+    position: absolute;
+    width: 71px;
+    height: 89px;
+    left: 159px;
+    top: 535px;
+    object-fit: cover;
+}
+.card2-name {
+    position: absolute;
+    width: 106px;
+    height: 15px;
+    left: 142px;
+    top: 636px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FCF9F2;
+}
+.card2-price {
+    position: absolute;
+    width: 85px;
+    height: 15px;
+    left: 152px;
+    top: 663px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FCF9F2;
+}
+.card2-choice {
+    position: absolute;
+    width: 84px;
+    height: 17.27px;
+    left: 152px;
+    top: 683px;
+}
+
+.card3 {
+    position: absolute;
+    width: 117px;
+    height: 175px;
+    left: 264px;
+    top: 535px;
+    background: #1F1F1F;
+    border-radius: 12px;
+}
+.card3-img {
+    position: absolute;
+    width: 71px;
+    height: 89px;
+    left: 288px;
+    top: 535px;
+    object-fit: cover;   
+}
+.card3-name {
+    position: absolute;
+    width: 106px;
+    height: 15px;
+    left: 271px;
+    top: 636px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FCF9F2;
+}
+.card3-price {
+    position: absolute;
+    width: 85px;
+    height: 15px;
+    left: 281px;
+    top: 663px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FCF9F2;
+}
+.card3-choice {
+    position: absolute;
+    width: 84px;
+    height: 17.27px;
+    left: 281px;
+    top: 683px;
+}
+/* SNACKS END */
+
+.total {
+    position: absolute;
+    width: 290px;
+    height: 44px;
+    left: 30px;
+    top: 737px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 44px;
+    color: #FCF9F2;
+}
+
+.total-price {
+    position: absolute;
+    width: 290px;
+    height: 44px;
+    left: 30px;
+    top: 781px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 44px;
+    color: #F8D040;
+}
+
+/*КНОПКА ПРОДОЛЖИТЬ ОФОРМЛЕНИЕ*/
+
+.go_on {
+    border: none;
+    width: 315px;
+    height: 56px;
+    left: 30px;
+    top: 855px;
+    position: absolute;
+    cursor: pointer;
+    background: linear-gradient(95.15deg, #F9D03F 17.18%, #E9B32A 71.35%);
+    box-shadow: 0px 4px 24px 4px rgba(249, 209, 64, 0.2);
+    border-radius: 12px;
+
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+    text-align: center;
+    color: #000000;
+}
+

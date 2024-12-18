@@ -1,0 +1,321 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100%; 
+    scroll-behavior: smooth; 
+}
+
+body {
+    background: #171616;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh; 
+    margin: 0;
+    backdrop-filter: blur(60px);
+    position: relative;
+    overflow-y: scroll;
+    overscroll-behavior-y: contain;
+}
+
+.euler-top-left, .euler-bottom-right {
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    border-radius: 50%;
+    box-shadow: 0 0 200px 80px rgba(249, 209, 63, 0.308);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.euler-top-left {
+    top: 25px;
+    left: 55px;
+}
+
+.euler-bottom-right {
+    bottom: 75px;
+    right: -50px;
+}
+
+.registration-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    box-sizing: border-box;
+    background: #00000000;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(105, 105, 105, 1);
+    box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+    flex-grow: 1;
+}
+
+@media (max-width: 500px) {
+    .registration-container {
+        border: none;
+        box-shadow: none;
+        position: static;
+    }
+}
+
+.logo {
+    width: 89px;
+    height: 69px;
+    margin-bottom: 20px;
+    margin-top: 35px;
+    align-self: center;
+}
+
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 43.88px;
+    text-align: left;
+    color: #fff;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.FIO {
+    margin-top: 20px;
+}
+
+.FIO input[type="text"]{
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    height: 53px;
+    border: 1px solid rgba(105, 105, 105, 1);
+    border-radius: 8px;
+    background-color: #17161600;
+    background: #17161600;
+    color: rgba(249, 208, 63, 1);
+    margin-top: 5px;
+    appearance: none;
+}
+
+.FIO input[type="text"]:hover {
+    border-color: rgba(249, 208, 63, 1);
+    outline: none;
+}
+
+.FIO input[type="text"]:hover::placeholder {
+    color: rgba(249, 208, 63, 1); 
+}
+
+.FIO input[type="text"]:focus {
+    border-color: rgba(249, 208, 63, 1);
+    outline: none;
+    background-color: #17161600;
+}
+
+.FIO input[type="text"]:focus::placeholder {
+    color: rgba(249, 208, 63, 1); 
+}
+
+label {
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    font-weight: 200;
+    line-height: 24px;
+    text-align: left;
+    color: rgba(252, 249, 242, 1);
+    margin-top: 20px;
+}
+
+.registration-container input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    height: 53px;
+    border: 1px solid rgba(105, 105, 105, 1);
+    border-radius: 8px;
+    background: #17161600;
+    color: rgba(79, 81, 84, 1);
+    margin-top: 5px;
+}
+
+.registration-container input[type="date"]:hover {
+    border-color: rgba(249, 208, 63, 1);
+    outline: none;
+}
+
+.registration-container input[type="date"]:focus {
+    border-color: rgba(249, 208, 63, 1);
+    outline: none;
+    color: rgba(249, 208, 63, 1);
+    background: #17161600;
+}
+
+.registration-container input[type="date"]:valid {
+    color: rgba(249, 208, 63, 1);
+}
+
+input::placeholder {
+    color: rgba(79, 81, 84, 1);
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    margin-top: 80px;
+    gap: 5px;
+}
+
+button {
+    padding: 12px;
+    font-size: 18px;
+    font-weight: 400;
+    border-radius: 12px;
+    font-family: 'Montserrat', sans-serif;
+    height: 53px;
+    box-shadow: 0px 4px 24px 4px rgba(249, 209, 64, 0.2);
+}
+
+button[type="submit"] {
+    color: #000;
+    border: none;
+    background: linear-gradient(to right, rgba(249, 208, 63, 1), rgba(233, 179, 42, 1));
+}
+
+button[type="button"] {
+    background: #44444400;
+    color: rgba(248, 208, 64, 1);
+    border: 1px solid rgba(248, 208, 64, 1);
+}
+
+.custom-date {
+    position: relative;
+}
+
+.custom-date::after {
+    content: url('calendar-icon.svg');
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-35%);
+    pointer-events: none;
+}
+
+.custom-checkbox {
+    display: flex;
+    align-items: center;
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: #fff;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.custom-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.custom-checkbox span {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(105, 105, 105, 1);
+    border-radius: 50%;
+    display: inline-block;
+    background: transparent;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.custom-checkbox span::before {
+    content: "";
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(105, 105, 105, 1);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: background-color 0.3s ease;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + span {
+    border-color: rgba(249, 208, 63, 1);
+    background-color: rgba(249, 208, 63, 1);
+}
+
+.custom-checkbox input[type="checkbox"]:checked + span::before {
+    background-color: rgba(249, 208, 63, 1);
+}
+
+
+.gender-selection {
+    display: flex;
+    align-items: start;
+    gap: 10px;
+    font-family: 'Arial', sans-serif;
+    font-size: 18px;
+    color: #fff;
+}
+
+.gender-selection input[type="radio"] {
+    display: none;
+}
+
+.gender-selection label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.gender-selection span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: transparent;
+    color: rgba(105, 105, 105, 1);
+    font-size: 11px;
+    font-weight: bold;
+    border: 1px solid rgba(105, 105, 105, 1);
+}
+
+.gender-selection span span {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%; 
+    background-color: transparent; 
+    transition: background-color 0.3s ease; 
+}
+
+.gender-selection input[type="radio"]:checked + span {
+    background-color: rgba(249, 208, 63, 1);
+    border-color: rgba(249, 208, 63, 1);
+    color: #000;
+}
+
+.gender-selection input[type="radio"]:checked + span span {
+    background-color: rgba(249, 208, 63, 1);
+    border-color: rgba(249, 208, 63, 1);
+    color: #000;
+}
