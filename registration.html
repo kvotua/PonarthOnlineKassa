@@ -13,7 +13,7 @@
         <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
         <h1>Оформить бонусную карту?</h1>
         <label>Зарегистрируйтесь в программе лояльности и получайте кэшбек 10% приобретая продукцию Понарт. Это займёт пару минут.</label>
-        <form class="registration" action="/submit" method="POST">
+        <form class="registration" method="POST" id="my_form">
             <div class="FIO">
                 <input type="text" id="first" name="first" placeholder="Фамилия" required><br>
                 <input type="text" id="second" name="second" placeholder="Имя" required><br>
@@ -21,22 +21,21 @@
             </div>
             <label id="cbday">Введите дату рождения:</label>
             <div class="custom-date">
-                <input type="date" id="bday" name="bday" placeholder="12.12.2022" required>
+                <input type="date" id="bday" name="bday" required>
             </div>
 
             <label>Укажите ваш пол</label>
             <div class="gender-selection">
                 <label>
-                    <input type="radio" name="gender" value="male">
+                    <input type="radio" name="gender" value="1" required>
                     <span><span>М</span></span>
                 </label>
                 <label>
-                    <input type="radio" name="gender" value="female">
+                    <input type="radio" name="gender" value="2">
                     <span><span>Ж</span></span>
                 </label>
             </div>
             
-
             <label class="custom-checkbox" for="agree">
                 Даю согласие на обработку персональных данных
                 <input type="checkbox" id="agree" name="agree" required>
@@ -49,5 +48,28 @@
             </div>
         </form>
     </div>
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("my_form").addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const last_name = document.getElementById("first").value;
+                const first_name = document.getElementById("second").value;
+                const patronymic = document.getElementById("third").value;
+                const birth_date = document.getElementById("bday").value;
+
+                const gender = document.querySelector('input[name="gender"]:checked').value;  
+
+                localStorage.setItem("last_name", last_name);
+                localStorage.setItem("first_name", first_name);
+                localStorage.setItem("patronymic", patronymic);
+                localStorage.setItem("birth_date", birth_date);
+                localStorage.setItem("gender", gender);
+
+                window.location.href = './greet.html';
+            });
+        });
+    </script>
 </body>
 </html>
