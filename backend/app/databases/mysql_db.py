@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
 from app.models.mysql import Base_mysql
+from app.models.postgres import Base_postgres
 from app.config import mysql_db_url
 
 

@@ -5,13 +5,13 @@ from contextlib import asynccontextmanager
 
 from app.api.main import api_router
 from app.databases.postgresdb import create_tables_postgres
-from app.databases.mysql_db import create_tables_mysql
+from app.databases.mysql_db import create_tables_mysql, create_tables_postgres
 from app.schemas.response_schemas import json_response
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await create_tables_postgres()
-    #await create_tables_mysql()
+    # await create_tables_postgres()
+    # #await create_tables_mysql()
     yield
 
 
