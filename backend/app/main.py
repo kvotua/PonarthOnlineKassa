@@ -10,8 +10,8 @@ from app.schemas.response_schemas import json_response
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # await create_tables_postgres()
-    await create_tables_mysql()
+    await create_tables_postgres()
+    #await create_tables_mysql()
     yield
 
 
