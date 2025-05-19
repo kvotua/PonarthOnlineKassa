@@ -6,7 +6,7 @@ from datetime import datetime, date
 from app.schemas.users_schemas import RegisterUserLoyaltySystem
 from app.schemas.auth_schemas import TokenPair, LoginUser, RegisterUser
 from app.schemas.response_schemas import json_response
-from app.cruds.auth_cruds import check_phone_status, add_user_to_loyal_system, add_user, get_all
+from app.cruds.auth_cruds import check_phone_status, add_user_to_loyal_system, get_all
 from app.cruds.verify_cruds import get_verify_session_without_code
 from app.utils import sing_access_jwt_token, sing_refresh_jwt_token, convert_decimal_to_float
 from app.api.dependensies import get_new_tokens, get_access_token

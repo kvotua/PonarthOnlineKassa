@@ -47,7 +47,7 @@ class DiscountCard(Base_mysql):
 class Verification(Base_mysql):
     __tablename__ = 'verification'
 
-    call_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    call_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
     code: Mapped[str] = mapped_column(VARCHAR(4))
     phone: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

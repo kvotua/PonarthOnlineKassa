@@ -2,7 +2,6 @@ from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 
-from app.models.postgres import Users
 from app.models.mysql import DiscountCard, Verification, UserScore
 from app.schemas.users_schemas import RegisterUserLoyaltySystem
 from app.schemas.response_schemas import json_response
@@ -19,15 +18,15 @@ async def check_phone_status(user_phone: str, session_mysql: AsyncSession) -> Di
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-async def add_user(phone: str, session_postgres: AsyncSession) -> Users:
-    try:
-        user = Users(phone=phone)
-        session_postgres.add(user)
-        await session_postgres.commit()
-        return user
+# async def add_user(phone: str, session_postgres: AsyncSession) -> Users:
+#     try:
+#         user = Users(phone=phone)
+#         session_postgres.add(user)
+#         await session_postgres.commit()
+#         return user
     
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
     
 
 async def get_all(session_mysql: AsyncSession):
