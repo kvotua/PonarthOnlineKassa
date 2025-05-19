@@ -1,4 +1,5 @@
-const port = 8013
+const port = 8013;
+const host = "127.0.0.1";
 
 document.querySelector('.send-sms').addEventListener('click', function() {
     const phoneInput = document.getElementById('phone');
@@ -17,7 +18,7 @@ document.querySelector('.send-sms').addEventListener('click', function() {
 });
 
 function sendPhoneVerification(phone) {
-    return fetch(`http://127.0.0.1:${port}/api/v1/verify/phone/send`, {
+    return fetch(`http://${host}:${port}/api/v1/verify/phone/send`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -88,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function confirmPhoneCode(phone, callId, code) {
-    return fetch(`http://127.0.0.1:${port}/api/v1/verify/phone/check`, {
+    return fetch(`http://${host}:${port}/api/v1/verify/phone/check`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -112,7 +113,7 @@ function confirmPhoneCode(phone, callId, code) {
 }
 
 function registerDiscount(callId) {
-    return fetch(`http://127.0.0.1:${port}/api/v1/register-discount`, {
+    return fetch(`http://${host}:${port}/api/v1/register-discount`, {
         method: 'POST',
         headers: {
             'accept': 'application/json',
