@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="registration.css">
+    <link rel="icon" href="img/Tag_Ponart.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="img/Tag_Ponart.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="img/Tag_Ponart.svg">
+</head>
+<body>
+    <div class="registration-container">
+        <div class="euler-top-left"></div>
+        <div class="euler-bottom-right"></div>
+        <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
+        <h1>Оформить бонусную карту?</h1>
+        <label>Зарегистрируйтесь в программе лояльности и получайте кэшбек 10% приобретая продукцию Понарт. Это займёт пару минут.</label>
+        <form class="registration" method="POST" id="my_form">
+            <div class="FIO">
+                <input type="text" id="first" name="first" placeholder="Фамилия*" required><br>
+                <input type="text" id="second" name="second" placeholder="Имя*" required><br>
+                <input type="text" id="third" name="third" placeholder="Отчество"><br>
+            </div>
+            <label id="cbday">Введите дату рождения*:</label>
+            <div class="custom-date">
+                <input type="date" id="bday" name="bday" required>
+            </div>
+
+            <label>Укажите ваш пол*</label>
+            <div class="gender-selection">
+                <label>
+                    <input type="radio" name="gender" value="1" required>
+                    <span><span>М</span></span>
+                </label>
+                <label>
+                    <input type="radio" name="gender" value="2" required>
+                    <span><span>Ж</span></span>
+                </label>
+            </div>
+            
+            <label class="custom-checkbox" for="agree">
+                Даю согласие на обработку персональных данных*
+                <input type="checkbox" id="agree" name="agree" required>
+                <span></span>                
+            </label>
+
+            <div class="buttons">
+                <button type="submit">Оформить карту</button>
+            </div>
+        </form>
+    </div>
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("my_form").addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Проверка заполнения всех обязательных полей
+                if (!document.getElementById("first").value || 
+                    !document.getElementById("second").value || 
+                    !document.getElementById("bday").value || 
+                    !document.querySelector('input[name="gender"]:checked') || 
+                    !document.getElementById("agree").checked) {
+                    alert("Пожалуйста, заполните все обязательные поля (помеченные *)");
+                    return;
+                }
+		const birthDate = new Date(document.getElementById("bday").value);
+                const currentDate = new Date();
+                const minBirthDate = new Date(
+                    currentDate.getFullYear() - 18,
+                    currentDate.getMonth(),
+                    currentDate.getDate()
+                );
+
+                if (birthDate > minBirthDate) {
+                    alert("Для регистрации вам должно быть не менее 18 лет");
+                    return;
+                }
+                const last_name = document.getElementById("first").value;
+                const first_name = document.getElementById("second").value;
+                const patronymic = document.getElementById("third").value;
+                const birth_date = document.getElementById("bday").value;
+                const gender = document.querySelector('input[name="gender"]:checked').value;  
+
+                localStorage.setItem("last_name", last_name);
+                localStorage.setItem("first_name", first_name);
+                localStorage.setItem("patronymic", patronymic);
+                localStorage.setItem("birth_date", birth_date);
+                localStorage.setItem("gender", gender);
+
+                window.location.href = './greet.html';
+            });
+        });
+    </script>
+</body>
+</html>
