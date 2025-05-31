@@ -15,7 +15,10 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan,
+    title="LOYALITY API",
+    description="API description",
+    version="1.0.0")
 
 
 app.add_middleware(

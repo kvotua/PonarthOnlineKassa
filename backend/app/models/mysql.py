@@ -41,7 +41,7 @@ class DiscountCard(Base_mysql):
     chat_id: Mapped[str] = mapped_column(Text, nullable=True)
     mode: Mapped[str] = mapped_column(Text, nullable=True)
     date_added: Mapped[datetime] = mapped_column(server_default=func.now())
-    data: Mapped[dict] = mapped_column(JSON)
+    data: Mapped[dict] = mapped_column(JSON,deferred=True)
 
 
 class Verification(Base_mysql):
