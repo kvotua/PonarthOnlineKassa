@@ -1,48 +1,154 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Здравствуйте!</title>
+    <title>PONARTH</title>
     <link rel="stylesheet" href="greet.css">
     <link rel="icon" href="img/Tag_Ponart.svg" type="image/svg+xml">
     <link rel="shortcut icon" href="img/Tag_Ponart.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="img/Tag_Ponart.svg">
     <script src="https://unpkg.com/imask"></script>
 </head>
+
 <body>
     <div class="greet-container">
         <div class="euler-top-left"></div>
         <div class="euler-bottom-right"></div>
         <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
         <h1>Введите номер</h1>
-        <label>Подтвердите номер телефона для продолжения покупок</label>
+        <label>Подтвердите номер телефона для создания карты лояльности</label>
 
         <form id="verification-form">
             <div class="phone-container">
-                <input type="tel" id="phone" name="phone" placeholder="+7 (952) 999-15-18" required>
-                <button type="button" class="send-sms" id="send-code">Отправить код</button>
+                <input type="tel" id="phone" name="phone" placeholder="+7 (952) 999-15-18" required
+                    class="input-autofill">
+                <button type="button" class="send-sms" id="send-code">Отправить звонок</button>
             </div>
-            <label class="labelSMS">Звонок-подтверждение отправлен на указанный номер</label>
-            <input type="text" id="sms-code" name="smsCode" placeholder="Введите последние 4 цифры" required>
-            <div class="labelSMS">
-                <label>Если код не пришёл, нажмите <span>отправить повторно (30 сек)</span></label>
+
+            <div class="sms-container">
+
+                <label class="labelSMS confirmation-label">
+                    Звонок-подтверждение отправлен</br> на номер <span id="phone-number"></span>
+                </label>
+                <input type="text" id="sms-code" name="smsCode" placeholder="Введите последние 4 цифры">
+                <div class="resend-text" style="display: none;">
+                    Если звонок не прошёл, нажмите
+                    <span class="resend-link timer-text disabled">
+                        Отправить звонок ( <span class="timer">30</span> сек )
+                    </span>
+                </div>
             </div>
             <div class="form-footer">
-                <button type="submit" id="confirm-code">Подтвердить и продолжить</button>
+                <button type="submit" id="confirm-code" style="display:none">Подтвердить и продолжить</button>
             </div>
         </form>
     </div>
     <script src="./js/script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            IMask(
-                document.getElementById('phone'),
-                {
-                    mask: '+{7} (000) 000-00-00'
+            const sendBtn = document.getElementById('send-code');
+            const phoneInput = document.getElementById('phone');
+            const smsContainer = document.querySelector('.sms-container');
+            const phoneNumberSpan = document.getElementById('phone-number');
+            const resendLink = document.querySelector('.resend-link');
+            const timerSpan = document.querySelector('.timer');
+            const confirmationLabel = document.querySelector('.confirmation-label');
+            const resendText = document.querySelector('.resend-text');
+            const smsCodeInput = document.getElementById('sms-code');
+            const confirmButton = document.getElementById('confirm-code');
+
+            IMask(phoneInput, {
+                mask: '+{7} (000) 000-00-00',
+            });
+
+            smsCodeInput.addEventListener('input', function () {
+                const isValid = this.value.length === 4;
+
+                if (isValid) {
+                    confirmButton.style.display = 'block';
+                    setTimeout(() => {
+                        confirmButton.classList.add('visible-btn');
+                    }, 10);
+                } else {
+                    confirmButton.classList.remove('visible-btn');
+                    confirmButton.addEventListener('transitionend', function handler() {
+                        if (!confirmButton.classList.contains('visible-btn')) {
+                            confirmButton.style.display = 'none';
+                        }
+                        confirmButton.removeEventListener('transitionend', handler);
+                    });
                 }
-            );
+            });
+
+            sendBtn.addEventListener('click', function () {
+                const phoneInput = document.getElementById('phone');
+                const phone = phoneInput.value;
+
+
+                if (phone) {
+                    sendPhoneVerification(phone)
+                        .then(response => {
+                            if (response.error) {
+                                alert(response.message);
+                            } else if (response.call_id) {
+                                console.log('Код отправлен:', response);
+                                localStorage.setItem('call_id', response.call_id);
+                                document.querySelector('.phone-container').classList.add('disabled');
+                                sendBtn.classList.add('disabled');
+                                sendBtn.textContent = 'Отправить звонок';
+
+                                phoneInput.readOnly = true;
+
+                                phoneNumberSpan.textContent = phoneInput.value;
+                                smsContainer.classList.add('visible', 'fade-in');
+                                resendText.style.display = 'block';
+                                confirmationLabel.style.display = 'block';
+
+                                startCountdown(30);
+                            }
+                        })
+                } else {
+                    alert('Пожалуйста, введите номер телефона.');
+                }
+
+            });
+
+            function startCountdown(seconds) {
+                let remaining = seconds;
+
+                const timerWrapper = document.querySelector('.resend-link.timer-text');
+                const timerSpan = document.querySelector('.resend-link.timer-text .timer');
+
+                timerWrapper.innerHTML = `Отправить звонок (<span class="timer">${remaining}</span> сек)`;
+                timerWrapper.classList.add('disabled');
+
+                const currentTimerSpan = timerWrapper.querySelector('.timer');
+
+                const timer = setInterval(() => {
+                    remaining--;
+                    currentTimerSpan.textContent = remaining;
+
+                    if (remaining <= 0) {
+                        clearInterval(timer);
+                        sendBtn.classList.remove('disabled');
+                        timerWrapper.classList.remove('disabled');
+                        timerWrapper.textContent = 'Отправить звонок';
+
+                        document.querySelector('.phone-container').classList.remove('disabled');
+                        phoneInput.readOnly = false;
+                    }
+                }, 1000);
+            }
+
+            resendLink.addEventListener('click', function () {
+                if (!sendBtn.classList.contains('disabled')) {
+                    sendBtn.click();
+                }
+            });
         });
     </script>
 </body>
+
 </html>

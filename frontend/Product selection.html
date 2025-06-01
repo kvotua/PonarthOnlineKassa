@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Здравствуйте!</title>
+    <title>PONARTH</title>
     <link rel="stylesheet" href="css/Product selection.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
@@ -11,32 +12,65 @@
     <link rel="shortcut icon" href="img/Tag_Ponart.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="img/Tag_Ponart.svg">
 </head>
+
 <body>
     <div class="choice-container">
         <div class="euler-top-left"></div>
         <div class="euler-bottom-right"></div>
         <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
         <h1>Ваша карта добавлена!</h1>
-        <label>На вашем бонусном счету <span id="scoreAmount">0 монет.</span></label>
-        <img src="img/photo_ponarth.jpg" class="photo-ponarth" alt="Фото Понарт">
+        <div class="bonus-container">
+            <div class="bonus-balance">
+                <svg class="coin-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                        stroke="#F9D03F" stroke-width="2" />
+                    <path d="M12 6V18" stroke="#F9D03F" stroke-width="2" stroke-linecap="round" />
+                    <path
+                        d="M15 9.5C15 8.11929 13.6569 7 12 7C10.3431 7 9 8.11929 9 9.5C9 10.8807 10.3431 12 12 12C13.6569 12 15 13.1193 15 14.5C15 15.8807 13.6569 17 12 17C10.3431 17 9 15.8807 9 14.5"
+                        stroke="#F9D03F" stroke-width="2" />
+                </svg>
+                <span>На вашем бонусном счету</span>
+                <span id="scoreAmount" class="amount">0 монет</span>
+            </div>
+
+            <div class="cashback-info">
+                <div class="cashback-card">
+                    <div class="cashback-rate">
+                        <span>10%</span>
+                        <small>стандартный кешбек</small>
+                    </div>
+                    <div class="cashback-divider">
+                        <div class="arrow"></div>
+                    </div>
+                    <div class="cashback-rate special">
+                        <span>15%</span>
+                        <small>при оплате наличными</small>
+                    </div>
+                </div>
+                <p class="cashback-hint">Оплачивайте товары наличными и получайте +50% к кешбеку!</p>
+            </div>
+        </div>
         <div class="beer-selection">
 
         </div>
     </div>
 
-    <script src="js/script.js"></script> 
+    <script src="js/script.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const scoreElement = document.getElementById('scoreAmount');
+        document.addEventListener('DOMContentLoaded', function () {
+            const scoreElement = document.getElementById('scoreAmount');
 
-        const score = localStorage.getItem('scoreAmount');
+            const score = localStorage.getItem('scoreAmount');
 
-        scoreElement.textContent = score ? `${score} монет.` : "0 монет.";
+            scoreElement.textContent = score ? `${score} монет.` : "0 монет.";
 
-        const h1Element = document.querySelector('h1');
-        h1Element.textContent = localStorage.getItem('h1Element');
-    });
+            const h1Element = document.querySelector('h1');
+            h1Element.textContent = localStorage.getItem('h1Element');
+        });
     </script>
 
 </body>
+
 </html>

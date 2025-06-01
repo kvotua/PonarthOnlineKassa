@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация</title>
+    <title>PONARTH</title>
     <link rel="stylesheet" href="registration.css">
     <link rel="icon" href="img/Tag_Ponart.svg" type="image/svg+xml">
     <link rel="shortcut icon" href="img/Tag_Ponart.svg" type="image/svg+xml">
@@ -15,7 +15,7 @@
         <div class="euler-bottom-right"></div>
         <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
         <h1>Оформить бонусную карту?</h1>
-        <label>Зарегистрируйтесь в программе лояльности и получайте кэшбек 10% приобретая продукцию Понарт. Это займёт пару минут.</label>
+        <label>Зарегистрируйтесь в программе лояльности и получайте кэшбек <strong style="color: rgba(249, 208, 63, 1);">10%</strong> приобретая продукцию Понарт. Это займёт пару минут.</label>
         <form class="registration" method="POST" id="my_form">
             <div class="FIO">
                 <input type="text" id="first" name="first" placeholder="Фамилия*" required><br>
@@ -56,7 +56,6 @@
             document.getElementById("my_form").addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                // Проверка заполнения всех обязательных полей
                 if (!document.getElementById("first").value || 
                     !document.getElementById("second").value || 
                     !document.getElementById("bday").value || 

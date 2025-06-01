@@ -1,31 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
-body {
-    font-family: 'Lato', sans-serif; 
+/* Базовые стили */
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100vw;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
     background: #171616;
     color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; 
     backdrop-filter: blur(60px);
-    position: relative; 
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
 }
 
-html, body {
-    height: 100%; 
-    overflow: hidden; 
-    width: 100vw;
-    overflow-x: hidden; 
-}
-
-.euler-top-left, .euler-bottom-right {
+.euler-top-left,
+.euler-bottom-right {
     position: absolute;
-    width: 0px;
-    height: 0px;
+    width: 0;
+    height: 0;
     border-radius: 50%;
     box-shadow: 0 0 200px 80px rgba(249, 209, 63, 0.308);
     pointer-events: none;
@@ -48,13 +56,12 @@ html, body {
     flex-direction: column;
     justify-content: space-between;
     height: 100vh;
-    width: 100%; 
-    max-width: 400px; 
+    width: 100%;
+    max-width: 400px;
     padding: 20px;
-    box-sizing: border-box;
-    background: #00000000;
+    gap: 24px;
+    background: transparent;
     border-radius: 15px;
-    overflow: hidden;
     border: 1px solid rgba(105, 105, 105, 1);
     box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
 }
@@ -63,127 +70,153 @@ html, body {
     .greet-container {
         border: none;
         box-shadow: none;
-        position: static;
     }
 }
 
 .logo {
     width: 89px;
     height: 69px;
-    margin-bottom: 20px; 
-    margin-top: 35px;
-    align-self: center; 
+    margin: 35px auto 20px;
 }
 
 h1 {
-    font-family: 'Montserrat', sans-serif; 
+    font-family: 'Montserrat', sans-serif;
     font-size: 36px;
     font-weight: 400;
     line-height: 43.88px;
     text-align: left;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none;
 }
 
 form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    flex-grow: 1; 
+    flex-grow: 1;
 }
 
-label {
-    font-family: 'Lato', sans-serif;
-    font-size: 16px;
-    font-weight: 100;
-    text-align: left;
-    color: #FCF9F2;
-    margin-bottom: 20px;
-}
-
-.labelSMS {
-    margin-top: 20px;
-}
-
-.phone-container {
-    position: relative; 
-    display: flex;
-    align-items: center;
-}
-
-.phone-container input {
-    width: 100%; 
+input {
+    width: 100%;
     padding: 10px;
     font-size: 16px;
-    height: 31px;
+    height: 53px;
     border: 1px solid rgba(105, 105, 105, 1);
-    border-radius: 8px; 
+    border-radius: 8px;
     background: #171616;
-    color: #fff;
-    padding-right: 90px; 
+    color: rgba(79, 81, 84, 1);
+    transition: all 0.3s ease;
 }
 
-.phone-container input::placeholder {
-    color: rgba(79, 81, 84, 1);
-    text-indent: 25px;
+input:hover {
+    border-color: rgba(249, 208, 63, 1);
+}
+
+input:focus {
+    border-color: rgba(249, 208, 63, 1);
     outline: none;
 }
 
-.phone-container .send-sms {
+input:valid,
+input:focus:valid,
+input:not(:placeholder-shown) {
+    color: rgba(249, 208, 63, 1);
+    border-color: rgba(249, 208, 63, 1);
+}
+
+input::placeholder {
+    color: rgba(79, 81, 84, 1);
+}
+
+.phone-container {
+    position: relative;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.phone-container input {
+    padding-right: 120px;
+}
+
+.send-sms {
     position: absolute;
-    font: 'Lato', sans-serif; 
-    top: 0;
     right: 0;
+    top: 0;
     height: 100%;
     padding: 0 15px;
     font-size: 16px;
     font-weight: 400;
     background: #F9D03F;
     color: #000;
-    border: none; 
+    border: none;
     border-radius: 8px;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
-.phone-container .send-sms:active {
+#send-code.expanded {
+    width: 100%;
+    border-radius: 8px;
+    padding: 0 15px;
+}
+
+.phone-container.disabled .input-autofill {
+    border-color: #4F5154 !important;
+    color: #7D7D7D !important;
+    cursor: not-allowed;
+}
+
+#send-code.disabled {
+    background-color: #4F5154 !important;
+    color: #7D7D7D !important;
+    cursor: not-allowed;
+}
+
+/* Для текста в инпуте */
+.phone-container.disabled .input-autofill::placeholder {
+    color: #7D7D7D !important;
+}
+
+.send-sms:active {
     background-color: #d4b030;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.15);
     transform: translateY(1px);
 }
 
-#sms-code {
-    font-family: 'Lato', sans-serif; 
-    text-align: center; 
-    padding: 10px;
-    border: 1px solid rgba(249, 208, 63, 1);
-    border-radius: 8px;
-    background: #171616;
-    color: #fff;
-    height: 35px;
+.resend-text {
+    font-size: 16px;
+    color: #FCF9F2;
+    margin-top: 30px;
 }
 
-#sms-code::placeholder {
-    color: rgba(248, 208, 64, 1);
-    font-size: 16px;
-    font-weight: 300;
-    line-height: 24px;
-}
-
-span {
-    font-family: 'Lato', sans-serif;
-    font-size: 16px;
-    font-weight: 300;
-    line-height: 24px;
-    text-align: left;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none;
+.resend-link {
     color: #F9D03F;
+    cursor: pointer;
+}
+
+.resend-link.disabled {
+    color: #4F5154;
+    cursor: not-allowed;
+}
+
+.sms-container {
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease-out;
+}
+
+.sms-container.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.confirmation-label {
+    font-size: 16px;
+    color: #FCF9F2;
 }
 
 .form-footer {
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     margin-top: auto;
     margin-bottom: 10px;
 }
@@ -202,5 +235,110 @@ span {
     border-radius: 8px;
     cursor: pointer;
     box-shadow: 0px 4px 24px 4px rgba(249, 209, 64, 0.2);
+}
 
+#confirm-code {
+    display: none; /* Изначально скрыта */
+    opacity: 0;
+    transform: translateY(15px);
+    transition: 
+        opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+}
+
+#confirm-code.visible-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.input-autofill:-webkit-autofill,
+.input-autofill:-webkit-autofill:hover,
+.input-autofill:-webkit-autofill:focus,
+.input-autofill:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #171616 inset !important;
+    -webkit-text-fill-color: rgba(249, 208, 63, 1) !important;
+    border-color: rgba(249, 208, 63, 1) !important;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+label {
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    font-weight: 200;
+    color: rgba(252, 249, 242, 1);
+}
+
+.labelSMS {
+    margin-bottom: 30px;
+}
+
+span {
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 24px;
+    color: #F9D03F;
+}
+
+#sms-code {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    text-align: center;
+    height: 57px;
+    padding: 10px;
+    border: 1px solid rgba(249, 208, 63, 1);
+    border-radius: 8px;
+    background: #171616;
+    color: #fff;
+}
+
+
+#sms-code {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    text-align: center;
+    height: 57px;
+    padding: 10px;
+    border: 1px solid rgba(105, 105, 105, 1) !important; /* Серая обводка по умолчанию */
+    border-radius: 8px;
+    background: #171616;
+    color: rgba(249, 208, 63, 1);
+    transition: border-color 0.3s ease; /* Добавляем плавность */
+}
+
+#sms-code:hover{
+    border-color: rgba(249, 208, 63, 1);
+    outline: none;
+}
+
+#sms-code::placeholder {
+    color: rgba(248, 208, 64, 1);
+}
+
+#sms-code:focus{
+    border-color: rgba(249, 208, 63, 1) !important;
+    outline: none;
+}
+
+
+input:not(:placeholder-shown) {
+    border-color: rgba(105, 105, 105, 1); 
 }

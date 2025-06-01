@@ -132,6 +132,11 @@ form {
     color: rgba(249, 208, 63, 1); 
 }
 
+input:-webkit-autofill{
+    -webkit-box-shadow: 0 0 0 1000px #171616 inset; 
+    -webkit-text-fill-color: rgba(249, 208, 63, 1) !important; 
+}
+
 label {
     font-family: 'Lato', sans-serif;
     font-size: 16px;
@@ -152,11 +157,19 @@ label {
     background: #17161600;
     color: rgba(79, 81, 84, 1);
     margin-top: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.registration-container input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
 }
 
 .registration-container input[type="date"]:hover {
     border-color: rgba(249, 208, 63, 1);
     outline: none;
+    
 }
 
 .registration-container input[type="date"]:focus {
@@ -208,12 +221,20 @@ button[type="button"] {
 }
 
 .custom-date::after {
-    content: url('calendar-icon.svg');
+    content: "";
     position: absolute;
     top: 50%;
     right: 12px;
-    transform: translateY(-35%);
+    width: 20px;  
+    height: 20px;
+    background-image: url('./img/calendar-svgrepo-com.svg');
+    background-size: contain; 
+    background-repeat: no-repeat;
+    background-position: center;
+    transform: translateY(-50%); 
     pointer-events: none;
+    filter: brightness(0) saturate(100%) invert(33%) sepia(5%) saturate(875%) hue-rotate(168deg) brightness(92%) contrast(89%);
+    transition: filter 0.3s ease;
 }
 
 .custom-checkbox {
@@ -268,8 +289,9 @@ button[type="button"] {
 
 .gender-selection {
     display: flex;
+    justify-content: center;
     align-items: start;
-    gap: 10px;
+    gap: 50px;
     font-family: 'Arial', sans-serif;
     font-size: 18px;
     color: #fff;
@@ -316,6 +338,6 @@ button[type="button"] {
 
 .gender-selection input[type="radio"]:checked + span span {
     background-color: rgba(249, 208, 63, 1);
-    border-color: rgba(249, 208, 63, 1);
+    border-color: rgba(105, 105, 105, 1);
     color: #000;
 }
