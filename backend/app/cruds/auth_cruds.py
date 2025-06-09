@@ -80,7 +80,7 @@ async def add_user_to_loyal_system(data: RegisterUserLoyaltySystem, session_mysq
             third=data.patronymic,
             gender=data.gender,
             bday=data.birth_date,
-            user_id=0,
+            user_id=314,
             data=json.dumps(data_user, ensure_ascii=False),
             phone=user_phone.phone,
             card_num=user_phone.phone,
