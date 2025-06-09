@@ -52,8 +52,7 @@ async def add_user_to_loyal_system(data: RegisterUserLoyaltySystem, session_mysq
         stmt_check_phone = select(DiscountCard).where(
             DiscountCard.phone == user_phone.phone,
             DiscountCard.base_id == base_id,
-            DiscountCard.mag_id == firm_id,
-            DiscountCard.discount_id == discount_id)
+            DiscountCard.mag_id == firm_id)
         result_check_phone: Result = await session_mysql.execute(stmt_check_phone)
         check_phone = result_check_phone.scalar_one_or_none()
         if check_phone:

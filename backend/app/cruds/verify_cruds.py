@@ -70,7 +70,7 @@ async def change_verify_status(call_id: str, code: str, session_mysql: AsyncSess
 
 async def check_phone_in_discound(phone: str, session_mysql: AsyncSession) -> bool:
     stmt = select(DiscountCard).where(DiscountCard.phone ==
-                                      phone[1:], DiscountCard.base_id == base_id, DiscountCard.mag_id == firm_id, DiscountCard.discount_id == discount_id)
+                                      phone[1:], DiscountCard.base_id == base_id, DiscountCard.mag_id == firm_id)
     print(stmt)
     result: Result = await session_mysql.execute(stmt)
     check = result.scalars().first()
