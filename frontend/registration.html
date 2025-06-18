@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,13 +10,16 @@
     <link rel="shortcut icon" href="img/Tag_Ponart.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="img/Tag_Ponart.svg">
 </head>
+
 <body>
     <div class="registration-container">
         <div class="euler-top-left"></div>
         <div class="euler-bottom-right"></div>
         <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
         <h1>Оформить бонусную карту?</h1>
-        <label>Зарегистрируйтесь в программе лояльности и получайте кэшбек <strong style="color: rgba(249, 208, 63, 1);">10%</strong> приобретая продукцию Понарт. Это займёт пару минут.</label>
+        <label>Зарегистрируйтесь в программе лояльности и получайте кэшбек <strong
+                style="color: rgba(249, 208, 63, 1);">10%</strong> приобретая продукцию Понарт. Это займёт пару
+            минут.</label>
         <form class="registration" method="POST" id="my_form">
             <div class="FIO">
                 <input type="text" id="first" name="first" placeholder="Фамилия*" required><br>
@@ -23,8 +27,8 @@
                 <input type="text" id="third" name="third" placeholder="Отчество"><br>
             </div>
             <label id="cbday">Введите дату рождения*:</label>
-            <div class="custom-date">
-                <input type="date" id="bday" name="bday" required>
+            <div class="FIO">
+                <input type="text" id="bday" name="bday" placeholder="дд.мм.гггг" required>
             </div>
 
             <label>Укажите ваш пол*</label>
@@ -38,11 +42,11 @@
                     <span><span>Ж</span></span>
                 </label>
             </div>
-            
+
             <label class="custom-checkbox" for="agree">
                 Даю согласие на обработку персональных данных*
                 <input type="checkbox" id="agree" name="agree" required>
-                <span></span>                
+                <span></span>
             </label>
 
             <div class="buttons">
@@ -51,26 +55,37 @@
         </form>
     </div>
     <script src="js/script.js"></script>
+    <script src="https://unpkg.com/imask"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById("my_form").addEventListener('submit', function(e) {
+        const bday = document.getElementById('bday');
+
+        IMask(bday, {
+            mask: '00.00.0000',
+        });
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById("my_form").addEventListener('submit', function (e) {
                 e.preventDefault();
 
-                if (!document.getElementById("first").value || 
-                    !document.getElementById("second").value || 
-                    !document.getElementById("bday").value || 
-                    !document.querySelector('input[name="gender"]:checked') || 
+                if (!document.getElementById("first").value ||
+                    !document.getElementById("second").value ||
+                    !document.getElementById("bday").value ||
+                    !document.querySelector('input[name="gender"]:checked') ||
                     !document.getElementById("agree").checked) {
                     alert("Пожалуйста, заполните все обязательные поля (помеченные *)");
                     return;
                 }
-		const birthDate = new Date(document.getElementById("bday").value);
+                const [day, month, year] = bday.value.split('.').map(Number); 
+
+                const birthDate = new Date(year, month - 1, day);
                 const currentDate = new Date();
                 const minBirthDate = new Date(
                     currentDate.getFullYear() - 18,
                     currentDate.getMonth(),
                     currentDate.getDate()
                 );
+                console.log(birthDate, minBirthDate);
 
                 if (birthDate > minBirthDate) {
                     alert("Для регистрации вам должно быть не менее 18 лет");
@@ -80,7 +95,7 @@
                 const first_name = document.getElementById("second").value;
                 const patronymic = document.getElementById("third").value;
                 const birth_date = document.getElementById("bday").value;
-                const gender = document.querySelector('input[name="gender"]:checked').value;  
+                const gender = document.querySelector('input[name="gender"]:checked').value;
 
                 localStorage.setItem("last_name", last_name);
                 localStorage.setItem("first_name", first_name);
@@ -93,4 +108,5 @@
         });
     </script>
 </body>
+
 </html>
