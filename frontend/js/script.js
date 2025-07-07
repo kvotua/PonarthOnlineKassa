@@ -1,12 +1,12 @@
 const port = '';
-const host = "loyality-backend.ponarth.com";
-
+// const host = "loyality-backend.ponarth.com";
+const host = "127.0.0.1:8000";
 function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 function sendPhoneVerification(phone) {
-    return fetch(`https://${host}/api/v1/verify/phone/send`, {
+    return fetch(`http://${host}/api/v1/verify/phone/send`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     } else {
                                         console.error('Элемент с ID scoreAmount не найден.');
                                     }
-                                localStorage.setItem('h1Element', "Ваша карта добавлена!")
+                                    localStorage.setItem('h1Element', "Ваша карта добавлена!")
                                     window.location.href = './Product selection.html';
                                 })
                                 .catch(error => {
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function confirmPhoneCode(phone, callId, code) {
-    return fetch(`https://${host}/api/v1/verify/phone/check`, {
+    return fetch(`http://${host}/api/v1/verify/phone/check`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -138,7 +138,17 @@ function confirmPhoneCode(phone, callId, code) {
 }
 
 function registerDiscount(callId) {
-    return fetch(`https://${host}/api/v1/register-discount`, {
+    const birthDateStr = localStorage.getItem('birth_date');
+
+    let formattedDate = birthDateStr;
+    if (birthDateStr) {
+        const dateObj = new Date(birthDateStr);
+        if (!isNaN(dateObj.getTime())) {
+            formattedDate = dateObj.toISOString().split('T')[0];
+        }
+    }
+
+    return fetch(`http://${host}/api/v1/register-discount`, {
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -148,21 +158,23 @@ function registerDiscount(callId) {
             'last_name': localStorage.getItem('last_name'),
             'first_name': localStorage.getItem('first_name'),
             'patronymic': localStorage.getItem('patronymic'),
-            'birth_date': localStorage.getItem('birth_date'),
+            'birth_date': formattedDate,
             'gender': localStorage.getItem('gender'),
             'call_id': callId
         })
     })
         .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw new Error(err.message); });
+            }
             return response.json();
         })
         .then(data => {
             console.log('Ответ от сервера:', data);
-
-            if (data.status_code === 200 || data.status_code === 400) {
-                return data;
-            } else {
-                throw new Error(data.message || 'Ошибка при регистрации скидки');
-            }
+            return data;
         })
+        .catch(error => {
+            console.error('Ошибка при регистрации скидки:', error);
+            throw error;
+        });
 }
