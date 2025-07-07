@@ -1,12 +1,11 @@
 const port = '';
-// const host = "loyality-backend.ponarth.com";
-const host = "127.0.0.1:8000";
+const host = "loyality-backend.ponarth.com";
 function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 function sendPhoneVerification(phone) {
-    return fetch(`http://${host}/api/v1/verify/phone/send`, {
+    return fetch(`https://${host}/api/v1/verify/phone/send`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -114,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function confirmPhoneCode(phone, callId, code) {
-    return fetch(`http://${host}/api/v1/verify/phone/check`, {
+    return fetch(`https://${host}/api/v1/verify/phone/check`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -148,7 +147,7 @@ function registerDiscount(callId) {
         }
     }
 
-    return fetch(`http://${host}/api/v1/register-discount`, {
+    return fetch(`https://${host}/api/v1/register-discount`, {
         method: 'POST',
         headers: {
             'accept': 'application/json',
