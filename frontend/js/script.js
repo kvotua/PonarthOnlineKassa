@@ -40,7 +40,7 @@ function sendPhoneVerification(phone) {
             }
             else if (data.call_id) {
                 return data;
-            }else if (data.status_code = 422){
+            } else if (data.status_code = 422) {
                 document.getElementById('phone').value = '';
                 alert("Невалидный номер");
             }
@@ -141,11 +141,16 @@ function registerDiscount(callId) {
 
     let formattedDate = birthDateStr;
     if (birthDateStr) {
-        const dateObj = new Date(birthDateStr);
+        const [day, month, year] = birthDateStr.split('.');
+
+        const dateObj = new Date(year, month - 1, day);
+
         if (!isNaN(dateObj.getTime())) {
             formattedDate = dateObj.toISOString().split('T')[0];
         }
     }
+
+    console.log(formattedDate); 
 
     return fetch(`https://${host}/api/v1/register-discount`, {
         method: 'POST',
