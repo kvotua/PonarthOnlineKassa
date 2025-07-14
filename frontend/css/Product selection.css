@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 /*Обнуление*/
 *{padding: 0;margin: 0;border: 0;}
 input::-ms-clear{display: none;}
@@ -224,13 +224,16 @@ h1{
 }
 
 .beer-selection{
-    display: flex;
-    justify-content: space-between;
-    /* align-items: center; */
+
+    /* align-items: center;*/
     height: 100%;
     width: 100%;
-    padding-top: 30px;
     padding-bottom: 40px;
+}
+.userinfo{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .beer-1 {
@@ -526,7 +529,7 @@ h2{
     padding: 20px;
     max-width: 400px;
     margin: 20px auto;
-    font-family: 'Lato', sans-serif;
+    font-family: "Montserrat", sans-serif;
     backdrop-filter: blur(5px);
     animation: fadeIn 0.6s ease-out;
 }
@@ -605,6 +608,7 @@ h2{
     font-size: 14px;
     color: #FCF9F2;
     margin-top: 15px;
+    font-family: "Montserrat", sans-serif;
     line-height: 1.5;
 }
 

@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 /* Базовые стили */
 * {
@@ -39,7 +40,9 @@ body {
     pointer-events: none;
     z-index: -1;
 }
-
+.labeltext{
+    font-family: "Montserrat", sans-serif;
+}
 .euler-top-left {
     top: 25px;
     left: 55px;
@@ -184,6 +187,7 @@ input::placeholder {
     font-size: 16px;
     color: #FCF9F2;
     margin-top: 30px;
+    font-family: "Montserrat", sans-serif;
 }
 
 .resend-link {
@@ -212,6 +216,7 @@ input::placeholder {
 .confirmation-label {
     font-size: 16px;
     color: #FCF9F2;
+    font-family: "Montserrat", sans-serif;
 }
 
 .form-footer {
