@@ -1,7 +1,7 @@
 const port = '';
 
-const host = "htts://loyality-backend.ponarth.com";
-// const host = "http://127.0.0.1:8000";
+// const host = "https://loyality-backend.ponarth.com";
+const host = "http://127.0.0.1:8000";
 function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
@@ -28,6 +28,7 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
                         if (!value) return "0.00";
                         const num = parseFloat(value);
                         return num >= 1000 ? `${(num / 1000).toFixed(2)}k` : num.toFixed(2);
+                    };
 
                         const formattedScore = data.scores ? formatScore(data.scores) : "0.00";
                         localStorage.setItem('scoreAmount', formattedScore);
@@ -90,9 +91,11 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
                             }
                         }
 
-                    };
+
+
 
                 window.location.href = './Product selection.html';
+                return;
             }
                 else if (data.call_id) {
                     return data;
@@ -128,6 +131,9 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+
+
+
     document.getElementById('verification-form').addEventListener('submit', function (event) {
         event.preventDefault();
         const confirmButton = document.getElementById('confirm-code');
@@ -212,7 +218,9 @@ function registerDiscount(callId) {
     })
         .then(response => {
             if (!response.ok) {
-                return response.json().then(err => { throw new Error(err.message); });
+                return response.json().then(err => {
+                    throw new Error(err.message);
+                });
             }
             return response.json();
         });
