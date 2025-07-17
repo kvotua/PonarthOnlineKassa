@@ -1,6 +1,7 @@
 const port = '';
-// const host = "loyality-backend.ponarth.com";
-const host = "127.0.0.1:8000";
+
+const host = "htts://loyality-backend.ponarth.com";
+// const host = "http://127.0.0.1:8000";
 function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
@@ -10,7 +11,7 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
 
 
     const executeRequest = () => {
-        return fetch(`http://${host}/api/v1/verify/phone/send`, {
+        return fetch(`${host}/api/v1/verify/phone/send`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -27,68 +28,69 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
                         if (!value) return "0.00";
                         const num = parseFloat(value);
                         return num >= 1000 ? `${(num / 1000).toFixed(2)}k` : num.toFixed(2);
+
+                        const formattedScore = data.scores ? formatScore(data.scores) : "0.00";
+                        localStorage.setItem('scoreAmount', formattedScore);
+                        localStorage.setItem('h1Element', ` ${data.user_info.first} ${data.user_info.third}, Вы уже оформили карту `);
+
+                        if (data.user_info) {
+
+                            function formatTimePassed(startDate) {
+                                const start = new Date(startDate);
+                                const now = new Date();
+                                const diff = now - start;
+
+                                if (start.toDateString() === now.toDateString()) {
+                                    return "Вы сегодня зарегистрировали карту";
+                                }
+
+
+                                const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+                                if (totalDays >= 365) {
+                                    const years = Math.floor(totalDays / 365);
+                                    return `${years} ${getRussianWord(years, 'год', 'года', 'лет')}`;
+                                }
+                                else if (totalDays >= 30) {
+                                    const months = Math.floor(totalDays / 30);
+                                    return `${months} ${getRussianWord(months, 'месяц', 'месяца', 'месяцев')}`;
+                                }
+                                else {
+                                    return `${totalDays} ${getRussianWord(totalDays, 'день', 'дня', 'дней')}`;
+                                }
+
+                                function getRussianWord(number, one, two, five) {
+                                    number = Math.abs(number);
+                                    if (number > 10 && number < 20) return five;
+                                    const lastDigit = number % 10;
+                                    if (lastDigit === 1) return one;
+                                    if (lastDigit > 1 && lastDigit < 5) return two;
+                                    return five;
+                                }
+                            }
+                            localStorage.setItem('userInfo', JSON.stringify({
+                                firstName: data.user_info.first,
+                                thirdName: data.user_info.third,
+                                registrationDate: data.user_info.date_added ?
+                                    new Date(data.user_info.date_added).toLocaleDateString() : 'Не указана'
+                            }));
+                        }
+                        if (data.user_info && data.user_info.date_added) {
+                            const registrationDate = new Date(data.user_info.date_added);
+                            const day = registrationDate.getDate();
+                            const month = (registrationDate.getMonth() + 1).toString().padStart(2, '0');
+                            const year = registrationDate.getFullYear();
+
+                            localStorage.setItem('registrationdate', `Дата оформления карты: ${day}.${month}.${year}`);
+
+                            const timePassed = formatTimePassed(data.user_info.date_added);
+                            if (timePassed === "Вы сегодня зарегистрировали карту") {
+                                localStorage.setItem('timePassed', timePassed);
+                            } else {
+                                localStorage.setItem('timePassed', `Вы уже с нами ${timePassed}!`);
+                            }
+                        }
+
                     };
-
-                    const formattedScore = data.scores ? formatScore(data.scores) : "0.00";
-                    localStorage.setItem('scoreAmount', formattedScore);
-                    localStorage.setItem('h1Element', ` ${data.user_info.first} ${data.user_info.third}, Вы уже оформили карту `);
-
-                if (data.user_info) {
-
-                    function formatTimePassed(startDate) {
-                        const start = new Date(startDate);
-                        const now = new Date();
-                        const diff = now - start;
-
-                        if (start.toDateString() === now.toDateString()) {
-                            return "Вы сегодня зарегистрировали карту";
-                        }
-
-
-                        const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
-                        if (totalDays >= 365) {
-                            const years = Math.floor(totalDays / 365);
-                            return `${years} ${getRussianWord(years, 'год', 'года', 'лет')}`;
-                        }
-                        else if (totalDays >= 30) {
-                            const months = Math.floor(totalDays / 30);
-                            return `${months} ${getRussianWord(months, 'месяц', 'месяца', 'месяцев')}`;
-                        }
-                        else {
-                            return `${totalDays} ${getRussianWord(totalDays, 'день', 'дня', 'дней')}`;
-                        }
-
-                        function getRussianWord(number, one, two, five) {
-                            number = Math.abs(number);
-                            if (number > 10 && number < 20) return five;
-                            const lastDigit = number % 10;
-                            if (lastDigit === 1) return one;
-                            if (lastDigit > 1 && lastDigit < 5) return two;
-                            return five;
-                        }
-                    }
-                    localStorage.setItem('userInfo', JSON.stringify({
-                        firstName: data.user_info.first,
-                        thirdName: data.user_info.third,
-                        registrationDate: data.user_info.date_added ?
-                            new Date(data.user_info.date_added).toLocaleDateString() : 'Не указана'
-                    }));
-                }
-                if (data.user_info && data.user_info.date_added) {
-                    const registrationDate = new Date(data.user_info.date_added);
-                    const day = registrationDate.getDate();
-                    const month = (registrationDate.getMonth() + 1).toString().padStart(2, '0');
-                    const year = registrationDate.getFullYear();
-
-                    localStorage.setItem('registrationdate', `Дата оформления карты: ${day}.${month}.${year}`);
-
-                    const timePassed = formatTimePassed(data.user_info.date_added);
-                    if (timePassed === "Вы сегодня зарегистрировали карту") {
-                        localStorage.setItem('timePassed', timePassed);
-                    } else {
-                        localStorage.setItem('timePassed', `Вы уже с нами ${timePassed}!`);
-                    }
-                }
 
                 window.location.href = './Product selection.html';
             }
@@ -157,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function confirmPhoneCode(phone, callId, code) {
-    return fetch(`http://${host}/api/v1/verify/phone/check`, {
+    return fetch(`${host}/api/v1/verify/phone/check`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -193,7 +195,7 @@ function registerDiscount(callId) {
         }
     }
 
-    return fetch(`http://${host}/api/v1/register-discount`, {
+    return fetch(`${host}/api/v1/register-discount`, {
         method: 'POST',
         headers: {
             'accept': 'application/json',

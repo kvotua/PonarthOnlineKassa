@@ -249,6 +249,28 @@ h1{
 
 }
 
+button {
+    padding: 12px;
+    font-size: 18px;
+    font-weight: 400;
+    border-radius: 12px;
+    font-family: 'Montserrat', sans-serif;
+    height: 53px;
+    box-shadow: 0px 4px 24px 4px rgba(255, 208, 50, 0.2);
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    margin-top: 80px;
+    gap: 5px;
+}
+button[type="submit"] {
+    color: #000;
+    border: none;
+    background: linear-gradient(to right, rgba(249, 208, 63, 1), rgba(233, 179, 42, 1));
+}
+
 .beer-2 {
     width: 143px;
     height: 213px;
@@ -322,7 +344,7 @@ h2{
 
 .btn-container{
     display: inline-block;
-    padding-right: 4;
+    padding-right: 4px;
     margin-bottom: 14px;
 }
 
@@ -331,7 +353,7 @@ h2{
     height: 25px;
     top: 646px;
     left: 48px;
-    padding: auto;
+    /*padding: auto;*/
     gap: 10px;
     border-radius: 9px;
 
@@ -359,7 +381,7 @@ h2{
     height: 25px;
     top: 646px;
     left: 48px;
-    padding: auto;
+    /*padding: auto;*/
     gap: 10px;
     border-radius: 9px;
 
