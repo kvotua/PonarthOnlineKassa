@@ -32,9 +32,9 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
 
                         const formattedScore = data.scores ? formatScore(data.scores) : "0.00";
                         localStorage.setItem('scoreAmount', formattedScore);
-                        localStorage.setItem('h1Element', ` ${data.user_info.first} ${data.user_info.third}, Вы уже оформили карту `);
+                        localStorage.setItem('h1Element', ` ${data.first} ${data.third}, Вы уже оформили карту `);
 
-                        if (data.user_info) {
+                        if (data) {
 
                             function formatTimePassed(startDate) {
                                 const start = new Date(startDate);
@@ -69,21 +69,21 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
                                 }
                             }
                             localStorage.setItem('userInfo', JSON.stringify({
-                                firstName: data.user_info.first,
-                                thirdName: data.user_info.third,
-                                registrationDate: data.user_info.date_added ?
-                                    new Date(data.user_info.date_added).toLocaleDateString() : 'Не указана'
+                                firstName: data.first,
+                                thirdName: data.third,
+                                registrationDate: data.date_added ?
+                                    new Date(data.date_added).toLocaleDateString() : 'Не указана'
                             }));
                         }
-                        if (data.user_info && data.user_info.date_added) {
-                            const registrationDate = new Date(data.user_info.date_added);
+                        if (data && data.date_added) {
+                            const registrationDate = new Date(data.date_added);
                             const day = registrationDate.getDate();
                             const month = (registrationDate.getMonth() + 1).toString().padStart(2, '0');
                             const year = registrationDate.getFullYear();
 
                             localStorage.setItem('registrationdate', `Дата оформления карты: ${day}.${month}.${year}`);
 
-                            const timePassed = formatTimePassed(data.user_info.date_added);
+                            const timePassed = formatTimePassed(data.date_added);
                             if (timePassed === "Вы сегодня зарегистрировали карту") {
                                 localStorage.setItem('timePassed', timePassed);
                             } else {
