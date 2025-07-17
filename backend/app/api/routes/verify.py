@@ -39,13 +39,9 @@ async def send_code(
         }
         if user:
             response_data.update({
-                "user_info": {
                     "date_added": user.date_added.isoformat() if user.date_added else None,
                     "first": user.first,
                     "third": user.third,
-                    "boss": user.boss
-
-                }
             })
             return JSONResponse(status_code=200, content=response_data)
     response_send = await http_client.send_message(phone=phone.phone)
