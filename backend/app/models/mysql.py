@@ -1,4 +1,7 @@
-from sqlalchemy import BigInteger, SmallInteger, Text, Integer, Date, DECIMAL, func, VARCHAR, JSON
+from decimal import Decimal
+from typing import Optional
+
+from sqlalchemy import BigInteger, SmallInteger, Text, Integer, Date, DECIMAL, func, VARCHAR, JSON, Column, String, DateTime, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime, date
@@ -7,7 +10,6 @@ from app.config import base_id, firm_id, discount_id
 
 
 Base_mysql = declarative_base()
-
 
 class DiscountCard(Base_mysql):
     __tablename__ = 'discount_cards'
@@ -64,3 +66,4 @@ class UserScore(Base_mysql):
     order_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     card_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     scores: Mapped[float] = mapped_column(DECIMAL(12, 2), nullable=False)
+
