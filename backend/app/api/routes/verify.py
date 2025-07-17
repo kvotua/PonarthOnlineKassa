@@ -1,6 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.responses import JSONResponse
 
+from app.models.mysql import DiscountCard
 from app.schemas.verify_schemas import Phone, CheckPhoneCode
 from app.utils import http_client, convert_decimal_to_float
 from app.cruds.verify_cruds import add_verify_session, get_verify_session, change_verify_status, check_phone_in_discound
@@ -24,16 +28,32 @@ async def send_code(
         if isinstance(scores, (int, float)):
         	scores = [scores]
         total_score = sum(scores) if scores else 0
-        return json_response(
-            status_code=400,
-            message="User is already register.",
-            scores=total_score)
+
+        stmt = select(DiscountCard).where(DiscountCard.phone == phone.phone[1:])
+        result = await session_mysql.execute(stmt)
+        user = result.scalars().first()
+        response_data = {
+            "status_code": 400,
+            "message": "User is already registered",
+            "scores": total_score,
+        }
+        if user:
+            response_data.update({
+                "user_info": {
+                    "date_added": user.date_added.isoformat() if user.date_added else None,
+                    "first": user.first,
+                    "third": user.third,
+                    "boss": user.boss
+
+                }
+            })
+            return JSONResponse(status_code=200, content=response_data)
     response_send = await http_client.send_message(phone=phone.phone)
     response_data = response_send['data']
     print("Zvonok API response:", response_send)
     if response_send['status'] == 'error':
         raise HTTPException(status_code=500,
-                            message=f"Zvonok API Error: {response_data}")
+                            detail=f"Zvonok API Error: {response_data}")
     await add_verify_session(call_id=response_data['call_id'], code=response_data['pincode'], phone=phone.phone[1:], session_mysql=session_mysql)
     return CallID(call_id=response_data['call_id'])
 
