@@ -81,14 +81,12 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
                             const month = (registrationDate.getMonth() + 1).toString().padStart(2, '0');
                             const year = registrationDate.getFullYear();
 
-                            localStorage.setItem('registrationdate', `Дата оформления карты: ${day}.${month}.${year}`);
 
                             const timePassed = formatTimePassed(data.date_added);
                             if (timePassed === "Вы сегодня зарегистрировали карту") {
-                                localStorage.setItem('timePassed', timePassed);
+                                localStorage.setItem('timePassed', `${timePassed}! <br> Дата оформления карты: ${day}.${month}.${year}`);
                             } else {
-                                localStorage.setItem('timePassed', `Вы уже с нами ${timePassed}!`);
-                            }
+                                localStorage.setItem('timePassed', `Вы уже с нами ${timePassed}!<br>Дата оформления карты: ${day}.${month}.${year}`);                         }
                         }
 
 

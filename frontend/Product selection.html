@@ -54,11 +54,11 @@
     </div>
     <div class="beer-selection">
         <div class="userinfo">
-            <p id="timePassed" class="cashback-hint"></p>
-            <p id="registrationdate" class="cashback-hint"></p>
+            <p id="timePassed" class="cashback-hint2"></p>
         </div>
 
     </div>
+
 </div>
 
 <script src="js/script.js"></script>
@@ -71,11 +71,8 @@
         const user_info = document.querySelector('h1');
         user_info.textContent = localStorage.getItem('h1Element');
 
-        const registration_date = document.getElementById("registrationdate")
-        registration_date.textContent = localStorage.getItem("registrationdate")
-
-        const time_Passed = document.getElementById("timePassed")
-        time_Passed.textContent = localStorage.getItem("timePassed")
+        const time_Passed = document.getElementById("timePassed");
+        time_Passed.innerHTML = localStorage.getItem("timePassed");
     });
 </script>
 

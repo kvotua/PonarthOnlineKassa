@@ -627,12 +627,24 @@ h2{
 
 .cashback-hint {
     text-align: center;
-    font-size: 14px;
+    font-size: 16px;
     color: #FCF9F2;
     margin-top: 15px;
     font-family: "Montserrat", sans-serif;
     line-height: 1.5;
+    font-weight: 200;
+
 }
+
+.cashback-hint2 {
+    font-size: 16px;
+    color: #FCF9F2;
+    margin-top: 15px;
+    font-family: "Montserrat", sans-serif;
+    line-height: 1.5;
+    font-weight: 200;
+}
+
 
 @keyframes pulse {
     0% { transform: scale(1); }
