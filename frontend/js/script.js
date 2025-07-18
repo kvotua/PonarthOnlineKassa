@@ -9,7 +9,6 @@ function isMobileDevice() {
 function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
     let retryCount = 0;
 
-
     const executeRequest = () => {
         return fetch(`${host}/api/v1/verify/phone/send`, {
             method: 'POST',
@@ -88,10 +87,6 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
                             } else {
                                 localStorage.setItem('timePassed', `Вы уже с нами ${timePassed}!<br>Дата оформления карты: ${day}.${month}.${year}`);                         }
                         }
-
-
-
-
                 window.location.href = './Product selection.html';
                 return;
             }
@@ -221,5 +216,20 @@ function registerDiscount(callId) {
                 });
             }
             return response.json();
+        })
+        .then(data => {
+            const currentDate = new Date();
+            const day = currentDate.getDate();
+            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+            const year = currentDate.getFullYear();
+
+            localStorage.setItem('timePassed', `Вы сегодня зарегистрировали карту! <br> Дата оформления карты: ${day}.${month}.${year}`);
+
+            localStorage.setItem('scoreAmount', '0.00');
+            localStorage.setItem('h1Element', ` ${localStorage.getItem('first_name')} ${localStorage.getItem('patronymic')}, Вы успешно оформили карту `);
+
+            window.location.href = './Product selection.html';
+
+            return data;
         });
 }
