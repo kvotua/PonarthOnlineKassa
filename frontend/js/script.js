@@ -190,12 +190,14 @@ function registerDiscount(callId) {
     let formattedDate = birthDateStr;
     if (birthDateStr) {
         const dateObj = new Date(birthDateStr.split('.').reverse().join('-'));
+
         if (!isNaN(dateObj.getTime())) {
             formattedDate = dateObj.toISOString().split('T')[0];
         }
     }
 
     return fetch(`${host}/api/v1/register-discount`, {
+
         method: 'POST',
         headers: {
             'accept': 'application/json',
