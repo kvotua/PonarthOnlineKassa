@@ -186,8 +186,9 @@ input::placeholder {
 .resend-text {
     font-size: 16px;
     color: #FCF9F2;
-    margin-top: 30px;
     font-family: "Montserrat", sans-serif;
+    font-weight: 200;
+    margin-top: 30px;
 }
 
 .resend-link {

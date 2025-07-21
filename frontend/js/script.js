@@ -1,7 +1,7 @@
 const port = '';
 
-// const host = "https://loyality-backend.ponarth.com";
-const host = "http://127.0.0.1:8000";
+const host = "https://loyality-backend.ponarth.com";
+// const host = "http://127.0.0.1:8000";
 function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
@@ -31,7 +31,8 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
 
                         const formattedScore = data.scores ? formatScore(data.scores) : "0.00";
                         localStorage.setItem('scoreAmount', formattedScore);
-                        localStorage.setItem('h1Element', ` ${data.first} ${data.third}, Вы уже оформили карту `);
+                        localStorage.setItem('h1Element', `Ваша карта`);
+                        localStorage.setItem('new_user_score', 'false');
 
                         if (data) {
 
@@ -225,8 +226,10 @@ function registerDiscount(callId) {
 
             localStorage.setItem('timePassed', `Вы сегодня зарегистрировали карту! <br> Дата оформления карты: ${day}.${month}.${year}`);
 
-            localStorage.setItem('scoreAmount', '0.00');
-            localStorage.setItem('h1Element', ` ${localStorage.getItem('first_name')} ${localStorage.getItem('patronymic')}, Вы успешно оформили карту `);
+            localStorage.setItem('scoreAmount', '150.00');
+            localStorage.setItem('h1Element', `Поздравляем!`);
+            localStorage.setItem('new_user_score', 'true');
+
 
             window.location.href = './Product selection.html';
 

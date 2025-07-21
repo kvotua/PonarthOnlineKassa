@@ -2,6 +2,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
 * {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  outline: none !important;
+}
+
+input, textarea, [contenteditable] {
+  user-select: text; /* Разрешаем выделение в полях ввода */
+}
+
+* {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -145,6 +158,10 @@ label {
     text-align: left;
     color: rgba(252, 249, 242, 1);
     margin-top: 20px;
+    font-size: 16px;
+    color: #FCF9F2;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 200;
 }
 
 .registration-container input[type="date"] {
@@ -240,10 +257,7 @@ button[type="button"] {
 .custom-checkbox {
     display: flex;
     align-items: center;
-    font-family: 'Lato', sans-serif;
     font-size: 16px;
-    font-weight: 300;
-    color: #fff;
     gap: 10px;
     cursor: pointer;
 }
@@ -254,8 +268,8 @@ button[type="button"] {
 
 .custom-checkbox span {
     flex-shrink: 0;
-    width: 24px;
-    height: 24px;
+    width: 45px;
+    height: 45px;
     border: 1px solid rgba(105, 105, 105, 1);
     border-radius: 50%;
     display: inline-block;
@@ -266,8 +280,8 @@ button[type="button"] {
 
 .custom-checkbox span::before {
     content: "";
-    width: 18px;
-    height: 18px;
+    width: 35px;
+    height: 35px;
     border: 1px solid rgba(105, 105, 105, 1);
     border-radius: 50%;
     position: absolute;
@@ -340,4 +354,18 @@ button[type="button"] {
     background-color: rgba(249, 208, 63, 1);
     border-color: rgba(105, 105, 105, 1);
     color: #000;
+}
+
+.buttons {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+}
+
+.buttons.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto; 
 }

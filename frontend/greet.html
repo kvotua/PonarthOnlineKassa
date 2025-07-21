@@ -18,22 +18,22 @@
     <div class="euler-bottom-right"></div>
     <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
     <h1>Здравствуйте!</h1>
-    <label class="labeltext">Подтвердите номер телефона для продолжения покупок</label>
+    <label class="labeltext">Введите номер телефона для регистрации карты</label>
     <form id="verification-form">
         <div class="phone-container">
             <input type="tel" id="phone" name="phone" placeholder="+7 (952) 999-15-18" required
                    class="input-autofill">
-            <button type="button" class="send-sms" id="send-code">Отправить звонок</button>
+            <button type="button" class="send-sms" id="send-code">Подтвердить</button>
         </div>
         <div class="sms-container">
             <label class="labelSMS confirmation-label">
-                Звонок-подтверждение отправлен</br> на номер <span id="phone-number"></span>
+                Введите последние 4 цифры входящего звонка</br> на номер <span id="phone-number"></span>
             </label>
             <input type="text" id="sms-code" name="smsCode" placeholder="Введите последние 4 цифры">
             <div class="resend-text" style="display: none;">
-                Если звонок не прошёл, нажмите
+                Если звонок не поступил, проверьте правильность вашего телефонного номера или нажмите кнопку
                 <span class="resend-link timer-text disabled">
-                        Отправить звонок ( <span class="timer">30</span> сек )
+                        Подтвердить повторно ( <span class="timer">30</span> сек )
                     </span>
             </div>
         </div>
@@ -90,11 +90,10 @@
                         if (response.error) {
                             alert(response.message);
                         } else if (response.call_id) {
-                            console.log('Код отправлен:', response);
                             localStorage.setItem('call_id', response.call_id);
                             document.querySelector('.phone-container').classList.add('disabled');
                             sendBtn.classList.add('disabled');
-                            sendBtn.textContent = 'Отправить звонок';
+                            sendBtn.textContent = 'Подтвердить';
 
                             phoneInput.readOnly = true;
 
@@ -118,7 +117,7 @@
             const timerWrapper = document.querySelector('.resend-link.timer-text');
             const timerSpan = document.querySelector('.resend-link.timer-text .timer');
 
-            timerWrapper.innerHTML = `Отправить звонок (<span class="timer">${remaining}</span> сек)`;
+            timerWrapper.innerHTML = `Подтвердить повторно (<span class="timer">${remaining}</span> сек)`;
             timerWrapper.classList.add('disabled');
 
             const currentTimerSpan = timerWrapper.querySelector('.timer');
@@ -131,7 +130,7 @@
                     clearInterval(timer);
                     sendBtn.classList.remove('disabled');
                     timerWrapper.classList.remove('disabled');
-                    timerWrapper.textContent = 'Отправить звонок';
+                    timerWrapper.textContent = 'Подтвердить';
 
                     document.querySelector('.phone-container').classList.remove('disabled');
                     phoneInput.readOnly = false;

@@ -19,6 +19,7 @@
     <div class="euler-bottom-right"></div>
     <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
     <h1>Ваша карта добавлена!</h1>
+    <p id="new_user_score">Вы вступили в клуб Понарт. На вашем счету 150 приветственых балла</p>
     <div class="bonus-container">
         <div class="bonus-balance">
             <svg class="coin-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -70,6 +71,13 @@
 
         const user_info = document.querySelector('h1');
         user_info.textContent = localStorage.getItem('h1Element');
+
+        const new_user_score = document.getElementById('new_user_score');
+        new_user = JSON.parse(localStorage.getItem('new_user_score'));
+        if(!new_user){
+            new_user_score.style.display = 'none';
+        }
+
 
         const time_Passed = document.getElementById("timePassed");
         time_Passed.innerHTML = localStorage.getItem("timePassed");

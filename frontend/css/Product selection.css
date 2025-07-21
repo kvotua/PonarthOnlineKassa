@@ -20,6 +20,12 @@ body {
     backdrop-filter: blur(60px);
     position: relative; 
 }
+#new_user_score{
+    color: #FCF9F2;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 200;
+    margin-top: 15px;
+}
 
 html, body {
     height: 100%; 
@@ -639,7 +645,6 @@ h2{
 .cashback-hint2 {
     font-size: 16px;
     color: #FCF9F2;
-    margin-top: 15px;
     font-family: "Montserrat", sans-serif;
     line-height: 1.5;
     font-weight: 200;

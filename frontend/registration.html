@@ -12,118 +12,130 @@
 </head>
 
 <body>
-<div class="registration-container">
-    <div class="euler-top-left"></div>
-    <div class="euler-bottom-right"></div>
-    <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
-    <h1>Оформить бонусную карту?</h1>
-    <label>Зарегистрируйтесь в программе лояльности и получайте кэшбек <strong
-            style="color: rgba(249, 208, 63, 1);">10%</strong> приобретая продукцию Понарт. Это займёт пару
-        минут.</label>
-    <form class="registration" method="POST" id="my_form">
-        <div class="FIO">
-            <input type="text" id="first" name="first" placeholder="Фамилия*" required><br>
-            <input type="text" id="second" name="second" placeholder="Имя*" required><br>
-            <input type="text" id="third" name="third" placeholder="Отчество"><br>
-        </div>
-        <label id="cbday">Введите дату рождения*:</label>
-        <div class="FIO">
-            <input type="text" id="bday" name="bday" placeholder="дд.мм.гггг" required>
-        </div>
+    <div class="registration-container">
+        <div class="euler-top-left"></div>
+        <div class="euler-bottom-right"></div>
+        <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
+        <h1>Кэшбек до 15%</h1>
+        <form class="registration" method="POST" id="my_form">
+            <label id="cbday">Введите ваше ФИО*:</label>
+            <div class="FIO">
+                <input type="text" id="first" name="first" placeholder="Фамилия*" required><br>
+                <input type="text" id="second" name="second" placeholder="Имя*" required><br>
+                <input type="text" id="third" name="third" placeholder="Отчество"><br>
+            </div>
+            <label id="cbday">Введите дату рождения*:</label>
+            <div class="FIO">
+                <input type="text" id="bday" name="bday" placeholder="дд.мм.гггг" required>
+            </div>
 
-        <label>Укажите ваш пол*</label>
-        <div class="gender-selection">
-            <label>
-                <input type="radio" name="gender" value="1" required>
-                <span><span>М</span></span>
+            <label>Укажите ваш пол*</label>
+            <div class="gender-selection">
+                <label>
+                    <input type="radio" name="gender" value="1" required>
+                    <span><span>М</span></span>
+                </label>
+                <label>
+                    <input type="radio" name="gender" value="2" required>
+                    <span><span>Ж</span></span>
+                </label>
+            </div>
+
+            <label class="custom-checkbox" for="agree">
+                Даю согласие на обработку персональных данных*
+                <input type="checkbox" id="agree" name="agree" required>
+                <span></span>
             </label>
-            <label>
-                <input type="radio" name="gender" value="2" required>
-                <span><span>Ж</span></span>
-            </label>
-        </div>
 
-        <label class="custom-checkbox" for="agree">
-            Даю согласие на обработку персональных данных*
-            <input type="checkbox" id="agree" name="agree" required>
-            <span></span>
-        </label>
+            <div class="buttons">
+                <button type="submit" id="submitBtn">Оформить карту</button>
+            </div>
+        </form>
+    </div>
+    <script src="js/script.js"></script>
+    <script src="https://unpkg.com/imask"></script>
+    <script>
+        const agreeCheckbox = document.getElementById('agree');
+        const buttonsBlock = document.querySelector('.buttons');
 
-        <div class="buttons">
-            <button type="submit">Оформить карту</button>
-        </div>
-    </form>
-</div>
-<script src="js/script.js"></script>
-<script src="https://unpkg.com/imask"></script>
-<script>
-    const bday = document.getElementById('bday');
-
-    IMask(bday, {
-        mask: '00.00.0000',
-    });
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById("my_form").addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            if (!document.getElementById("first").value ||
-                !document.getElementById("second").value ||
-                !document.getElementById("bday").value ||
-                !document.querySelector('input[name="gender"]:checked') ||
-                !document.getElementById("agree").checked) {
-                alert("Пожалуйста, заполните все обязательные поля (помеченные *)");
-                return;
+        agreeCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                buttonsBlock.style.display = 'flex';
+                setTimeout(() => {
+                    buttonsBlock.classList.add('active');
+                }, 10);
+            } else {
+                buttonsBlock.classList.remove('active');
             }
-            const [day, month, year] = bday.value.split('.').map(Number);
-            const birthDate = new Date(year, month - 1, day);
-            const currentDate = new Date();
-            const minBirthDate = new Date(
-                currentDate.getFullYear() - 18,
-                currentDate.getMonth(),
-                currentDate.getDate()
-            );
-
-            if (birthDate > minBirthDate) {
-                alert("Для регистрации вам должно быть не менее 18 лет");
-                return;
-            }
-            const last_name = document.getElementById("first").value;
-            const first_name = document.getElementById("second").value;
-            const patronymic = document.getElementById("third").value;
-            const birth_date = document.getElementById("bday").value;
-            const gender = document.querySelector('input[name="gender"]:checked').value;
-
-            localStorage.setItem("last_name", last_name);
-            localStorage.setItem("first_name", first_name);
-            localStorage.setItem("patronymic", patronymic);
-            localStorage.setItem("birth_date", birth_date);
-            localStorage.setItem("gender", gender);
-            localStorage.setItem('h1Element', ` ${last_name} ${first_name}, ваша карта добавлена!`)
-            localStorage.setItem('registrationdate', `Дата оформления карты: ${day}.${month}.${year}`);
-
-
-            const callId = localStorage.getItem('call_id');
-
-            if (!callId){
-                alert('Ошибка: отсутствует идентификатор сессии');
-                return;
-            }
-            registerDiscount(callId)
-                .then(response =>{
-                    console.log('Скидка успешно зарегистрирована:', response);
-
-                    window.location.href = './Product selection.html';
-                })
-                .catch(error => {
-                    console.error('Ошибка при регистрации скидки:', error);
-                    alert('Произошла ошибка при регистрации скидки. Пожалуйста, попробуйте снова.');
-                })
-
         });
-    });
-</script>
+
+        const bday = document.getElementById('bday');
+
+        IMask(bday, {
+            mask: '00.00.0000',
+        });
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById("my_form").addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                if (!document.getElementById("first").value ||
+                    !document.getElementById("second").value ||
+                    !document.getElementById("bday").value ||
+                    !document.querySelector('input[name="gender"]:checked') ||
+                    !document.getElementById("agree").checked) {
+                    alert("Пожалуйста, заполните все обязательные поля (помеченные *)");
+                    return;
+                }
+                const [day, month, year] = bday.value.split('.').map(Number);
+                const birthDate = new Date(year, month - 1, day);
+                const currentDate = new Date();
+                const minBirthDate = new Date(
+                    currentDate.getFullYear() - 18,
+                    currentDate.getMonth(),
+                    currentDate.getDate()
+                );
+
+                if (birthDate > minBirthDate) {
+                    alert("Для регистрации вам должно быть не менее 18 лет");
+                    return;
+                }
+                const last_name = document.getElementById("first").value;
+                const first_name = document.getElementById("second").value;
+                const patronymic = document.getElementById("third").value;
+                const birth_date = document.getElementById("bday").value;
+                const gender = document.querySelector('input[name="gender"]:checked').value;
+
+                localStorage.setItem("last_name", last_name);
+                localStorage.setItem("first_name", first_name);
+                localStorage.setItem("patronymic", patronymic);
+                localStorage.setItem("birth_date", birth_date);
+                localStorage.setItem("gender", gender);
+                localStorage.setItem('h1Element', ` ${last_name} ${first_name}, ваша карта добавлена!`)
+                localStorage.setItem('registrationdate', `Дата оформления карты: ${day}.${month}.${year}`);
+
+
+                const callId = localStorage.getItem('call_id');
+
+                if (!callId) {
+                    alert('Ошибка: отсутствует идентификатор сессии');
+                    return;
+                }
+                registerDiscount(callId)
+                    .then(response => {
+                        console.log('Скидка успешно зарегистрирована:', response);
+
+                        window.location.href = './Product selection.html';
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при регистрации скидки:', error);
+                        alert('Произошла ошибка при регистрации скидки. Пожалуйста, попробуйте снова.');
+                    })
+
+            });
+        });
+    </script>
 </body>
 
 </html>
