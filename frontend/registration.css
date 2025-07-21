@@ -71,7 +71,6 @@ body {
     box-sizing: border-box;
     background: #00000000;
     border-radius: 15px;
-    overflow: hidden;
     border: 1px solid rgba(105, 105, 105, 1);
     box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
     flex-grow: 1;
@@ -419,6 +418,7 @@ button[type="button"] {
 .euler-top-left, .euler-bottom-right {
     will-change: transform;
     /* Лёгкое размытие в движении */
+    z-index: -1;
     transition: filter 0.5s ease;
 }
 .euler-top-left:hover, .euler-bottom-right:hover {

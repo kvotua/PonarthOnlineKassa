@@ -311,7 +311,7 @@ span {
     padding: 10px;
     border: 1px solid rgba(249, 208, 63, 1);
     border-radius: 8px;
-    background: #171616;
+    background: #17161600;
     color: #fff;
 }
 
@@ -325,7 +325,7 @@ span {
     padding: 10px;
     border: 1px solid rgba(105, 105, 105, 1) !important; /* Серая обводка по умолчанию */
     border-radius: 8px;
-    background: #171616;
+    background: #17161600;
     color: rgba(249, 208, 63, 1);
     transition: border-color 0.3s ease; /* Добавляем плавность */
 }
