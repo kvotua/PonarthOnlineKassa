@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 /* Базовые стили */
 * {
@@ -39,7 +40,9 @@ body {
     pointer-events: none;
     z-index: -1;
 }
-
+.labeltext{
+    font-family: "Montserrat", sans-serif;
+}
 .euler-top-left {
     top: 25px;
     left: 55px;
@@ -100,7 +103,7 @@ input {
     height: 53px;
     border: 1px solid rgba(105, 105, 105, 1);
     border-radius: 8px;
-    background: #171616;
+    background: #17161600;
     color: rgba(79, 81, 84, 1);
     transition: all 0.3s ease;
 }
@@ -183,6 +186,8 @@ input::placeholder {
 .resend-text {
     font-size: 16px;
     color: #FCF9F2;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 200;
     margin-top: 30px;
 }
 
@@ -212,6 +217,7 @@ input::placeholder {
 .confirmation-label {
     font-size: 16px;
     color: #FCF9F2;
+    font-family: "Montserrat", sans-serif;
 }
 
 .form-footer {
@@ -342,3 +348,56 @@ span {
 input:not(:placeholder-shown) {
     border-color: rgba(105, 105, 105, 1); 
 }
+
+.euler-top-left {
+    top: 25px;
+    left: 55px;
+    animation: 
+        floatVerticalDown 60s ease-in-out infinite,
+        glowPulse 8s ease-in-out infinite alternate;
+}
+
+.euler-bottom-right {
+    bottom: 75px;
+    right: -50px;
+    animation: 
+        floatVerticalUp 70s ease-in-out infinite,
+        glowPulse 10s ease-in-out infinite alternate 1s;
+}
+
+/* Первый шарик: вниз → вверх */
+@keyframes floatVerticalDown {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translate(30px, calc(100vh - 100px));
+    }
+}
+
+/* Второй шарик: вверх → вниз */
+@keyframes floatVerticalUp {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translate(-80px, calc(-100vh + 100px));
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 0 0 180px 80px rgba(249, 230, 63, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 220px 100px rgba(245, 205, 45, 0.45);
+    }
+}
+.euler-top-left, .euler-bottom-right {
+    will-change: transform;
+    transition: filter 0.5s ease;
+}
+.euler-top-left:hover, .euler-bottom-right:hover {
+    filter: blur(1px);
+}
+

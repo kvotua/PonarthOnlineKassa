@@ -14,62 +14,75 @@
 </head>
 
 <body>
-    <div class="choice-container">
-        <div class="euler-top-left"></div>
-        <div class="euler-bottom-right"></div>
-        <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
-        <h1>Ваша карта добавлена!</h1>
-        <div class="bonus-container">
-            <div class="bonus-balance">
-                <svg class="coin-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
+<div class="choice-container">
+    <div class="euler-top-left"></div>
+    <div class="euler-bottom-right"></div>
+    <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
+    <h1>Ваша карта добавлена!</h1>
+    <p id="new_user_score">Вы вступили в клуб Понарт. На вашем счету 150 приветственых балла</p>
+    <div class="bonus-container">
+        <div class="bonus-balance">
+            <svg class="coin-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 xmlns="http://www.w3.org/2000/svg">
+                <path
                         d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
                         stroke="#F9D03F" stroke-width="2" />
-                    <path d="M12 6V18" stroke="#F9D03F" stroke-width="2" stroke-linecap="round" />
-                    <path
+                <path d="M12 6V18" stroke="#F9D03F" stroke-width="2" stroke-linecap="round" />
+                <path
                         d="M15 9.5C15 8.11929 13.6569 7 12 7C10.3431 7 9 8.11929 9 9.5C9 10.8807 10.3431 12 12 12C13.6569 12 15 13.1193 15 14.5C15 15.8807 13.6569 17 12 17C10.3431 17 9 15.8807 9 14.5"
                         stroke="#F9D03F" stroke-width="2" />
-                </svg>
-                <span>На вашем бонусном счету</span>
-                <span id="scoreAmount" class="amount">0 монет</span>
-            </div>
-
-            <div class="cashback-info">
-                <div class="cashback-card">
-                    <div class="cashback-rate">
-                        <span>10%</span>
-                        <small>стандартный кешбек</small>
-                    </div>
-                    <div class="cashback-divider">
-                        <div class="arrow"></div>
-                    </div>
-                    <div class="cashback-rate special">
-                        <span>15%</span>
-                        <small>при оплате наличными</small>
-                    </div>
-                </div>
-                <p class="cashback-hint">Оплачивайте товары наличными и получайте +50% к кешбеку!</p>
-            </div>
+            </svg>
+            <span>На вашем бонусном счету</span>
+            <span id="scoreAmount" class="amount">0 монет</span>
         </div>
-        <div class="beer-selection">
 
+        <div class="cashback-info">
+            <div class="cashback-card">
+                <div class="cashback-rate">
+                    <span>10%</span>
+                    <small>стандартный кешбек</small>
+                </div>
+                <div class="cashback-divider">
+                    <div class="arrow"></div>
+                </div>
+                <div class="cashback-rate special">
+                    <span>15%</span>
+                    <small>при оплате наличными</small>
+                </div>
+            </div>
+            <p class="cashback-hint">Оплачивайте товары наличными и получайте +50% к кешбеку!</p>
         </div>
     </div>
+    <div class="beer-selection">
+        <div class="userinfo">
+            <p id="timePassed" class="cashback-hint2"></p>
+        </div>
 
-    <script src="js/script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const scoreElement = document.getElementById('scoreAmount');
+    </div>
 
-            const score = localStorage.getItem('scoreAmount');
+</div>
 
-            scoreElement.textContent = score ? `${score} монет.` : "0 монет.";
+<script src="js/script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const scoreElement = document.getElementById('scoreAmount');
+        const score = localStorage.getItem('scoreAmount');
+        scoreElement.textContent = score ? `${score} монет.` : "0 монет.";
 
-            const h1Element = document.querySelector('h1');
-            h1Element.textContent = localStorage.getItem('h1Element');
-        });
-    </script>
+        const user_info = document.querySelector('h1');
+        user_info.textContent = localStorage.getItem('h1Element');
+
+        const new_user_score = document.getElementById('new_user_score');
+        new_user = JSON.parse(localStorage.getItem('new_user_score'));
+        if(!new_user){
+            new_user_score.style.display = 'none';
+        }
+
+
+        const time_Passed = document.getElementById("timePassed");
+        time_Passed.innerHTML = localStorage.getItem("timePassed");
+    });
+</script>
 
 </body>
 

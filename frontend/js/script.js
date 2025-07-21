@@ -1,63 +1,133 @@
 const port = '';
-const host = "loyality-backend.ponarth.com";
+
+const host = "https://loyality-backend.ponarth.com";
+// const host = "http://127.0.0.1:8000";
 function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
-function sendPhoneVerification(phone) {
-    return fetch(`https://${host}/api/v1/verify/phone/send`, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ phone })
-    })
-        .then(response => {
-            console.log(response);
-            return response.json();
+function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
+    let retryCount = 0;
+
+    const executeRequest = () => {
+        return fetch(`${host}/api/v1/verify/phone/send`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ phone })
         })
-        .then(data => {
-            const formatScore = (value) => {
-                if (!value) return "0.00";
+            .then(async response => {
+                console.log(response);
+                const data = await response.json();
 
-                const num = parseFloat(value);
+                if (data.status_code === 400) {
+                    const formatScore = (value) => {
+                        if (!value) return "0.00";
+                        const num = parseFloat(value);
+                        return num >= 1000 ? `${(num / 1000).toFixed(2)}k` : num.toFixed(2);
+                    };
 
-                if (num >= 1000) {
-                    const inThousands = (num / 1000).toFixed(2);
-                    return `${inThousands}k`;
-                } else {
-                    return num.toFixed(2);
-                }
-            };
-            if (data.status_code === 400) {
-                const score = data.scores;
-                const formattedScore = score ? formatScore(score) : "0.00";
-                localStorage.setItem('scoreAmount', formattedScore);
-                localStorage.setItem('h1Element', "Ваша карта уже была добавлена!")
+                        const formattedScore = data.scores ? formatScore(data.scores) : "0.00";
+                        localStorage.setItem('scoreAmount', formattedScore);
+                        localStorage.setItem('h1Element', `Ваша карта`);
+                        localStorage.setItem('new_user_score', 'false');
 
+                        if (data) {
+
+                            function formatTimePassed(startDate) {
+                                const start = new Date(startDate);
+                                const now = new Date();
+                                const diff = now - start;
+
+                                if (start.toDateString() === now.toDateString()) {
+                                    return "Вы сегодня зарегистрировали карту";
+                                }
+
+
+                                const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+                                if (totalDays >= 365) {
+                                    const years = Math.floor(totalDays / 365);
+                                    return `${years} ${getRussianWord(years, 'год', 'года', 'лет')}`;
+                                }
+                                else if (totalDays >= 30) {
+                                    const months = Math.floor(totalDays / 30);
+                                    return `${months} ${getRussianWord(months, 'месяц', 'месяца', 'месяцев')}`;
+                                }
+                                else {
+                                    return `${totalDays} ${getRussianWord(totalDays, 'день', 'дня', 'дней')}`;
+                                }
+
+                                function getRussianWord(number, one, two, five) {
+                                    number = Math.abs(number);
+                                    if (number > 10 && number < 20) return five;
+                                    const lastDigit = number % 10;
+                                    if (lastDigit === 1) return one;
+                                    if (lastDigit > 1 && lastDigit < 5) return two;
+                                    return five;
+                                }
+                            }
+                            localStorage.setItem('userInfo', JSON.stringify({
+                                firstName: data.first,
+                                thirdName: data.third,
+                                registrationDate: data.date_added ?
+                                    new Date(data.date_added).toLocaleDateString() : 'Не указана'
+                            }));
+                        }
+                        if (data && data.date_added) {
+                            const registrationDate = new Date(data.date_added);
+                            const day = registrationDate.getDate();
+                            const month = (registrationDate.getMonth() + 1).toString().padStart(2, '0');
+                            const year = registrationDate.getFullYear();
+
+
+                            const timePassed = formatTimePassed(data.date_added);
+                            if (timePassed === "Вы сегодня зарегистрировали карту") {
+                                localStorage.setItem('timePassed', `${timePassed}! <br> Дата оформления карты: ${day}.${month}.${year}`);
+                            } else {
+                                localStorage.setItem('timePassed', `Вы уже с нами ${timePassed}!<br>Дата оформления карты: ${day}.${month}.${year}`);                         }
+                        }
                 window.location.href = './Product selection.html';
+                return;
             }
-            else if (data.call_id) {
-                return data;
-            } else if (data.status_code = 422) {
-                document.getElementById('phone').value = '';
-                alert("Невалидный номер");
-            }
-        })
-        .catch(error => {
-            console.error('Fetch error:', error.message);
-            return {
-                error: true,
-                status: error.status || 500,
-                message: error.message || 'Слишком много запросов',
-                details: error.details || null,
-                timestamp: new Date().toISOString()
-            };
-        });;
+                else if (data.call_id) {
+                    return data;
+                }
+                else if (data.status_code === 422) {
+                    document.getElementById('phone').value = '';
+                    throw new Error("Невалидный номер");
+                }
+                else {
+                    throw new Error("Неизвестная ошибка сервера");
+                }
+            })
+            .catch(error => {
+                console.error(`Ошибка (попытка ${retryCount + 1}/${maxRetries}):`, error.message);
+
+                if (retryCount < maxRetries - 1) {
+                    retryCount++;
+                    return new Promise(resolve => setTimeout(resolve, retryDelay))
+                        .then(executeRequest);
+                } else {
+                    return {
+                        error: true,
+                        status: error.status || 500,
+                        message: error.message || 'Слишком много запросов',
+                        details: error.details || null,
+                        timestamp: new Date().toISOString()
+                    };
+                }
+            });
+    };
+
+    return executeRequest();
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+
+
+
     document.getElementById('verification-form').addEventListener('submit', function (event) {
         event.preventDefault();
         const confirmButton = document.getElementById('confirm-code');
@@ -65,36 +135,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const callId = localStorage.getItem('call_id');
         const phone = document.getElementById('phone').value;
 
-
         if (confirmButton.style.display !== 'none') {
             confirmButton.click();
             if (smsCode && callId) {
                 confirmPhoneCode(phone, callId, smsCode)
                     .then(response => {
                         console.log('Код подтверждения успешно отправлен:', response);
-                        if (response.status_code === 200) {
-                            registerDiscount(callId)
-                                .then(discountResponse => {
-                                    console.log('Ответ от регистрации скидки:', discountResponse);
-                                    const score = discountResponse.scores;
-                                    const scoreElement = document.getElementById('scoreAmount');
-
-                                    if (scoreElement) {
-                                        const displayScore = score ? (Math.round(parseFloat(score) * 100) / 100).toFixed(2) : '0.00';
-                                        scoreElement.textContent = displayScore;
-                                    } else {
-                                        console.error('Элемент с ID scoreAmount не найден.');
-                                    }
-                                    localStorage.setItem('h1Element', "Ваша карта добавлена!")
-                                    window.location.href = './Product selection.html';
-                                })
-                                .catch(error => {
-                                    console.error('Ошибка при регистрации скидки:', error);
-                                    alert('Ошибка при регистрации скидки. Пожалуйста, попробуйте снова.');
-                                });
-                        } else {
-                            alert('Ошибка подтверждения кода. Проверьте код и попробуйте снова.');
-                        }
                     })
                     .catch(error => {
                         console.error('Ошибка при подтверждении кода:', error);
@@ -113,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function confirmPhoneCode(phone, callId, code) {
-    return fetch(`https://${host}/api/v1/verify/phone/check`, {
+    return fetch(`${host}/api/v1/verify/phone/check`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -129,6 +175,8 @@ function confirmPhoneCode(phone, callId, code) {
         })
         .then(data => {
             if (data.status_code === 200) {
+                localStorage.setItem('call_id', data.call_id || callId);
+                window.location.href = './registration.html';
                 return data;
             } else {
                 throw new Error(data.message || 'Ошибка подтверждения кода');
@@ -141,18 +189,15 @@ function registerDiscount(callId) {
 
     let formattedDate = birthDateStr;
     if (birthDateStr) {
-        const [day, month, year] = birthDateStr.split('.');
-
-        const dateObj = new Date(year, month - 1, day);
+        const dateObj = new Date(birthDateStr.split('.').reverse().join('-'));
 
         if (!isNaN(dateObj.getTime())) {
             formattedDate = dateObj.toISOString().split('T')[0];
         }
     }
 
-    console.log(formattedDate); 
+    return fetch(`${host}/api/v1/register-discount`, {
 
-    return fetch(`https://${host}/api/v1/register-discount`, {
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -169,16 +214,27 @@ function registerDiscount(callId) {
     })
         .then(response => {
             if (!response.ok) {
-                return response.json().then(err => { throw new Error(err.message); });
+                return response.json().then(err => {
+                    throw new Error(err.message);
+                });
             }
             return response.json();
         })
         .then(data => {
-            console.log('Ответ от сервера:', data);
+            const currentDate = new Date();
+            const day = currentDate.getDate();
+            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+            const year = currentDate.getFullYear();
+
+            localStorage.setItem('timePassed', `Вы сегодня зарегистрировали карту! <br> Дата оформления карты: ${day}.${month}.${year}`);
+
+            localStorage.setItem('scoreAmount', '150.00');
+            localStorage.setItem('h1Element', `Поздравляем!`);
+            localStorage.setItem('new_user_score', 'true');
+
+
+            window.location.href = './Product selection.html';
+
             return data;
-        })
-        .catch(error => {
-            console.error('Ошибка при регистрации скидки:', error);
-            throw error;
         });
 }

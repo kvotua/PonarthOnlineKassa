@@ -16,11 +16,9 @@
         <div class="euler-top-left"></div>
         <div class="euler-bottom-right"></div>
         <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
-        <h1>Оформить бонусную карту?</h1>
-        <label>Зарегистрируйтесь в программе лояльности и получайте кэшбек <strong
-                style="color: rgba(249, 208, 63, 1);">10%</strong> приобретая продукцию Понарт. Это займёт пару
-            минут.</label>
+        <h1>Кэшбек до 15%</h1>
         <form class="registration" method="POST" id="my_form">
+            <label id="cbday">Введите ваше ФИО*:</label>
             <div class="FIO">
                 <input type="text" id="first" name="first" placeholder="Фамилия*" required><br>
                 <input type="text" id="second" name="second" placeholder="Имя*" required><br>
@@ -50,13 +48,27 @@
             </label>
 
             <div class="buttons">
-                <button type="submit">Оформить карту</button>
+                <button type="submit" id="submitBtn">Оформить карту</button>
             </div>
         </form>
     </div>
     <script src="js/script.js"></script>
     <script src="https://unpkg.com/imask"></script>
     <script>
+        const agreeCheckbox = document.getElementById('agree');
+        const buttonsBlock = document.querySelector('.buttons');
+
+        agreeCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                buttonsBlock.style.display = 'flex';
+                setTimeout(() => {
+                    buttonsBlock.classList.add('active');
+                }, 10);
+            } else {
+                buttonsBlock.classList.remove('active');
+            }
+        });
+
         const bday = document.getElementById('bday');
 
         IMask(bday, {
@@ -76,8 +88,7 @@
                     alert("Пожалуйста, заполните все обязательные поля (помеченные *)");
                     return;
                 }
-                const [day, month, year] = bday.value.split('.').map(Number); 
-
+                const [day, month, year] = bday.value.split('.').map(Number);
                 const birthDate = new Date(year, month - 1, day);
                 const currentDate = new Date();
                 const minBirthDate = new Date(
@@ -85,7 +96,6 @@
                     currentDate.getMonth(),
                     currentDate.getDate()
                 );
-                console.log(birthDate, minBirthDate);
 
                 if (birthDate > minBirthDate) {
                     alert("Для регистрации вам должно быть не менее 18 лет");
@@ -102,8 +112,27 @@
                 localStorage.setItem("patronymic", patronymic);
                 localStorage.setItem("birth_date", birth_date);
                 localStorage.setItem("gender", gender);
+                localStorage.setItem('h1Element', ` ${last_name} ${first_name}, ваша карта добавлена!`)
+                localStorage.setItem('registrationdate', `Дата оформления карты: ${day}.${month}.${year}`);
 
-                window.location.href = './greet.html';
+
+                const callId = localStorage.getItem('call_id');
+
+                if (!callId) {
+                    alert('Ошибка: отсутствует идентификатор сессии');
+                    return;
+                }
+                registerDiscount(callId)
+                    .then(response => {
+                        console.log('Скидка успешно зарегистрирована:', response);
+
+                        window.location.href = './Product selection.html';
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при регистрации скидки:', error);
+                        alert('Произошла ошибка при регистрации скидки. Пожалуйста, попробуйте снова.');
+                    })
+
             });
         });
     </script>
