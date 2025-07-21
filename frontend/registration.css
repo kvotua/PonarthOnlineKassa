@@ -369,3 +369,58 @@ button[type="button"] {
     transform: translateY(0);
     pointer-events: auto; 
 }
+
+
+.euler-top-left {
+    top: 25px;
+    left: 55px;
+    animation: 
+        floatVerticalDown 60s ease-in-out infinite,
+        glowPulse 8s ease-in-out infinite alternate;
+}
+
+.euler-bottom-right {
+    bottom: 75px;
+    right: -50px;
+    animation: 
+        floatVerticalUp 70s ease-in-out infinite,
+        glowPulse 10s ease-in-out infinite alternate 1s;
+}
+
+/* Первый шарик: вниз → вверх */
+@keyframes floatVerticalDown {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translate(30px, calc(100vh - 100px));
+    }
+}
+
+/* Второй шарик: вверх → вниз */
+@keyframes floatVerticalUp {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translate(-80px, calc(-100vh + 100px));
+    }
+}
+
+/* Мерцание для обоих */
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 0 0 180px 80px rgba(249, 230, 63, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 220px 100px rgba(245, 205, 45, 0.45);
+    }
+}
+.euler-top-left, .euler-bottom-right {
+    will-change: transform;
+    /* Лёгкое размытие в движении */
+    transition: filter 0.5s ease;
+}
+.euler-top-left:hover, .euler-bottom-right:hover {
+    filter: blur(1px);
+}
