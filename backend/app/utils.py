@@ -10,16 +10,6 @@ from decimal import Decimal
 from typing import Optional
 from app.config import secret_key, algorithm, expire_minutes, expire_days, public_key, campaign_id
 
-class SimpleResolver:
-    """Резолвер без pycares — работает через socket.getaddrinfo"""
-    async def resolve(self, host, port=0, family=0):
-        return await asyncio.get_event_loop().getaddrinfo(
-            host, port, type=socket.SOCK_STREAM, family=family
-        )
-
-    async def close(self):
-        pass
-
 
 class HttpClient:
     _instance: Optional['HttpClient'] = None
@@ -41,7 +31,6 @@ class HttpClient:
             return
 
         self.connector = TCPConnector(
-            resolver=SimpleResolver(),  
             limit=10,
             limit_per_host=3,
             enable_cleanup_closed=True,
