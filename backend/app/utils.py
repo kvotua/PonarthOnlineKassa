@@ -1,4 +1,7 @@
 import jwt
+import phonenumbers
+from datetime import datetime, timezone, timedelta
+from fastapi import HTTPException
 from aiohttp import ClientSession, TCPConnector, ClientTimeout
 import asyncio
 from decimal import Decimal
@@ -86,100 +89,108 @@ async def close_http_client():
         await http_client.close()
     http_client = None
     
-def validate_phone(phone: str) -> Optional[str]:
-    """Валидация номера телефона для РФ"""
-    try:
-        valid = phonenumbers.parse(phone, 'RU')
-        if phonenumbers.is_valid_number(valid):
-            return ''.join(
-                c for c in phonenumbers.format_number(
-                    valid, 
-                    phonenumbers.PhoneNumberFormat.NATIONAL
-                ) if c.isdigit()
-            )
-    except phonenumbers.phonenumberutil.NumberParseException:
-        return None
-    return None
+def validate_phone(phone):
+    valid = phonenumbers.parse(phone, 'RU')
+    if phonenumbers.is_valid_number(valid):
+        valid_phone = ''
+        for i in phonenumbers.format_number(
+                valid, phonenumbers.PhoneNumberFormat.NATIONAL):
+            if i.isdigit():
+                valid_phone += i
+        return valid_phone
+
 
 def sing_access_jwt_token(
         user_id: int,
         phone: str,
-        secret_key: str = secret_key,
-        algorithm: str = algorithm) -> str:
-    """Генерация JWT токена доступа"""
+        secret_key=secret_key,
+        algorithm=algorithm):
     payload = {
         "user_id": user_id,
         "phone": phone,
-        "exp": datetime.now(timezone.utc) + timedelta(minutes=int(expire_minutes)),
-        "type": "access"
     }
-    return jwt.encode(payload, key=secret_key, algorithm=algorithm)
+    expire = datetime.now(timezone.utc) + \
+        timedelta(minutes=int(expire_minutes))
+    payload.update({"exp": expire, "type": "access"})
+    return jwt.encode(payload=payload, key=secret_key, algorithm=algorithm)
+
 
 def sing_refresh_jwt_token(
         user_id: int,
         phone: str,
-        secret_key: str = secret_key,
-        algorithm: str = algorithm) -> str:
-    """Генерация JWT refresh токена"""
+        secret_key=secret_key,
+        algorithm=algorithm):
     payload = {
         "user_id": user_id,
         "phone": phone,
-        "exp": datetime.now(timezone.utc) + timedelta(days=int(expire_days)),
-        "type": "refresh"
     }
-    return jwt.encode(payload, key=secret_key, algorithm=algorithm)
+    expire = datetime.now(timezone.utc) + timedelta(days=int(expire_days))
+    payload.update({"exp": expire, "type": "refresh"})
+    return jwt.encode(payload=payload, key=secret_key, algorithm=algorithm)
+
 
 def get_access_token_data(
         token: str,
-        secret_key: str = secret_key,
-        algorithm: str = algorithm) -> dict:
-    """Валидация и декодирование access токена"""
+        secret_key=secret_key,
+        algorithm=algorithm) -> dict:
     try:
         decoded = jwt.decode(token, key=secret_key, algorithms=[algorithm])
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
+        raise HTTPException(status_code=401, detail="Invalid token.")
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise HTTPException(status_code=401, detail="Invalid token.")
 
-    now = datetime.now(timezone.utc).timestamp()
-    if decoded.get("exp", 0) <= now:
-        raise HTTPException(status_code=401, detail="Token expired")
+    now_ts = int(datetime.now(timezone.utc).timestamp())
+
+    if decoded.get("exp") is None or decoded.get("exp") <= now_ts:
+        raise HTTPException(status_code=401, detail="Expired token.")
+
     if decoded.get("type") != "access":
-        raise HTTPException(status_code=401, detail="Invalid token type")
+        raise HTTPException(status_code=401, detail="Invalid token type.")
 
     return decoded
 
+
 def get_new_tokens_pair(refresh_token: str) -> dict:
-    """Обновление пары токенов"""
     try:
-        decoded = jwt.decode(
+        decoded: dict = jwt.decode(
             refresh_token,
             key=secret_key,
-            algorithms=[algorithm]
-        )
+            algorithms=[algorithm])
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
+        raise HTTPException(status_code=401, detail="Invalid token.")
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise HTTPException(status_code=401, detail="Invalid token.")
 
-    now = datetime.now(timezone.utc).timestamp()
-    if decoded.get("exp", 0) <= now:
-        raise HTTPException(status_code=401, detail="Token expired")
+    now_ts = int(datetime.now(timezone.utc).timestamp())
+
+    if decoded.get("exp") is None or decoded.get("exp") <= now_ts:
+        raise HTTPException(status_code=401, detail="Expired token.")
+
     if decoded.get("type") != "refresh":
-        raise HTTPException(status_code=401, detail="Invalid token type")
+        raise HTTPException(status_code=401, detail="Invalid token type.")
 
+    new_access_token = sing_access_jwt_token(
+        user_id=decoded.get("user_id"),
+        phone=decoded.get("phone"))
+    new_refresh_token = sing_refresh_jwt_token(
+        user_id=decoded.get("user_id"),
+        phone=decoded.get("phone"))
     return {
-        "access_token": sing_access_jwt_token(
-            user_id=decoded["user_id"],
-            phone=decoded["phone"]
-        ),
-        "refresh_token": sing_refresh_jwt_token(
-            user_id=decoded["user_id"],
-            phone=decoded["phone"]
-        )
+        "access_token": new_access_token,
+        "refresh_token": new_refresh_token
     }
 
+
 def convert_decimal_to_float(data):
+    if isinstance(data, list):
+        return [convert_decimal_to_float(item) for item in data]
+    elif isinstance(data, dict):
+        return {key: convert_decimal_to_float(
+            value) for key, value in data.items()}
+    elif isinstance(data, Decimal):
+        return float(data)
+    return data
     """Рекурсивное преобразование Decimal в float"""
     if isinstance(data, list):
         return [convert_decimal_to_float(item) for item in data]
