@@ -8,7 +8,7 @@ from decimal import Decimal
 from typing import Optional
 import atexit
 from app.config import secret_key, algorithm, expire_minutes, expire_days, public_key, campaign_id
-from aiohttp.resolver import DefaultResolver
+from aiohttp.resolver import AsyncResolver
 
 
 class HttpClient:
@@ -33,14 +33,10 @@ class HttpClient:
         self.public_key = public_key
         self.campaign_id = campaign_id
         
-        # Оптимальные настройки для Docker-контейнера
-        loop = asyncio.get_event_loop()
         self.connector = TCPConnector(
-            resolver=DefaultResolver(loop=loop),  # Явно передаем event loop
+            resolver=AsyncResolver(),
             limit=10,
-            limit_per_host=3,
-            enable_cleanup_closed=True,
-            force_close=False
+            limit_per_host=3
         )
                 
         # Таймауты для всех операций
