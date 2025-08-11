@@ -6,12 +6,11 @@ from aiohttp import ClientSession
 from decimal import Decimal
 from app.config import secret_key, algorithm, expire_minutes, expire_days, public_key, campaign_id
 
-from aiohttp import ClientSession, TCPConnector
+from aiohttp import ClientSession
 
 async def send_message(phone: str):
     url = "https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/"
-    connector = TCPConnector(force_close=True)  # стандартный резолвер
-    async with ClientSession(connector=connector) as session:
+    async with ClientSession() as session:
         async with session.post(
             url,
             data={
