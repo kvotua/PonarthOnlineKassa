@@ -12,7 +12,7 @@ from app.utils import get_http_client, close_http_client
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Инициализация подключений и клиентов при старте
-    await get_http_client()  # Инициализируем HTTP клиент
+    # await get_http_client()  # Инициализируем HTTP клиент
     
     # await create_tables_postgres()
     # await create_tables_mysql()

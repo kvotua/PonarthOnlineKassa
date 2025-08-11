@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 from app.models.mysql import DiscountCard
 from app.schemas.verify_schemas import Phone, CheckPhoneCode
-from app.utils import http_client, convert_decimal_to_float
+from app.utils import get_http_client, convert_decimal_to_float
 from app.cruds.verify_cruds import add_verify_session, get_verify_session, change_verify_status, check_phone_in_discound
 from app.schemas.response_schemas import CallID, ResponseSchema, json_response
 from app.databases.postgresdb import get_postgres_session
@@ -44,6 +44,7 @@ async def send_code(
                     "third": user.third,
             })
             return JSONResponse(status_code=200, content=response_data)
+    http_client = get_http_client()
     response_send = await http_client.send_message(phone=phone.phone)
     response_data = response_send['data']
     print("Zvonok API response:", response_send)
