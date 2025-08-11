@@ -8,16 +8,7 @@ from decimal import Decimal
 from typing import Optional
 import socket
 from app.config import secret_key, algorithm, expire_minutes, expire_days, public_key, campaign_id
-
-class SimpleResolver:
-    """Кастомный резолвер без использования aiodns/pycares"""
-    async def resolve(self, host, port=0, family=0):
-        return await asyncio.get_event_loop().getaddrinfo(
-            host, port, type=socket.SOCK_STREAM, family=family
-        )
-
-    async def close(self):
-        pass
+from aiohttp.resolver import AsyncResolver
 
 class HttpClient:
     _instance: Optional['HttpClient'] = None
@@ -41,13 +32,12 @@ class HttpClient:
             
         # Используем кастомный резолвер
         self.connector = TCPConnector(
-            resolver=SimpleResolver(),
+            resolver=AsyncResolver(),
             limit=10,
             limit_per_host=3,
             enable_cleanup_closed=True,
-            force_close=False
         )
-        
+
         # Таймауты для всех операций
         timeout = ClientTimeout(
             total=30,
