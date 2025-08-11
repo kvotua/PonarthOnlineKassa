@@ -5,6 +5,7 @@ import jwt
 from aiohttp import ClientSession, TCPConnector
 import asyncio
 from decimal import Decimal
+from aiohttp import ClientTimeout
 from typing import Optional
 import atexit
 from app.config import secret_key, algorithm, expire_minutes, expire_days, public_key, campaign_id
@@ -32,52 +33,34 @@ class HttpClient():
         self.public_key = public_key
         self.campaign_id = campaign_id
         
-        # Важные изменения:
+        # Оптимальные настройки для Docker-контейнера
         self.connector = TCPConnector(
-            limit=15,                    # Оптимальный лимит для Docker
-            limit_per_host=3,            # Лимит соединений к одному хосту
-            enable_cleanup_closed=True,  # Автоочистка закрытых соединений
-            force_close=False,           # Не принуждать к закрытию
-            use_dns_cache=True,          # Кеширование DNS
-            ttl_dns_cache=300            # 5 минут кеша
+            limit=20,                      # Максимум 20 одновременных соединений
+            limit_per_host=5,              # Макс. 5 соединений к одному хосту
+            enable_cleanup_closed=True,    # Автоочистка закрытых соединений
+            force_close=False,             # Не принудительно закрывать
+            use_dns_cache=True,            # Кешировать DNS-запросы
+            ttl_dns_cache=300,            # 5 минут кеширования DNS
+            resolver=None                 # Используем системный резолвер
         )
         
-        # Убрано ручное управление loop - это основная причина проблем
-        self.session = ClientSession(connector=self.connector)
+        # Таймауты для всех операций (в секундах)
+        timeout = ClientTimeout(
+            total=30,      # Максимальное время всего запроса
+            connect=10,    # Таймаут соединения
+            sock_connect=10,
+            sock_read=10
+        )
         
-        # Регистрируем закрытие при завершении
+        self.session = ClientSession(
+            connector=self.connector,
+            timeout=timeout,
+            trust_env=True
+        )
+        
         atexit.register(self._cleanup)
         self._initialized = True
-
-    async def _cleanup(self):
-        if not self.session.closed:
-            await self.session.close()
-
-    async def send_message(self, phone: str):
-        try:
-            async with self.session.post(
-                self.url,
-                data={
-                    'public_key': self.public_key,
-                    'phone': phone,
-                    'campaign_id': self.campaign_id
-                },
-                timeout=10
-            ) as response:
-                return await response.json()
-        except Exception as e:
-            print(f"Request failed: {str(e)[:200]}")  # Логируем сокращенное сообщение
-            raise
-
-    async def close(self):
-        await self._cleanup()
-
-    async def __aenter__(self):
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.close()
-
+        
 http_client = HttpClient(
     url='https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/')
 
