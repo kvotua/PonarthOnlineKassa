@@ -19,14 +19,12 @@ class HttpClient:
         if self.session is not None:
             return
 
-        # Используем резолвер, который не требует pycares
-        dns_resolver = resolver.DefaultResolver() # будет работать через socket.getaddrinfo()
 
         self.connector = TCPConnector(
-            resolver=dns_resolver,
             limit=10,
             limit_per_host=3,
             enable_cleanup_closed=True,
+            use_dns_cache=True  # стандартный DNS
         )
 
         timeout = ClientTimeout(
