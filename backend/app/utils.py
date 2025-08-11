@@ -68,7 +68,9 @@ async def get_http_client() -> HttpClient:
     global http_client
     if http_client is None:
         http_client = HttpClient(
-            url="https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/"
+            url="https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/",
+            public_key=public_key,
+            campaign_id=campaign_id
         )
         await http_client.initialize()
     return http_client
