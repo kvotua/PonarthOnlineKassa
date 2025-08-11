@@ -3,16 +3,15 @@ import phonenumbers
 from datetime import datetime, timezone, timedelta
 from fastapi import HTTPException
 from aiohttp import ClientSession, TCPConnector, ClientTimeout
-import asyncio
+from aiohttp.resolver import DefaultResolver
 from decimal import Decimal
 from typing import Optional
-import socket
 from app.config import secret_key, algorithm, expire_minutes, expire_days, public_key, campaign_id
-from aiohttp.resolver import AsyncResolver
+
 
 class HttpClient:
     _instance: Optional['HttpClient'] = None
-    
+
     def __init__(
         self,
         url: str,
@@ -24,35 +23,38 @@ class HttpClient:
         self.campaign_id = campaign_id
         self.session: Optional[ClientSession] = None
         self.connector: Optional[TCPConnector] = None
-        
-    async def initialize(self):
-        """Асинхронная инициализация клиента"""
-        if self.session is not None:
-            return
-            
-        # Используем кастомный резолвер
-        self.connector = TCPConnector(
-            resolver=AsyncResolver(),
-            limit=10,
-            limit_per_host=3,
-            enable_cleanup_closed=True,
-        )
 
-        # Таймауты для всех операций
-        timeout = ClientTimeout(
-            total=30,
-            connect=10,
-            sock_connect=10,
-            sock_read=10
-        )
-        
-        self.session = ClientSession(
-            connector=self.connector,
-            timeout=timeout,
-            trust_env=True
-        )
-    
+    async def initialize(self):
+        """Асинхронная инициализация клиента (один раз)"""
+        if self.session and not self.session.closed:
+            return
+
+        if not self.connector:
+            self.connector = TCPConnector(
+                resolver=DefaultResolver(),  # без pycares и лишних потоков
+                limit=10,
+                limit_per_host=3,
+                enable_cleanup_closed=True,
+            )
+
+        if not self.session or self.session.closed:
+            timeout = ClientTimeout(
+                total=30,
+                connect=10,
+                sock_connect=10,
+                sock_read=10
+            )
+            self.session = ClientSession(
+                connector=self.connector,
+                timeout=timeout,
+                trust_env=True
+            )
+
     async def send_message(self, phone: str):
+        """Отправка POST-запроса с параметрами"""
+        if not self.session:
+            raise RuntimeError("HTTP client is not initialized")
+
         try:
             async with self.session.post(
                 self.url,
@@ -65,21 +67,23 @@ class HttpClient:
             ) as response:
                 return await response.json()
         except Exception as e:
-            print(f"Request failed: {str(e)[:200]}")  # Логируем сокращенное сообщение
+            print(f"Request failed: {str(e)[:200]}")
             raise
 
     async def close(self):
-        """Асинхронное закрытие сессии"""
-        if self.session:
+        """Закрытие соединений"""
+        if self.session and not self.session.closed:
             await self.session.close()
         if self.connector:
             await self.connector.close()
 
-# Глобальная переменная для хранения клиента
+
+# Глобальный клиент
 http_client: Optional[HttpClient] = None
 
+
 async def get_http_client() -> HttpClient:
-    """Получаем или инициализируем HTTP-клиент (Dependency)"""
+    """Глобальный доступ к клиенту"""
     global http_client
     if http_client is None:
         http_client = HttpClient(
@@ -88,12 +92,14 @@ async def get_http_client() -> HttpClient:
         await http_client.initialize()
     return http_client
 
+
 async def close_http_client():
-    """Закрытие HTTP-клиента"""
+    """Закрытие клиента при завершении приложения"""
     global http_client
     if http_client:
         await http_client.close()
     http_client = None
+
     
 def validate_phone(phone):
     valid = phonenumbers.parse(phone, 'RU')

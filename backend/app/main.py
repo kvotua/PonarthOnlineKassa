@@ -12,7 +12,7 @@ from app.utils import get_http_client, close_http_client
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Инициализация подключений и клиентов при старте
-    # await get_http_client()  # Инициализируем HTTP клиент
+    await get_http_client()  # Инициализируем HTTP клиент
     
     # await create_tables_postgres()
     # await create_tables_mysql()
@@ -36,6 +36,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await close_http_client()
 
 @app.exception_handler(RequestValidationError)
 async def custom_validation_exception_handler(request: Request, exc: RequestValidationError):
