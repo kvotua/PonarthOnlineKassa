@@ -6,10 +6,18 @@ from aiohttp import ClientSession, TCPConnector, ClientTimeout
 import asyncio
 from decimal import Decimal
 from typing import Optional
-import atexit
+import socket
 from app.config import secret_key, algorithm, expire_minutes, expire_days, public_key, campaign_id
-from aiohttp.resolver import AsyncResolver
 
+class SimpleResolver:
+    """Кастомный резолвер без использования aiodns/pycares"""
+    async def resolve(self, host, port=0, family=0):
+        return await asyncio.get_event_loop().getaddrinfo(
+            host, port, type=socket.SOCK_STREAM, family=family
+        )
+
+    async def close(self):
+        pass
 
 class HttpClient:
     _instance: Optional['HttpClient'] = None
@@ -33,16 +41,19 @@ class HttpClient:
         self.public_key = public_key
         self.campaign_id = campaign_id
         
+        # Используем кастомный резолвер
         self.connector = TCPConnector(
-            resolver=AsyncResolver(),
+            resolver=SimpleResolver(),  # Наш собственный резолвер
             limit=10,
-            limit_per_host=3
+            limit_per_host=3,
+            enable_cleanup_closed=True,
+            force_close=False
         )
-                
+        
         # Таймауты для всех операций
         timeout = ClientTimeout(
-            total=30,      # Максимальное время всего запроса
-            connect=10,    # Таймаут соединения
+            total=30,
+            connect=10,
             sock_connect=10,
             sock_read=10
         )
@@ -53,29 +64,22 @@ class HttpClient:
             trust_env=True
         )
         
-        atexit.register(self._cleanup)
         self._initialized = True
 
     async def close(self):
         """Асинхронное закрытие сессии"""
         if hasattr(self, "session"):
             await self.session.close()
-            delattr(self, "session")
 
-    def _cleanup(self):
-        """Синхронная очистка для atexit"""
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            loop.create_task(self.close())
-        else:
-            loop.run_until_complete(self.close())
+# Инициализация клиента в event loop
+async def init_http_client():
+    global http_client
+    http_client = HttpClient(
+        url='https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/'
+    )
 
-
-# Инициализация клиента
-http_client = HttpClient(
-    url='https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/'
-)
-
+# Запускаем при старте приложения
+asyncio.get_event_loop().run_until_complete(init_http_client())
 
 def validate_phone(phone: str) -> Optional[str]:
     """Валидация номера телефона для РФ"""
@@ -92,7 +96,6 @@ def validate_phone(phone: str) -> Optional[str]:
         return None
     return None
 
-
 def sing_access_jwt_token(
         user_id: int,
         phone: str,
@@ -107,7 +110,6 @@ def sing_access_jwt_token(
     }
     return jwt.encode(payload, key=secret_key, algorithm=algorithm)
 
-
 def sing_refresh_jwt_token(
         user_id: int,
         phone: str,
@@ -121,7 +123,6 @@ def sing_refresh_jwt_token(
         "type": "refresh"
     }
     return jwt.encode(payload, key=secret_key, algorithm=algorithm)
-
 
 def get_access_token_data(
         token: str,
@@ -142,7 +143,6 @@ def get_access_token_data(
         raise HTTPException(status_code=401, detail="Invalid token type")
 
     return decoded
-
 
 def get_new_tokens_pair(refresh_token: str) -> dict:
     """Обновление пары токенов"""
@@ -173,7 +173,6 @@ def get_new_tokens_pair(refresh_token: str) -> dict:
             phone=decoded["phone"]
         )
     }
-
 
 def convert_decimal_to_float(data):
     """Рекурсивное преобразование Decimal в float"""
