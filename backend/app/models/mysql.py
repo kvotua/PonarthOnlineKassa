@@ -4,7 +4,7 @@ from typing import Optional
 from sqlalchemy import BigInteger, SmallInteger, Text, Integer, Date, DECIMAL, func, VARCHAR, JSON, Column, String, DateTime, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Mapped, mapped_column
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 
 from app.config import base_id, firm_id, discount_id
 
@@ -60,9 +60,7 @@ class UserScore(Base_mysql):
     __tablename__ = 'users_scores'
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    date_added: Mapped[datetime] = mapped_column(
-    server_default=func.now() - timedelta(days=1)
-    )
+    date_added: Mapped[datetime] = mapped_column(server_default=func.now())
     status: Mapped[SmallInteger] = mapped_column(SmallInteger, nullable=True, default=1)  # 0-не подтверждено, 1-подтверждено
     base_id: Mapped[int] = mapped_column(Integer, nullable=False, default=int(base_id))
     order_id: Mapped[int] = mapped_column(BigInteger, nullable=False)

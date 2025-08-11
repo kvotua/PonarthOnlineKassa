@@ -6,6 +6,7 @@ services:
       - "127.0.0.1:8013:8013"
     volumes:
       - .:/app
+    pids_limit: 1000
  
 #   mysql:
 #     image: mysql:8.0

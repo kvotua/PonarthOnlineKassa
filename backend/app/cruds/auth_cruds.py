@@ -7,7 +7,7 @@ from app.schemas.users_schemas import RegisterUserLoyaltySystem
 from app.schemas.response_schemas import json_response
 from app.config import base_id, firm_id, discount_id
 import random
-
+from datetime import datetime, date, timedelta
 
 async def check_phone_status(user_phone: str, session_mysql: AsyncSession) -> DiscountCard:
     try:
@@ -101,6 +101,7 @@ async def add_user_to_loyal_system(data: RegisterUserLoyaltySystem, session_mysq
         new_id = data_for_discount_card.id
         new_score = UserScore(
             card_id=new_id,
+            date_added=datetime.now() - timedelta(days=1),
             status=1,
             base_id=base_id,
             order_id=0,
