@@ -18,12 +18,12 @@ async def shutdown_event():
     if session:
         await session.close()
 
-async def send_message(phone: str, public_key: str, campaign_id: str):
+async def send_message(phone: str):
     global session
     if not session:
         raise RuntimeError("ClientSession не инициализирована")
 
-    url = "https://example.com/send"
+    url = "https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/"
     payload = {
         'public_key': public_key,
         'phone': phone,
