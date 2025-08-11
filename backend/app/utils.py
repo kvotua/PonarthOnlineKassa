@@ -2,84 +2,25 @@ import jwt
 import phonenumbers
 from datetime import datetime, timezone, timedelta
 from fastapi import HTTPException
-from aiohttp import ClientSession, TCPConnector, ClientTimeout, resolver
+from aiohttp import ClientSession
 from decimal import Decimal
-from typing import Optional
 from app.config import secret_key, algorithm, expire_minutes, expire_days, public_key, campaign_id
 
-class HttpClient:
-    def __init__(self, url, public_key, campaign_id):
-        self.url = url
-        self.public_key = public_key
-        self.campaign_id = campaign_id
-        self.session = None
-        self.connector = None
+from aiohttp import ClientSession
 
-    async def initialize(self):
-        if self.session is not None:
-            return
-
-
-        self.connector = TCPConnector(
-            limit=10,
-            limit_per_host=3,
-            enable_cleanup_closed=True,
-            use_dns_cache=True  # стандартный DNS
-        )
-
-        timeout = ClientTimeout(
-            total=30,
-            connect=10,
-            sock_connect=10,
-            sock_read=10
-        )
-
-        self.session = ClientSession(
-            connector=self.connector,
-            timeout=timeout,
-            trust_env=True
-        )
-
-    async def send_message(self, phone: str):
-        async with self.session.post(
-            self.url,
+async def send_message(phone: str):
+    url = "https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/"
+    async with ClientSession() as session:
+        async with session.post(
+            url,
             data={
-                'public_key': self.public_key,
+                'public_key': public_key,
                 'phone': phone,
-                'campaign_id': self.campaign_id
+                'campaign_id': campaign_id
             },
             timeout=10
         ) as response:
             return await response.json()
-
-    async def close(self):
-        if self.session:
-            await self.session.close()
-        if self.connector:
-            await self.connector.close()
-
-
-http_client: Optional[HttpClient] = None
-
-
-async def get_http_client() -> HttpClient:
-    global http_client
-    if http_client is None:
-        http_client = HttpClient(
-            url="https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/",
-            public_key=public_key,
-            campaign_id=campaign_id
-        )
-        await http_client.initialize()
-    return http_client
-
-
-async def close_http_client():
-    global http_client
-    if http_client:
-        await http_client.close()
-    http_client = None
-
     
 def validate_phone(phone):
     valid = phonenumbers.parse(phone, 'RU')

@@ -7,12 +7,10 @@ from app.api.main import api_router
 from app.databases.postgresdb import create_tables_postgres
 from app.databases.mysql_db import create_tables_mysql
 from app.schemas.response_schemas import json_response
-from app.utils import get_http_client, close_http_client
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Инициализация подключений и клиентов при старте
-    await get_http_client()  # Инициализируем HTTP клиент
     
     # await create_tables_postgres()
     # await create_tables_mysql()
@@ -20,7 +18,6 @@ async def lifespan(app: FastAPI):
     yield
     
     # Очистка при завершении
-    await close_http_client()
 
 app = FastAPI(
     lifespan=lifespan,
