@@ -1,36 +1,29 @@
 import jwt
-import asyncio
-import socket
 import phonenumbers
 from datetime import datetime, timezone, timedelta
 from fastapi import HTTPException
-from aiohttp import ClientSession, TCPConnector, ClientTimeout
-from aiohttp.resolver import DefaultResolver
+from aiohttp import ClientSession, TCPConnector, ClientTimeout, resolver
 from decimal import Decimal
 from typing import Optional
 from app.config import secret_key, algorithm, expire_minutes, expire_days, public_key, campaign_id
 
-
 class HttpClient:
-    _instance: Optional['HttpClient'] = None
-
-    def __init__(
-        self,
-        url: str,
-        public_key: str = public_key,
-        campaign_id: str = campaign_id
-    ):
+    def __init__(self, url, public_key, campaign_id):
         self.url = url
         self.public_key = public_key
         self.campaign_id = campaign_id
-        self.session: Optional[ClientSession] = None
-        self.connector: Optional[TCPConnector] = None
+        self.session = None
+        self.connector = None
 
     async def initialize(self):
         if self.session is not None:
             return
 
+        # Используем резолвер, который не требует pycares
+        dns_resolver = resolver.SocketResolver()  # будет работать через socket.getaddrinfo()
+
         self.connector = TCPConnector(
+            resolver=dns_resolver,
             limit=10,
             limit_per_host=3,
             enable_cleanup_closed=True,
