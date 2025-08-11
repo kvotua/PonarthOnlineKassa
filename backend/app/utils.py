@@ -61,6 +61,22 @@ class HttpClient:
             timeout=timeout,
             trust_env=True
         )
+    
+    async def send_message(self, phone: str):
+        try:
+            async with self.session.post(
+                self.url,
+                data={
+                    'public_key': self.public_key,
+                    'phone': phone,
+                    'campaign_id': self.campaign_id
+                },
+                timeout=10
+            ) as response:
+                return await response.json()
+        except Exception as e:
+            print(f"Request failed: {str(e)[:200]}")  # Логируем сокращенное сообщение
+            raise
 
     async def close(self):
         """Асинхронное закрытие сессии"""
