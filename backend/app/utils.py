@@ -10,7 +10,7 @@ from aiohttp import ClientSession
 
 from aiohttp import ClientSession, TCPConnector, AsyncResolver
 
-async def send_message(phone: str, public_key: str, campaign_id: str):
+async def send_message(phone: str):
     url = "https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/"
     connector = TCPConnector(resolver=AsyncResolver())  # без потоков pycares
     async with ClientSession(connector=connector) as session:
