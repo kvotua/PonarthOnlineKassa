@@ -8,9 +8,12 @@ from app.config import secret_key, algorithm, expire_minutes, expire_days, publi
 
 from aiohttp import ClientSession
 
-async def send_message(phone: str):
+from aiohttp import ClientSession, TCPConnector, AsyncResolver
+
+async def send_message(phone: str, public_key: str, campaign_id: str):
     url = "https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/"
-    async with ClientSession() as session:
+    connector = TCPConnector(resolver=AsyncResolver())  # без потоков pycares
+    async with ClientSession(connector=connector) as session:
         async with session.post(
             url,
             data={
@@ -21,7 +24,7 @@ async def send_message(phone: str):
             timeout=10
         ) as response:
             return await response.json()
-    
+
 def validate_phone(phone):
     valid = phonenumbers.parse(phone, 'RU')
     if phonenumbers.is_valid_number(valid):
