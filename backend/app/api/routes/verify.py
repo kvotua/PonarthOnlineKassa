@@ -44,7 +44,7 @@ async def send_code(
                     "third": user.third,
             })
             return JSONResponse(status_code=200, content=response_data)
-    http_client = get_http_client()
+    http_client = await get_http_client()
     response_send = await http_client.send_message(phone=phone.phone)
     response_data = response_send['data']
     print("Zvonok API response:", response_send)
