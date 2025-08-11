@@ -2,25 +2,36 @@ import jwt
 import phonenumbers
 from datetime import datetime, timezone, timedelta
 from fastapi import HTTPException
-from aiohttp import ClientSession
 from decimal import Decimal
 from app.config import secret_key, algorithm, expire_minutes, expire_days, public_key, campaign_id
 
-from aiohttp import ClientSession
+import aiohttp
 
-async def send_message(phone: str):
-    url = "https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/"
-    async with ClientSession() as session:
-        async with session.post(
-            url,
-            data={
-                'public_key': "ТВОЙ_PUBLIC_KEY",
-                'phone': phone,
-                'campaign_id': "ТВОЙ_CAMPAIGN_ID"
-            },
-            timeout=10
-        ) as response:
-            return await response.json()
+session: aiohttp.ClientSession | None = None
+
+async def startup_event():
+    global session
+    session = aiohttp.ClientSession()
+
+async def shutdown_event():
+    global session
+    if session:
+        await session.close()
+
+async def send_message(phone: str, public_key: str, campaign_id: str):
+    global session
+    if not session:
+        raise RuntimeError("ClientSession не инициализирована")
+
+    url = "https://example.com/send"
+    payload = {
+        'public_key': public_key,
+        'phone': phone,
+        'campaign_id': campaign_id
+    }
+
+    async with session.post(url, data=payload) as resp:
+        return await resp.json()
 
 def validate_phone(phone):
     valid = phonenumbers.parse(phone, 'RU')

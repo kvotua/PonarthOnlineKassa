@@ -4,6 +4,7 @@ from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
 
 from app.api.main import api_router
+from app.utils import startup_event, shutdown_event
 from app.databases.postgresdb import create_tables_postgres
 from app.databases.mysql_db import create_tables_mysql
 from app.schemas.response_schemas import json_response
@@ -11,12 +12,12 @@ from app.schemas.response_schemas import json_response
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Инициализация подключений и клиентов при старте
-    
+    await startup_event()
     # await create_tables_postgres()
     # await create_tables_mysql()
     
     yield
-    
+    await shutdown_event()
     # Очистка при завершении
 
 app = FastAPI(
@@ -33,10 +34,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    await close_http_client()
 
 @app.exception_handler(RequestValidationError)
 async def custom_validation_exception_handler(request: Request, exc: RequestValidationError):
