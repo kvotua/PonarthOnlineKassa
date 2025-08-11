@@ -1,4 +1,6 @@
 import jwt
+import asyncio
+import socket
 import phonenumbers
 from datetime import datetime, timezone, timedelta
 from fastapi import HTTPException
@@ -7,6 +9,16 @@ from aiohttp.resolver import DefaultResolver
 from decimal import Decimal
 from typing import Optional
 from app.config import secret_key, algorithm, expire_minutes, expire_days, public_key, campaign_id
+
+class SimpleResolver:
+    """Резолвер без pycares — работает через socket.getaddrinfo"""
+    async def resolve(self, host, port=0, family=0):
+        return await asyncio.get_event_loop().getaddrinfo(
+            host, port, type=socket.SOCK_STREAM, family=family
+        )
+
+    async def close(self):
+        pass
 
 
 class HttpClient:
@@ -25,76 +37,62 @@ class HttpClient:
         self.connector: Optional[TCPConnector] = None
 
     async def initialize(self):
-        """Асинхронная инициализация клиента (один раз)"""
-        if self.session and not self.session.closed:
+        if self.session is not None:
             return
 
-        if not self.connector:
-            self.connector = TCPConnector(
-                resolver=DefaultResolver(),  # без pycares и лишних потоков
-                limit=10,
-                limit_per_host=3,
-                enable_cleanup_closed=True,
-            )
+        self.connector = TCPConnector(
+            resolver=SimpleResolver(),  
+            limit=10,
+            limit_per_host=3,
+            enable_cleanup_closed=True,
+        )
 
-        if not self.session or self.session.closed:
-            timeout = ClientTimeout(
-                total=30,
-                connect=10,
-                sock_connect=10,
-                sock_read=10
-            )
-            self.session = ClientSession(
-                connector=self.connector,
-                timeout=timeout,
-                trust_env=True
-            )
+        timeout = ClientTimeout(
+            total=30,
+            connect=10,
+            sock_connect=10,
+            sock_read=10
+        )
+
+        self.session = ClientSession(
+            connector=self.connector,
+            timeout=timeout,
+            trust_env=True
+        )
 
     async def send_message(self, phone: str):
-        """Отправка POST-запроса с параметрами"""
-        if not self.session:
-            raise RuntimeError("HTTP client is not initialized")
-
-        try:
-            async with self.session.post(
-                self.url,
-                data={
-                    'public_key': self.public_key,
-                    'phone': phone,
-                    'campaign_id': self.campaign_id
-                },
-                timeout=10
-            ) as response:
-                return await response.json()
-        except Exception as e:
-            print(f"Request failed: {str(e)[:200]}")
-            raise
+        async with self.session.post(
+            self.url,
+            data={
+                'public_key': self.public_key,
+                'phone': phone,
+                'campaign_id': self.campaign_id
+            },
+            timeout=10
+        ) as response:
+            return await response.json()
 
     async def close(self):
-        """Закрытие соединений"""
-        if self.session and not self.session.closed:
+        if self.session:
             await self.session.close()
         if self.connector:
             await self.connector.close()
 
 
-# Глобальный клиент
 http_client: Optional[HttpClient] = None
 
 
 async def get_http_client() -> HttpClient:
-    """Глобальный доступ к клиенту"""
     global http_client
     if http_client is None:
         http_client = HttpClient(
-            url='https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/'
+            url="https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/"
         )
         await http_client.initialize()
     return http_client
 
 
 async def close_http_client():
-    """Закрытие клиента при завершении приложения"""
     global http_client
     if http_client:
         await http_client.close()
