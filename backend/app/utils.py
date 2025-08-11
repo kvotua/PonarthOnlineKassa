@@ -20,7 +20,7 @@ class HttpClient:
             return
 
         # Используем резолвер, который не требует pycares
-        dns_resolver = resolver.SocketResolver()  # будет работать через socket.getaddrinfo()
+        dns_resolver = resolver.DefaultResolver() # будет работать через socket.getaddrinfo()
 
         self.connector = TCPConnector(
             resolver=dns_resolver,
