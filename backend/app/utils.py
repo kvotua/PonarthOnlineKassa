@@ -1,6 +1,3 @@
-import phonenumbers
-from datetime import datetime, timezone, timedelta
-from fastapi import HTTPException
 import jwt
 from aiohttp import ClientSession, TCPConnector, ClientTimeout
 import asyncio
@@ -22,28 +19,26 @@ class SimpleResolver:
 class HttpClient:
     _instance: Optional['HttpClient'] = None
     
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialized = False
-        return cls._instance
-    
     def __init__(
         self,
         url: str,
         public_key: str = public_key,
         campaign_id: str = campaign_id
     ):
-        if self._initialized:
-            return
-            
         self.url = url
         self.public_key = public_key
         self.campaign_id = campaign_id
+        self.session: Optional[ClientSession] = None
+        self.connector: Optional[TCPConnector] = None
         
+    async def initialize(self):
+        """Асинхронная инициализация клиента"""
+        if self.session is not None:
+            return
+            
         # Используем кастомный резолвер
         self.connector = TCPConnector(
-            resolver=SimpleResolver(),  # Наш собственный резолвер
+            resolver=SimpleResolver(),
             limit=10,
             limit_per_host=3,
             enable_cleanup_closed=True,
@@ -63,24 +58,34 @@ class HttpClient:
             timeout=timeout,
             trust_env=True
         )
-        
-        self._initialized = True
 
     async def close(self):
         """Асинхронное закрытие сессии"""
-        if hasattr(self, "session"):
+        if self.session:
             await self.session.close()
+        if self.connector:
+            await self.connector.close()
 
-# Инициализация клиента в event loop
-async def init_http_client():
+# Глобальная переменная для хранения клиента
+http_client: Optional[HttpClient] = None
+
+async def get_http_client() -> HttpClient:
+    """Получаем или инициализируем HTTP-клиент (Dependency)"""
     global http_client
-    http_client = HttpClient(
-        url='https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/'
-    )
+    if http_client is None:
+        http_client = HttpClient(
+            url='https://zvonok.com/manager/cabapi_external/api/v1/phones/flashcall/'
+        )
+        await http_client.initialize()
+    return http_client
 
-# Запускаем при старте приложения
-asyncio.get_event_loop().run_until_complete(init_http_client())
-
+async def close_http_client():
+    """Закрытие HTTP-клиента"""
+    global http_client
+    if http_client:
+        await http_client.close()
+    http_client = None
+    
 def validate_phone(phone: str) -> Optional[str]:
     """Валидация номера телефона для РФ"""
     try:
