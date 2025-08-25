@@ -21,19 +21,26 @@ button { cursor: pointer; background: none; border: none; }
 button::-moz-focus-inner { padding: 0; border: 0; }
 
 /* Base Styles */
+html,
 body {
-  font-family: 'Lato', sans-serif;
-  background: var(--bg-color);
-  color: var(--text-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  position: relative;
-  overflow-x: hidden;
-  backdrop-filter: blur(60px);
+    height: 100%;
+    width: 100vw;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
 }
 
+body {
+    font-family: 'Lato', sans-serif;
+    background: #171616;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(60px);
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+}
 /* Main Container */
 .choice-container {
   position: relative;
@@ -47,6 +54,8 @@ body {
   border: 1px solid var(--border-color);
   box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
   z-index: 1;
+    justify-content: space-between;
+
 }
 
 @media (max-width: 500px) {
@@ -234,4 +243,19 @@ h1 {
 
 .coin-icon {
   animation: pulse 2s infinite;
+}
+
+.button-info {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: 400;
+    border-radius: 12px;
+    font-family: 'Montserrat', sans-serif;
+    height: 53px;
+    box-shadow: 0px 4px 24px 4px rgba(249, 209, 64, 0.2);
+    color: #000;
+    border: none;
+    background: linear-gradient(to right, rgba(249, 208, 63, 1), rgba(233, 179, 42, 1));
+    margin-top: auto;
 }

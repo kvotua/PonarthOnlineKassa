@@ -1,0 +1,618 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+/*Обнуление*/
+*{padding: 0;margin: 0;border: 0;}
+input::-ms-clear{display: none;}
+button{cursor: pointer;}
+button::-moz-focus-inner{padding:0;border:0;}
+
+html,
+body {
+    height: 100%;
+    width: 100vw;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    background: #171616;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(60px);
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+}
+/* Базовые стили шаров */
+.euler-top-left,
+.euler-bottom-right {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 200px 80px rgba(249, 209, 63, 0.308);
+    pointer-events: none;
+    z-index: -1;
+    will-change: transform; /* Оптимизация для анимации */
+    transition: filter 0.5s ease; /* Плавное изменение фильтра при наведении */
+}
+
+/* Позиционирование верхнего шара */
+.euler-top-left {
+    top: 25px;
+    left: 55px;
+}
+
+/* Позиционирование нижнего шара */
+.euler-bottom-right {
+    bottom: 75px;
+    right: -50px;
+}
+
+/* Анимация для верхнего шара */
+.euler-top-left {
+    animation:
+            floatVerticalDown 60s ease-in-out infinite, /* Движение */
+            glowPulse 8s ease-in-out infinite alternate; /* Пульсация свечения */
+}
+
+/* Анимация для нижнего шара */
+.euler-bottom-right {
+    animation:
+            floatVerticalUp 70s ease-in-out infinite, /* Движение */
+            glowPulse 10s ease-in-out infinite alternate 1s; /* Пульсация свечения с задержкой */
+}
+
+/* Эффект при наведении на шары */
+.euler-top-left:hover,
+.euler-bottom-right:hover {
+    filter: blur(1px);
+}
+
+/* Анимация движения верхнего шара (вниз → вверх) */
+@keyframes floatVerticalDown {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translate(30px, calc(100vh - 100px));
+    }
+}
+
+/* Анимация движения нижнего шара (вверх → вниз) */
+@keyframes floatVerticalUp {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translate(-80px, calc(-100vh + 100px));
+    }
+}
+
+/* Анимация пульсации свечения */
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 0 0 180px 80px rgba(249, 230, 63, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 220px 100px rgba(245, 205, 45, 0.45);
+    }
+}
+
+.product-card h2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Ограничиваем текст двумя строками */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 2.8em; /* Высота примерно двух строк */
+    line-height: 1.4em;
+    margin: 0.5em 0;
+}
+
+.choice-container {
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.5);
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    box-sizing: border-box;
+    background: #171616;
+
+    border: 1px solid rgba(105, 105, 105, 1);
+    box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+
+    overflow: visible;
+    overflow-y: scroll;
+    scrollbar-width: none; /* Для Firefox */
+    -ms-overflow-style: none; /* Для IE/Edge */
+}
+
+@media (max-width: 500px) {
+    .choice-container {
+        border: none;
+        box-shadow: none;
+        position: static;
+    }
+}
+
+@media (max-height: 700px) {
+    .choice-container {
+        padding: 10px 30px;
+    }
+}
+
+.logo {
+    width: 89px;
+    height: 69px;
+    margin-bottom: 20px; 
+    margin-top: 35px;
+    align-self: center; 
+}
+
+.search-button {
+    width: 24px;
+    height: 24px;
+
+    position: absolute;
+    top: 30px;
+    right: 30px;
+
+    background-color: transparent;
+    color: #fff
+}
+
+h1{
+    font-family: 'Montserrat', sans-serif; 
+    color:#FCF9F2;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 43.88px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+}
+
+.choice-container label{
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    font-weight: 100;
+    text-align: left;
+    color: #FCF9F2; 
+
+    margin-top: 12px;
+}
+
+.choice-container span{
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+    color: #F9D03F;
+}
+
+.button-container {
+    display: block;
+    position: absolute;
+    top: 234px;
+    left: 10px;
+    right: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    padding: 10px 0;
+    scrollbar-width: none; /* Для Firefox */
+    -ms-overflow-style: none; /* Для IE и Edge */
+}
+
+.button-container > * {
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.button-container > *:last-child {
+    margin-right: 0;
+}
+
+
+.radio-btn{
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16.8px;
+    text-align: center; 
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none; 
+    color: #808080;
+    width: 100px;
+    height: 35px;
+    border-radius: 12px;
+    padding: 9px 15px 9px 15px;
+
+    background-color: #171616;
+
+    margin-top: 20px;
+}
+
+.radio-btn.selected {
+    background-color: #F9D03F;
+    color: #000
+}
+
+.radio-btn.inactive {
+    background-color: transparent;
+    color: #808080;
+}
+
+.photo-ponarth{
+    width: auto;
+    height: 163px;
+    border-radius: 12px;
+    object-fit: cover;
+
+    margin-top: 80px;
+
+}
+
+.stock{
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 14.4px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+    color:#FFFFFF;
+
+    width: 14px;
+    height: 14px;
+    padding: 9px 15px 9px 15px;
+    gap: 10px;
+    border-radius: 12px;
+
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    position: absolute; 
+    top: -13px; 
+    left: -6px; 
+}
+
+.beer-selection{
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    height: 100%;
+    width: 100%;
+    padding-top: 30px;
+    padding-bottom: 40px;
+}
+
+.beer-1 {
+    padding: 15px;
+    border-radius: 8px;
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+
+    background-color: #212121;
+}
+
+.beer-2 {
+    width: 143px;
+    height: 213px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    background-color: #212121;
+    position: relative;
+}
+
+.light-beer{
+    width: 71px;
+    height: 89px;
+    object-fit: cover;
+    
+    display: flex;
+    justify-self: center;
+    justify-content: space-between;
+    margin-top: -14px;
+}
+
+h2{
+    width: 120px;
+
+    font-family: 'Montserrat', sans-serif; 
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 17.07px;
+    text-align: center;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+
+    margin-top: 7px;
+}
+
+.text{
+    width: 118px;
+    height: 14px;
+
+    font-family: 'Lato', sans-serif;
+    color:#FCF9F2;
+    font-size: 12px;
+    font-weight: 100;
+    line-height: 14.4px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+
+    margin-top: 7px;
+}
+
+.cost{
+    width: auto;
+    height: 17px;
+
+    font-family: 'Montserrat', sans-serif; 
+    color:#FCF9F2;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 17.07px;
+    text-align: center;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+
+    margin-top: 7px;
+    margin-bottom: 10px;
+}
+
+.btn-container{
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.radio-btn-volume1{
+    width: 25px;
+    height: 25px;
+    top: 646px;
+    left: 48px;
+    padding: auto;
+    gap: 10px;
+    border-radius: 9px;
+
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
+
+    background-color:#505050;
+    color: #121111;
+}
+
+.radio-btn-volume1.selected {
+    background-color: #F9D03F;
+    color: #121111
+}
+
+.radio-btn-volume1.inactive {
+    background-color: #505050;
+    color: #121111;
+}
+
+.radio-btn-volume2{
+    width: 25px;
+    height: 25px;
+    top: 646px;
+    left: 48px;
+    padding: auto;
+    gap: 10px;
+    border-radius: 9px;
+
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
+
+    background-color:#505050;
+    color: #121111;
+}
+
+.radio-btn-volume2.selected {
+    background-color: #F9D03F;
+    color: #121111
+}
+
+.radio-btn-volume2.inactive {
+    background-color: #505050;
+    color: #121111;
+}
+
+.count-volume1{
+    width: 8px;
+    height: 13px;
+
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16.8px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+}
+
+.counter-container1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 17.27px;
+    background-color: transparent;
+    margin-bottom: 0.27px;
+    gap: 10px;
+}
+
+.circle-1{
+    width: 16.27px;
+    height: 16.27px;
+    border-radius: 50%;
+    border: 1px solid #696969;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position:relative;
+}
+
+.horizontal-line{
+    width: 12px;
+    height: 1.5px;
+    border-radius: 1px;    
+
+    background: #696969
+}
+
+.vertical-line{
+    width: 1.5px;
+    height: 12px;
+    border-radius: 1px;
+
+    background: #696969;
+
+    position: absolute; 
+    top: 50%; 
+    left: 51%;
+    transform: translate(-50%, -50%); 
+}
+
+.circle-1.selected{
+    border-color: #F9D03F;
+}
+
+.counter-container2{
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    width: 61px;
+    height: 17.27px;
+
+    background-color: transparent;
+}
+
+.circle-2{
+    width: 16.27px;
+    height: 16.27px;
+    border-radius: 50%;
+    border: 1px solid #696969;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position:relative;
+}
+
+.horizontal-line.selected{
+    background: #F9D03F;
+}
+
+.vertical-line.selected{
+    background: #F9D03F;
+}
+
+.circle-2.selected{
+    border-color: #F9D03F;
+}
+
+.subtract{
+    background-color: transparent;
+}
+
+.add{
+    background-color: transparent;
+}
+
+.bottom-panel {
+    box-sizing: content-box;
+    width: 100%;
+    height: 70px;
+    background-color: #121111;
+    box-shadow: 0px -16px 35px 6px #00000099;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}
+
+.cart{
+    display: inline-flex;
+    width: 52px;
+    height: 52px;
+    z-index: 2;
+    align-items: center;
+    justify-content: center; 
+    cursor: pointer;
+
+    position: absolute; 
+    top: -15px;
+
+    border-radius: 50%;
+    background: rgba(249, 208, 63, 1);
+    box-shadow: 0px 0px 24px 4px rgba(249, 208, 63, 0.3)    
+}
+
+.cart i{
+    font-size: 24px;
+}
+
+/* отображение уведомлений */
+/* .cart-button::after {
+    content: attr(data-count);  Используем атрибут data-count для отображения количества 
+    position: absolute;
+    bottom: 29.73px;
+    left: 193px;
+    width: 16.27px;
+    height: 16.27px;
+    background: rgba(255, 84, 84, 1);
+    border: 1px solid rgba(255, 84, 84, 1);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 50%;
+}
+
+.cart-button[data-count="0"]::after {
+    display: none; Скрываем значок, если количество равно 0
+}    */
+
+
+.beer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 0fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+

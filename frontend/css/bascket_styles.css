@@ -1,0 +1,663 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #171616;
+    backdrop-filter: blur(60px);
+    position: relative;
+}
+
+/* BACKGROUND START */
+.background {
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.5);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    box-sizing: border-box;
+    background: #171616;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(105, 105, 105, 1);
+    box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+}
+
+.logo {
+    width: 89px;
+    height: 69px;
+    margin-bottom: 20px;
+    margin-top: 3px;
+    align-self: center;
+}
+
+.back-btn {
+    width: 24px;
+    height: 24px;
+    background-color: transparent;
+    padding: 4px 0px 0px 0px;
+    position: absolute;
+    top: 30px;
+    left: 30px;
+}
+
+.shadow-top {
+    position: absolute;
+    width: 338px;
+    height: 338px;
+    left: -105px;
+    top: -167px;
+    background: rgba(249, 208, 63, 0.04);
+    box-shadow: 0px 4px 25px rgba(249, 208, 63, 0.08);
+    filter: blur(60px);
+}
+/* BACKGROUND END */
+
+/* HEADER START */
+.logotip {
+    position: absolute;
+    border: none;
+    width: 86px;
+    height: 69px;
+    left: 141px;
+    top: 35px;
+}
+/* HEADER END */
+
+/* UR BASCKET START */
+.bascket {
+    font-family: 'Montserrat', sans-serif;
+    color: #FCF9F2;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 43.88px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+}
+
+.cart-container1 {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
+    width: 100%;
+    padding-top: 30px;
+    padding-bottom: 40px;
+}
+
+.item {
+    position: relative;
+    width: 315px;
+    height: 56px;
+    background: #1F1F1F;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    margin: 10px 0;
+}
+
+.item img {
+    width: 30px;
+    height: 38px;
+    margin-left: 10px;
+    object-fit: cover;
+}
+
+.item-name {
+    font-family: 'Montserrat', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: #FCF9F2;
+    margin-left: 11px;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 155px;
+    top: 50%;
+    transform: translateY(-50%);
+    gap: 10px;
+}
+
+.quantity button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.circle-1 {
+    width: 17.73px;
+    height: 17.73px;
+    border-radius: 50%;
+    border: 1px solid #696969;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle-1.selected {
+    border-color: #F9D03F;
+}
+
+.horizontal-line {
+    width: 12px;
+    height: 1.5px;
+    border-radius: 1px;
+    background: #696969;
+}
+
+.horizontal-line.selected {
+    background: #F9D03F;
+}
+
+.vertical-line{
+    width: 1.5px;
+    height: 12px;
+    border-radius: 1px;
+    background:  #F9D03F;
+    position: absolute;
+    top: 50%;
+    left: 88%;
+    transform: translate(-50%, -50%);
+}
+
+.vertical-line.selected {
+    display: block;
+}
+
+.item-quantity {
+    font-family: 'Lato', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #F9D03F;
+    min-width: 20px;
+    text-align: center;
+}
+
+.price {
+    font-family: 'Montserrat', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: #FCF9F2;
+    position: absolute;
+    right: 38px;
+}
+
+.delete1,
+.delete2,
+.delete3 {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+/* UR BASCKET END */
+
+/* SNACKS START */
+.snack {
+    position: absolute;
+    width: 271px;
+    height: 88px;
+    left: 30px;
+    top: 418px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 44px;
+    color: #FCF9F2;
+}
+
+.card1 {
+    position: absolute;
+    width: 117px;
+    height: 175px;
+    left: 8px;
+    top: 535px;
+    background: #1F1F1F;
+    border-radius: 12px;
+}
+
+.card1-img {
+    position: absolute;
+    width: 71px;
+    height: 89px;
+    left: 30px;
+    top: 535px;
+    object-fit: cover;
+}
+
+.card1-name {
+    position: absolute;
+    width: 106px;
+    height: 15px;
+    left: 13px;
+    top: 636px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FCF9F2;
+}
+
+.card1-price {
+    position: absolute;
+    width: 85px;
+    height: 15px;
+    left: 23px;
+    top: 656px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FCF9F2;
+}
+
+.card1-choice {
+    position: absolute;
+    width: 84px;
+    height: 17.27px;
+    left: 23px;
+    top: 683px;
+}
+
+.card2 {
+    position: absolute;
+    width: 117px;
+    height: 175px;
+    left: 136px;
+    top: 535px;
+    background: #1F1F1F;
+    border-radius: 12px;
+}
+
+.card2-img {
+    position: absolute;
+    width: 71px;
+    height: 89px;
+    left: 159px;
+    top: 535px;
+    object-fit: cover;
+}
+
+.card2-name {
+    position: absolute;
+    width: 106px;
+    height: 15px;
+    left: 142px;
+    top: 636px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FCF9F2;
+}
+
+.card2-price {
+    position: absolute;
+    width: 85px;
+    height: 15px;
+    left: 152px;
+    top: 663px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FCF9F2;
+}
+
+.card2-choice {
+    position: absolute;
+    width: 84px;
+    height: 17.27px;
+    left: 152px;
+    top: 683px;
+}
+
+.card3 {
+    position: absolute;
+    width: 117px;
+    height: 175px;
+    left: 264px;
+    top: 535px;
+    background: #1F1F1F;
+    border-radius: 12px;
+}
+
+.card3-img {
+    position: absolute;
+    width: 71px;
+    height: 89px;
+    left: 288px;
+    top: 535px;
+    object-fit: cover;
+}
+
+.card3-name {
+    position: absolute;
+    width: 106px;
+    height: 15px;
+    left: 271px;
+    top: 636px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FCF9F2;
+}
+
+.card3-price {
+    position: absolute;
+    width: 85px;
+    height: 15px;
+    left: 281px;
+    top: 663px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FCF9F2;
+}
+
+.card3-choice {
+    position: absolute;
+    width: 84px;
+    height: 17.27px;
+    left: 281px;
+    top: 683px;
+}
+/* SNACKS END */
+
+/* TOTAL START */
+.total {
+    font-family: 'Montserrat', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 44px;
+    color: #FCF9F2;
+    margin-top: 20px;
+}
+
+.total-price {
+    font-family: 'Montserrat', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 44px;
+    color: #F8D040;
+    margin-top: 10px;
+}
+/* TOTAL END */
+
+/* CONTINUE BUTTON */
+.go_on {
+    border: none;
+    width: 340px;
+    height: 56px;
+    cursor: pointer;
+    background: linear-gradient(95.15deg, #F9D03F 17.18%, #E9B32A 71.35%);
+    box-shadow: 0px 4px 24px 4px rgba(249, 209, 64, 0.2);
+    border-radius: 12px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+    text-align: center;
+    color: #000000;
+}
+
+.product-card-text {
+    width: 120px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 17.07px;
+    text-align: center;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+    margin-top: 7px;
+    color: white;
+}
+
+/* EULER BALLS */
+.euler-top-left,
+.euler-bottom-right {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 200px 80px rgba(249, 209, 63, 0.308);
+    pointer-events: none;
+    z-index: -1;
+    will-change: transform;
+    transition: filter 0.5s ease;
+}
+
+.euler-top-left {
+    top: 25px;
+    left: 55px;
+}
+
+.euler-bottom-right {
+    bottom: 75px;
+    right: -50px;
+}
+
+.euler-top-left {
+    animation:
+            floatVerticalDown 60s ease-in-out infinite,
+            glowPulse 8s ease-in-out infinite alternate;
+}
+
+.euler-bottom-right {
+    animation:
+            floatVerticalUp 70s ease-in-out infinite,
+            glowPulse 10s ease-in-out infinite alternate 1s;
+}
+
+.euler-top-left:hover,
+.euler-bottom-right:hover {
+    filter: blur(1px);
+}
+
+@keyframes floatVerticalDown {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translate(30px, calc(100vh - 100px));
+    }
+}
+
+@keyframes floatVerticalUp {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translate(-80px, calc(-100vh + 100px));
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 0 0 180px 80px rgba(249, 230, 63, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 220px 100px rgba(245, 205, 45, 0.45);
+    }
+}
+
+/* LEGACY STYLES (for reference, can be removed if not needed) */
+.rectangle1,
+.rectangle2,
+.rectangle3 {
+    position: absolute;
+    width: 315px;
+    height: 56px;
+    border-radius: 12px;
+    background: #1F1F1F;
+}
+
+.rectangle1 { top: 190px; left: 30px; }
+.rectangle2 { top: 267px; left: 30px; }
+.rectangle3 { top: 341px; left: 30px; }
+
+.pivo1,
+.pivo2,
+.pivo3 {
+    position: absolute;
+    width: 30px;
+    height: 38px;
+    left: 29px;
+    object-fit: cover;
+}
+
+.pivo1 { top: 198px; }
+.pivo2 { top: 276px; }
+.pivo3 { top: 350px; }
+
+.circle1,
+.circle2,
+.circle3 {
+    position: absolute;
+    left: 43px;
+}
+
+.circle1 { top: 223px; }
+.circle2 { top: 301px; }
+.circle3 { top: 375px; }
+
+.light1,
+.light2,
+.light3 {
+    position: absolute;
+    width: 68px;
+    height: 20px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: #FCF9F2;
+}
+
+.light1 { left: 73px; top: 207px; }
+.light2 { left: 74px; top: 285px; }
+.light3 { left: 74px; top: 359px; }
+
+.plus_minus1,
+.plus_minus2,
+.plus_minus3 {
+    position: absolute;
+    display: flex;
+    width: 66.5px;
+    height: 20px;
+}
+
+.plus_minus1 { left: 155px; top: 207px; }
+.plus_minus2 { left: 155px; top: 285px; }
+.plus_minus3 { left: 170px; top: 359px; }
+
+.minus,
+.plus {
+    cursor: pointer;
+}
+
+.minus {
+    position: absolute;
+    width: 17.73px;
+    height: 17.73px;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.plus {
+    position: absolute;
+    width: 17.73px;
+    height: 17.73px;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.amount {
+    position: absolute;
+    width: 9px;
+    height: 18px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #F9D03F;
+}
+
+.price1,
+.price2,
+.price3 {
+    position: absolute;
+    width: 46px;
+    height: 20px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: #FCF9F2;
+}
+
+.price1 { left: 248px; top: 207px; }
+.price2 { left: 248px; top: 285px; }
+.price3 { left: 248px; top: 359px; }
+
+
+.delete-btn{
+
+    position: absolute;
+    right: 6px;
+}
+.volume-label {
+    position: absolute;
+    top: -5px;
+    background: #F9D03F;
+    color: rgba(31, 31, 31, 0.8);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    line-height: 15px;
+    padding: 2px 6px;
+    border: 1px solid #F9D03F;
+    border-radius: 12px;
+}

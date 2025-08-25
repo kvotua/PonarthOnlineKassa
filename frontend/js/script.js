@@ -1,7 +1,7 @@
 const port = '';
 
-const host = "https://loyality-backend.ponarth.com";
-// const host = "http://127.0.0.1:8000";
+// const host = "https://loyality-backend.ponarth.com";
+const host = "http://127.0.0.1:8000";
 function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }

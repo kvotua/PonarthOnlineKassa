@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Информация о товаре</title>
+    <link rel="stylesheet" href="css/Product information.css">
+    <link href="https://cdn.jsdelivr.net/npm/eva-icons@1.1.3/style/eva-icons.css" rel="stylesheet">
+</head>
+<body>
+<div class="info-container">
+    <div class="euler-top-left"></div>
+    <div class="euler-bottom-right"></div>
+    <img src="https://iss.ponarth.com/i/logo_white_mini.png" class="logo">
+
+    <a href="Product%20info.html" class="back-btn">
+        <i data-eva="arrow-ios-back-outline" data-eva-fill="#ffffff" data-eva-width="24" data-eva-height="24"></i>
+    </a>
+
+    <img id="productImage" src="" class="beer-image">
+
+    <h2 id="productTitle" class="name-cost"></h2>
+
+    <p id="productDescription">Загрузка описания...</p>
+
+    <div class="btn-container2">
+        <button class="radio-btn-volume" data-volume="0.5">0,5</button>
+        <button class="radio-btn-volume selected" data-volume="1">1</button>
+        <button class="radio-btn-volume" data-volume="1.5">1,5</button>
+        <button class="radio-btn-volume" data-volume="2">2</button>
+    </div>
+
+    <div class="counter-container3">
+        <button class="subtract">
+            <div class="circle">
+                <div class="horizontal-line"></div>
+            </div>
+        </button>
+
+        <span class="counter3">0</span>
+
+        <button class="add">
+            <div class="circle selected">
+                <div class="horizontal-line selected"></div>
+                <div class="vertical-line selected"></div>
+            </div>
+        </button>
+    </div>
+
+    <h2 id="totalPrice" class="sum">Итого: 0 р.</h2>
+
+    <button class="go-to-cart" onclick="addToCartAndRedirect()">Перейти в корзину</button>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/eva-icons@1.1.3/eva.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.2.1/redux.min.js"></script>
+<script src="js/scriptinfomenu.js"></script>
+<script src="js/store.js"></script>
+</body>
+</html>
