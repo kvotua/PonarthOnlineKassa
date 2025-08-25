@@ -1,9 +1,10 @@
 from decimal import Decimal
 from typing import Optional
 
-from sqlalchemy import BigInteger, SmallInteger, Text, Integer, Date, DECIMAL, func, VARCHAR, JSON, Column, String, DateTime, Numeric
+from sqlalchemy import BigInteger, SmallInteger, Text, Integer, Date, DECIMAL, func, VARCHAR, JSON, Column, String, \
+    DateTime, Numeric, ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, date
 
 from app.config import base_id, firm_id, discount_id
@@ -67,3 +68,85 @@ class UserScore(Base_mysql):
     card_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     scores: Mapped[float] = mapped_column(DECIMAL(12, 2), nullable=False)
 
+class Good(Base_mysql):
+    __tablename__ = 'goods'
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    status: Mapped[int] = mapped_column(Integer, default=0, comment='1 - товар удалён')
+    base_id: Mapped[int] = mapped_column(Integer)
+    firm_id: Mapped[int] = mapped_column(Integer)
+    mag_id: Mapped[int] = mapped_column(Integer)
+    sect_id: Mapped[int] = mapped_column(Integer, ForeignKey('section.id'))
+    sect_menu_id: Mapped[int] = mapped_column(Integer, default=1)
+    active: Mapped[int] = mapped_column(Integer, default=0)
+    no_more_need: Mapped[int] = mapped_column(Integer, default=0, comment='1- больше не заказываем')
+    name: Mapped[str] = mapped_column(String(300))
+    name_kassa: Mapped[str] = mapped_column(String(50))
+    shtrih: Mapped[str] = mapped_column(String(100))
+    contr_id: Mapped[int] = mapped_column(Integer)
+    country: Mapped[int] = mapped_column(Integer, default=1, comment='Страна-производитель')
+    edinica: Mapped[int] = mapped_column(Integer, default=0, comment='1 - литры, 2 - кг, 3 - шт')
+    kega: Mapped[int] = mapped_column(Integer, default=0, comment='1-вести учёт по кегам')
+    srok: Mapped[date] = mapped_column(Date, comment='срок годности')
+    srok_user_id: Mapped[int] = mapped_column(Integer)
+    kran1: Mapped[int] = mapped_column(Integer, default=0)
+    kran2: Mapped[int] = mapped_column(Integer, default=0)
+    ibu: Mapped[float] = mapped_column(Numeric(11, 2))
+    alco: Mapped[float] = mapped_column(Numeric(11, 2))
+    og: Mapped[float] = mapped_column(Numeric(11, 2))
+    perfect: Mapped[str] = mapped_column(String(500), comment='С чем употреблять')
+    info: Mapped[str] = mapped_column(String(500), comment='Сроки хранения')
+    logo: Mapped[str] = mapped_column(String(300))
+    bottle: Mapped[int] = mapped_column(Integer, default=0, comment='1-это бытулка')
+    day_sale: Mapped[float] = mapped_column(Numeric(10, 2))
+    pribil: Mapped[float] = mapped_column(Numeric(10, 2))
+    week_sale: Mapped[float] = mapped_column(Numeric(10, 2))
+    tweek_sale: Mapped[float] = mapped_column(Numeric(10, 2))
+    month_sale: Mapped[float] = mapped_column(Numeric(10, 2))
+    pol_sale: Mapped[float] = mapped_column(Numeric(10, 2))
+    year_sale: Mapped[float] = mapped_column(Numeric(10, 2))
+    all_year: Mapped[float] = mapped_column(Numeric(10, 2))
+    min_zakaz: Mapped[float] = mapped_column(Numeric(10, 2), default=0.00)
+    max_zakaz: Mapped[float] = mapped_column(Numeric(10, 2))
+    ordered: Mapped[datetime] = mapped_column(DateTime, comment='дата и время когда товар заказан')
+    ordered_count: Mapped[float] = mapped_column(Numeric(10, 2))
+    sort: Mapped[int] = mapped_column(Integer, default=1000)
+    mark: Mapped[int] = mapped_column(Integer, default=0)
+    category: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+    section = relationship("Section", back_populates="goods")
+    prices = relationship("GoodPrice", back_populates="good")
+
+class DiscountCard(Base_mysql):
+    __tablename__ = 'discount_cards'
+
+
+class GoodPrice(Base_mysql):
+    __tablename__ = 'good_price'
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    good_id = Column(Integer, ForeignKey('goods.id'))
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False,  comment='ID пользователя')
+    status: Mapped[int] = mapped_column(   Integer, nullable=False,  default=1,comment='0 - не активен, 1 - активен' )
+    price: Mapped[float] = mapped_column( Numeric(10, 2), nullable=False, default=0.00, comment='Цена' )
+    price_real: Mapped[float] = mapped_column(  Numeric(10, 2),nullable=False, comment='Реальная цена' )
+    date_added: Mapped[datetime] = mapped_column(DateTime,  nullable=False,  server_default=func.now(),  comment='Дата добавления')
+
+    good = relationship("Good", back_populates="prices")
+    __table_args__ = (  PrimaryKeyConstraint('id', 'date_added'),  {'comment': 'Таблица цен товаров'},  )
+
+
+class Section(Base_mysql):
+    __tablename__ = 'section'
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    status: Mapped[int] = mapped_column(Integer, nullable=False)
+    base_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    firm_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    mag_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    active: Mapped[int] = mapped_column(Integer, server_default="1", nullable=False)
+    name: Mapped[str] = mapped_column(String(300), nullable=False)
+    marzha: Mapped[int] = mapped_column(Integer, server_default="0", nullable=False)
+    sort: Mapped[int] = mapped_column(Integer, server_default="1000", nullable=False)
+
+    goods = relationship("Good", back_populates="section")
