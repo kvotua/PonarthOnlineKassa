@@ -16,11 +16,24 @@ function getSectionDisplayName(originalName) {
         "Пэт-тара, стаканы и CO2": "Стаканы",
         "0,5 БУТЫЛОЧНОЕ ПИВО PONARTH)": "Бутылочное",
     };
-
     return nameMap[originalName] || originalName;
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
+    // Create and append bottom panel with cart button
+    const choiceContainer = document.querySelector('.choice-container');
+    const bottomPanel = document.createElement('div');
+    bottomPanel.className = 'bottom-panel';
+    const cartButton = document.createElement('button');
+    cartButton.className = 'cart';
+    cartButton.innerHTML = `<i class='bx bx-cart-alt'></i>`;
+    cartButton.addEventListener('click', () => {
+        window.location.href = 'bascket.html';
+    });
+    bottomPanel.appendChild(cartButton);
+    choiceContainer.appendChild(bottomPanel);
+
+    // Existing code for loading sections and products
     await loadSections();
     await fetchBeerProducts();
 });
@@ -28,21 +41,15 @@ document.addEventListener('DOMContentLoaded', async function() {
 // Загрузка секций
 async function loadSections() {
     const sectionsContainer = document.getElementById('sectionsContainer');
-
     try {
         const response = await fetch(`${host}/api/v1/sections`);
-
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         let sections = await response.json();
-
         // ФИЛЬТРАЦИЯ: Убираем секцию "Пэт-тара, стаканы и CO2"
         sections = sections.filter(section => section.name !== "Пэт-тара, стаканы и CO2");
-
         sectionsContainer.innerHTML = '';
-
         if (sections.length === 0) {
             sectionsContainer.innerHTML = '<div class="error">Секции не найдены</div>';
         } else {
@@ -52,7 +59,6 @@ async function loadSections() {
             allButton.textContent = 'Все';
             allButton.dataset.sectionId = 'all';
             sectionsContainer.appendChild(allButton);
-
             // Добавляем кнопки для каждой секции с преобразованными названиями
             sections.forEach(section => {
                 const displayName = getSectionDisplayName(section.name);
@@ -63,23 +69,15 @@ async function loadSections() {
                 button.dataset.originalName = section.name;
                 sectionsContainer.appendChild(button);
             });
-
             // Добавляем обработчик кликов на кнопки секций
             sectionsContainer.addEventListener('click', function(e) {
                 if (e.target.classList.contains('radio-btn')) {
-                    // Убираем выделение со всех кнопок
                     document.querySelectorAll('.radio-btn').forEach(btn => {
                         btn.classList.remove('selected');
                     });
-
-                    // Добавляем выделение нажатой кнопке
                     e.target.classList.add('selected');
-
-                    // Фильтруем товары по выбранной секции
                     const sectionId = e.target.dataset.sectionId;
-
                     if (sectionId === 'all') {
-                        // При показе всех товаров исключаем раздел "Пэт-тара, стаканы и CO2"
                         const filteredProducts = allProducts.filter(product => {
                             return product.section_name !== "Пэт-тара, стаканы и CO2";
                         });
@@ -107,27 +105,20 @@ async function loadSections() {
 // Загрузка товаров
 async function fetchBeerProducts() {
     const beerContainer = document.getElementById('beerContainer');
-
     beerContainer.innerHTML = `
                 <div class="beer-grid">
                     <div class="loading">Загрузка товаров...</div>
                 </div>
             `;
-
     try {
         const response = await fetch(`${host}/api/v1/goods-with-prices`);
-
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         allProducts = await response.json();
-
-        // При первоначальной загрузке также исключаем раздел "Пэт-тара, стаканы и CO2"
         const filteredProducts = allProducts.filter(product => {
             return product.section_name !== "Пэт-тара, стаканы и CO2";
         });
-
         displayProducts(filteredProducts);
     } catch (error) {
         const beerGrid = beerContainer.querySelector('.beer-grid');
@@ -145,7 +136,6 @@ function displayProducts(products) {
     const beerContainer = document.getElementById('beerContainer');
     const beerGrid = document.createElement('div');
     beerGrid.className = 'beer-grid';
-
     if (products.length === 0) {
         beerGrid.innerHTML = '<div class="error">Товары не найдены</div>';
     } else {
@@ -186,11 +176,8 @@ function displayProducts(products) {
             beerGrid.appendChild(beerElement);
         });
     }
-
     beerContainer.innerHTML = '';
     beerContainer.appendChild(beerGrid);
-
-    // Добавляем обработчики событий для кнопок товаров
     addEventListeners();
 }
 
@@ -201,7 +188,6 @@ function addEventListeners() {
             const counter = e.target.closest('.counter-container1').querySelector('.counter1');
             counter.textContent = parseInt(counter.textContent) + 1;
         }
-
         if (e.target.closest('.subtract')) {
             const counter = e.target.closest('.counter-container1').querySelector('.counter1');
             const currentValue = parseInt(counter.textContent);
@@ -209,7 +195,6 @@ function addEventListeners() {
                 counter.textContent = currentValue - 1;
             }
         }
-
         if (e.target.classList.contains('radio-btn-volume1')) {
             const container = e.target.closest('.btn-container');
             container.querySelectorAll('.radio-btn-volume1').forEach(btn => {

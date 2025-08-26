@@ -434,7 +434,9 @@ body {
     text-align: center;
     color: #000000;
 }
-
+.total-container{
+    padding-bottom: 10px;
+}
 .product-card-text {
     width: 120px;
     font-family: 'Montserrat', sans-serif;
@@ -660,4 +662,8 @@ body {
     padding: 2px 6px;
     border: 1px solid #F9D03F;
     border-radius: 12px;
+}
+
+.info{
+
 }
