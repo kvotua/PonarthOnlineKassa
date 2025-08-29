@@ -109,7 +109,7 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-height: 2.8em; /* Высота примерно двух строк */
+    min-height: 2em; /* Высота примерно двух строк */
     line-height: 1.4em;
     margin: 0.5em 0;
 }
@@ -297,7 +297,6 @@ h1{
     /* align-items: center; */
     height: 100%;
     width: 100%;
-    padding-top: 30px;
     padding-bottom: 40px;
 }
 

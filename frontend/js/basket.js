@@ -15,6 +15,13 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeEventHandlers();
 });
 
+function truncateText(text, maxLength) {
+    if (text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+    }
+    return text;
+}
+
 function displayCartItems(cartItems) {
     const cartContainer = document.getElementById('cart-container');
     const totalContainer = document.getElementById('total-container');
@@ -29,13 +36,15 @@ function displayCartItems(cartItems) {
     let total = 0;
 
     cartItems.forEach((item) => {
+        const truncatedName = truncateText(item.name, 8);
+
         html += `
 <div class="item" data-item-key="${item.itemKey}">
     <div class="image-container">
         <img src="${item.image}" alt="${item.name}">
         <span class="volume-label">${item.volume}</span>
     </div>
-    <span class="item-name">${item.name}</span>
+    <span class="item-name" title="${item.name}">${truncatedName}</span>
     <div class="quantity">
         <button class="subtract" data-item-key="${item.itemKey}">
             <div class="circle-1">

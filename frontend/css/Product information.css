@@ -120,7 +120,6 @@ html, body {
     line-height: 29.26px;
     color: #FCF9F2;
     padding-bottom: 25px;
-    width: 278px;
     height: 29px;
 
     margin-bottom: 12px;
@@ -257,7 +256,7 @@ html, body {
     line-height: 29.26px;
     color: #FCF9F2; 
     height: 29px;
-
+    padding-bottom: 10px;
     margin-bottom: 5px;
 }
 

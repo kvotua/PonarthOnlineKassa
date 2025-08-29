@@ -60,7 +60,7 @@ async function fetchProductDetails(productId) {
         document.getElementById('productTitle').dataset.productName = product.name;
         document.getElementById('productImage').src = product.image || 'img/light_beer.png';
         document.getElementById('productImage').alt = product.name;
-        document.getElementById('productTitle').textContent = `${product.name} | ${basePrice.toFixed(2)} р. - 1 л`;
+        document.getElementById('productTitle').textContent = `${product.name} | ${basePrice.toFixed(2)} р. `;
         document.getElementById('productDescription').innerHTML = `
             Крепость — 4,5%. Напиток относят к категории премиум-лагеров в американском стиле.
             Для него характерны сладковатое солодовое тело с карамельными тонами и нюансами сухофруктов и специй.
