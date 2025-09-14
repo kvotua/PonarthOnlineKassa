@@ -191,7 +191,7 @@ h1 {
 .euler-top-left {
     top: 25px;
     left: 55px;
-    animation: 
+    animation:
         floatVerticalDown 60s ease-in-out infinite,
         glowPulse 8s ease-in-out infinite alternate;
 }
@@ -199,7 +199,7 @@ h1 {
 .euler-bottom-right {
     bottom: 75px;
     right: -50px;
-    animation: 
+    animation:
         floatVerticalUp 70s ease-in-out infinite,
         glowPulse 10s ease-in-out infinite alternate 1s;
 }

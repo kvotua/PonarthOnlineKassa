@@ -1,21 +1,113 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
-/*Обнуление*/
-*{padding: 0;margin: 0;border: 0;}
+:root {
+    --primary-color: #F9D03F;
+    --bg-color: #171616;
+    --text-color: #FCF9F2;
+    --border-color: rgba(105, 105, 105, 1);
+    --card-bg: #212121;
+}
+*{padding: 0;margin: 0;border: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;}
 input::-ms-clear{display: none;}
 button{cursor: pointer;}
 button::-moz-focus-inner{padding:0;border:0;}
+
+.bonus-container {
+    background: rgba(23, 22, 22, 0.8);
+    border: 1px solid rgba(105, 105, 105, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px auto;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.6s ease-out;
+}
+
+.bonus-balance {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.coin-icon {
+    animation: pulse 2s infinite;
+}
+
+.amount {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-left: 5px;
+}
+
+.cashback-info {
+    /* Container for cashback content */
+}
+
+.cashback-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
+    gap: 10px;
+}
+
+.cashback-rate {
+    text-align: center;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(105, 105, 105, 0.2);
+    flex: 1;
+}
+
+
+.cashback-rate span {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.cashback-rate.special span {
+    color: #FFD700;
+}
+
+.cashback-rate small {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.cashback-divider {
+    position: relative;
+    width: 40px;
+    height: 2px;
+    background: rgba(249, 208, 63, 0.5);
+}
+
+.arrow {
+    position: absolute;
+    right: 0;
+    top: -4px;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 8px solid var(--primary-color);
+}
+
+.cashback-hint {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 200;
+    line-height: 1.5;
+}
 
 html,
 body {
     height: 100%;
     width: 100vw;
-    overflow-x: hidden;
     scroll-behavior: smooth;
-}
-
-body {
     font-family: 'Lato', sans-serif;
     background: #171616;
     color: #fff;
@@ -105,14 +197,17 @@ body {
 
 .product-card h2 {
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Ограничиваем текст двумя строками */
+    -webkit-line-clamp: 2; /* Ограничиваем 2 строками */
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-height: 2em; /* Высота примерно двух строк */
-    line-height: 1.4em;
-    margin: 0.5em 0;
+    white-space: normal; /* Разрешаем перенос текста */
+    line-height: 1.2; /* Опционально: регулируем межстрочный интервал */
+    max-height: 2.4em; /* Опционально: 2 строки * line-height */
+    min-height: 2.4em; /* Опционально: фиксируем высоту */
 }
+
+
 
 .choice-container {
     z-index: 1;
@@ -137,6 +232,7 @@ body {
     scrollbar-width: none; /* Для Firefox */
     -ms-overflow-style: none; /* Для IE/Edge */
 }
+
 
 @media (max-width: 500px) {
     .choice-container {
@@ -193,27 +289,19 @@ h1{
     margin-top: 12px;
 }
 
-.choice-container span{
-    font-family: 'Lato', sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 24px;
-    text-align: left;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none;
-    color: #F9D03F;
-}
+
 
 .button-container {
     display: block;
-    position: absolute;
-    top: 234px;
-    left: 10px;
-    right: 10px;
-    overflow-x: auto;
+    /*position: absolute;*/
+    /*top: 234px;*/
+    /*left: 10px;*/
+    /*right: 10px;*/
     overflow-y: hidden;
+    overflow-x: auto;
+    overflow-y: auto;
     white-space: nowrap;
-    padding: 10px 0;
+    min-height: 60px;
     scrollbar-width: none; /* Для Firefox */
     -ms-overflow-style: none; /* Для IE и Edge */
 }
@@ -243,6 +331,7 @@ h1{
     padding: 9px 15px 9px 15px;
 
     background-color: #171616;
+    border: 1px solid rgba(255, 255, 255, 0.31);
 
     margin-top: 20px;
 }
@@ -263,7 +352,7 @@ h1{
     border-radius: 12px;
     object-fit: cover;
 
-    margin-top: 80px;
+    margin-top: 20px;
 
 }
 
@@ -299,9 +388,17 @@ h1{
     width: 100%;
     padding-bottom: 40px;
 }
+#new_user_score,
+.cashback-hint,
+.cashback-hint2 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 200;
+    line-height: 1.5;
+    color: #FFFFFF;
+}
 
 .beer-1 {
-    padding: 15px;
+    padding: 20px;
     border-radius: 8px;
     width: 100%;
     position: relative;
@@ -330,7 +427,7 @@ h1{
     display: flex;
     justify-self: center;
     justify-content: space-between;
-    margin-top: -14px;
+    /*margin-top: -14px;*/
 }
 
 h2{
@@ -375,8 +472,6 @@ h2{
     text-align: center;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
-
-    margin-top: 7px;
     margin-bottom: 10px;
 }
 
@@ -611,6 +706,5 @@ h2{
     grid-template-columns: repeat(2, 0fr);
     gap: 20px;
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    padding-top: 20px;
 }

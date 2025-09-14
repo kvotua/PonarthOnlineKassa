@@ -1,50 +1,6 @@
 const host = "http://127.0.0.1:8000";
 
-// Store container prices globally
-let containerPrices = {
-    0.5: 0,
-    1: 0,
-    1.5: 0,
-    2: 0
-};
-
 eva.replace();
-
-// Fetch container prices from the "Пэт-тара, стаканы и CO2" section
-async function fetchContainerPrices() {
-    try {
-        const response = await fetch(`${host}/api/v1/goods-with-prices`);
-        if (!response.ok) {
-            throw new Error('Ошибка загрузки тары');
-        }
-        const products = await response.json();
-        // Filter container products
-        const containers = products.filter(product => product.section_name === "Пэт-тара, стаканы и CO2");
-
-        // Map container prices to volumes based on product names
-        containers.forEach(container => {
-            if (container.name === "Бутылка 0.5л") {
-                containerPrices[0.5] = container.price_real;
-            } else if (container.name === "Бутылка 1 литра" || container.name === "Бутылка 1л") {
-                containerPrices[1] = container.price_real;
-            } else if (container.name === "Бутылка 1.5л") {
-                containerPrices[1.5] = container.price_real;
-            } else if (container.name === "Бутылка 2 литра") {
-                containerPrices[2] = container.price_real;
-            }
-        });
-        console.log('Container prices:', containerPrices);
-    } catch (error) {
-        console.error('Ошибка загрузки цен на тару:', error);
-        // Fallback prices from search results
-        containerPrices = {
-            0.5: 7.85, // From web:9
-            1: 10.00,   // Approximate average from web:6, web:12
-            1.5: 6.90,  // From web:4
-            2: 8.00     // Approximate average from web:22
-        };
-    }
-}
 
 async function fetchProductDetails(productId) {
     try {
@@ -54,7 +10,7 @@ async function fetchProductDetails(productId) {
         }
         const product = await response.json();
         const basePrice = product.price_real;
-        // Update DOM with product details
+        // Обновите DOM с подробной информацией о продукте
         document.getElementById('totalPrice').dataset.basePrice = basePrice;
         document.getElementById('totalPrice').dataset.productId = productId;
         document.getElementById('productTitle').dataset.productName = product.name;
@@ -93,15 +49,8 @@ function updateTotalPrice() {
     const basePrice = parseFloat(document.getElementById('totalPrice').dataset.basePrice || 0);
     const selectedVolume = parseFloat(document.querySelector('.radio-btn-volume.selected').dataset.volume || 1);
 
-    // Calculate product cost
-    const productCost = basePrice * selectedVolume * quantity;
-
-    // Get container cost for the selected volume
-    const containerCost = containerPrices[selectedVolume] || 0;
-    const totalContainerCost = containerCost * quantity;
-
-    // Total price including container cost
-    const total = productCost + totalContainerCost;
+    // Расчет стоимости
+    const total = basePrice * selectedVolume * quantity;
 
     document.getElementById('totalPrice').textContent = `Итого: ${total.toFixed(2)} р.`;
 }
@@ -118,27 +67,23 @@ function addToCart() {
     const productName = document.getElementById('productTitle').dataset.productName;
     const image = document.getElementById('productImage').src;
 
-    // Get container cost for the selected volume
-    const containerCost = containerPrices[selectedVolume] || 0;
-
     const cartItem = {
         id: productId,
         name: productName,
         volume: selectedVolume,
         quantity: quantity,
         pricePerLiter: basePrice,
-        containerCost: containerCost, // Include container cost
-        totalPrice: (basePrice * selectedVolume + containerCost) * quantity, // Include container cost in total
+        totalPrice: basePrice * selectedVolume * quantity, // Только стоимость продукта
         image: image
     };
 
-    // Dispatch to Redux store
+    // Отправка в магазин Redux
     store.dispatch({
         type: 'ADD_TO_CART',
         payload: cartItem
     });
 
-    // Save to localStorage
+    // Сохранить в localStorage
     localStorage.setItem('cartState', JSON.stringify(store.getState()));
 
     console.log("Товар добавлен в корзину:", cartItem);
@@ -153,7 +98,7 @@ function addToCartAndRedirect() {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
-    // Load cart state from localStorage into Redux store
+    // Загрузить состояние корзины из localStorage в Redux store
     const savedState = localStorage.getItem('cartState');
     if (savedState) {
         try {
@@ -163,9 +108,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // Fetch container prices before product details
-    await fetchContainerPrices();
-
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
     if (productId) {
@@ -174,7 +116,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('productTitle').textContent = 'Товар не найден';
     }
 
-    // Initialize event handlers
+    // Инициализировать обработчики событий
     document.querySelectorAll('.radio-btn-volume').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.radio-btn-volume').forEach(b => b.classList.remove('selected'));

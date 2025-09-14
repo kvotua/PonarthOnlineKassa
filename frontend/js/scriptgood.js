@@ -20,19 +20,6 @@ function getSectionDisplayName(originalName) {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
-    // Create and append bottom panel with cart button
-    const choiceContainer = document.querySelector('.choice-container');
-    const bottomPanel = document.createElement('div');
-    bottomPanel.className = 'bottom-panel';
-    const cartButton = document.createElement('button');
-    cartButton.className = 'cart';
-    cartButton.innerHTML = `<i class='bx bx-cart-alt'></i>`;
-    cartButton.addEventListener('click', () => {
-        window.location.href = 'bascket.html';
-    });
-    bottomPanel.appendChild(cartButton);
-    choiceContainer.appendChild(bottomPanel);
-
     // Existing code for loading sections and products
     await loadSections();
     await fetchBeerProducts();
@@ -148,7 +135,7 @@ function displayProducts(products) {
                                 <img class="light-beer" alt="${product.name}" src="img/light_beer.png">
                             </a>
                             <h2>${product.name}</h2>
-                            <h2 class="cost">${product.price_real.toFixed(2)} р.</h2>
+                            <h3 class="cost">${product.price_real.toFixed(2)}</h3>
                             <div class="panelmenu">
                                 <div class="btn-container">
                                     <button class="radio-btn-volume1">0,5</button>
