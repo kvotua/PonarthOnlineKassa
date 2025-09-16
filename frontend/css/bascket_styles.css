@@ -134,6 +134,16 @@ body {
     gap: 10px;
 }
 
+.quantity1 {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 185px;
+    top: 50%;
+    transform: translateY(-50%);
+    gap: 10px;
+}
+
 .quantity button {
     background: none;
     border: none;

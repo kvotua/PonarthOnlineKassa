@@ -14,9 +14,8 @@ function cartReducer(state = initialState, action) {
 
         case 'ADD_TO_CART':
             const newItem = action.payload;
-            const itemKey = `${newItem.id}_${newItem.volume}`;
             const existingItemIndex = state.cartItems.findIndex(
-                item => item.itemKey === itemKey
+                item => item.itemKey === newItem.itemKey
             );
 
             let updatedItems;
@@ -24,16 +23,18 @@ function cartReducer(state = initialState, action) {
             if (existingItemIndex !== -1) {
                 updatedItems = [...state.cartItems];
                 updatedItems[existingItemIndex].quantity += newItem.quantity;
-                updatedItems[existingItemIndex].totalPrice =
+                updatedItems[existingItemIndex].liquidPrice =
                     updatedItems[existingItemIndex].pricePerLiter *
                     updatedItems[existingItemIndex].volume *
                     updatedItems[existingItemIndex].quantity;
+                updatedItems[existingItemIndex].containerPrice =
+                    updatedItems[existingItemIndex].containerCost *
+                    updatedItems[existingItemIndex].quantity;
+                updatedItems[existingItemIndex].totalPrice =
+                    updatedItems[existingItemIndex].liquidPrice +
+                    updatedItems[existingItemIndex].containerPrice;
             } else {
-                updatedItems = [...state.cartItems, {
-                    ...newItem,
-                    itemKey: itemKey,
-                    totalPrice: newItem.pricePerLiter * newItem.volume * newItem.quantity
-                }];
+                updatedItems = [...state.cartItems, newItem];
             }
 
             const newTotalAmount = updatedItems.reduce((total, item) => total + item.totalPrice, 0);
@@ -52,7 +53,9 @@ function cartReducer(state = initialState, action) {
                     return {
                         ...item,
                         quantity: quantity,
-                        totalPrice: item.pricePerLiter * item.volume * quantity
+                        liquidPrice: item.pricePerLiter * item.volume * quantity,
+                        containerPrice: item.containerCost * quantity,
+                        totalPrice: (item.pricePerLiter * item.volume + item.containerCost) * quantity
                     };
                 }
                 return item;
