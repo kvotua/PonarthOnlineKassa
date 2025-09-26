@@ -3,6 +3,10 @@ const host = "http://127.0.0.1:8000";
 
 let allProducts = [];
 let sections = [];
+let currentPage = 1;
+const productsPerPage = 20;
+let isLoading = false;
+let currentProducts = [];
 
 // Функция для преобразования названий секций
 function getSectionDisplayName(originalName) {
@@ -23,7 +27,85 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Existing code for loading sections and products
     await loadSections();
     await fetchBeerProducts();
+
+    // Добавляем обработчик скролла для бесконечной подгрузки
+    setupInfiniteScroll();
 });
+
+// Настройка бесконечного скролла на choice-container
+function setupInfiniteScroll() {
+    const choiceContainer = document.querySelector('.choice-container');
+
+    choiceContainer.addEventListener('scroll', function() {
+        if (isLoading) return;
+
+        const scrollTop = choiceContainer.scrollTop;
+        const scrollHeight = choiceContainer.scrollHeight;
+        const clientHeight = choiceContainer.clientHeight;
+
+        // Проверяем, достигли ли мы нижней части контейнера (за 100px до конца)
+        if (scrollTop + clientHeight >= scrollHeight - 100) {
+            loadMoreProducts();
+        }
+    });
+}
+
+// Загрузка дополнительных товаров
+function loadMoreProducts() {
+    if (isLoading) return;
+
+    const totalPages = Math.ceil(currentProducts.length / productsPerPage);
+    if (currentPage >= totalPages) return; // Все товары уже показаны
+
+    isLoading = true;
+
+    // Показываем индикатор загрузки
+    showLoadingIndicator();
+
+    // Задержка 1 секунда перед подгрузкой
+    setTimeout(() => {
+        currentPage++;
+        displayProducts(currentProducts, true); // true - значит добавляем к существующим
+
+        isLoading = false;
+        hideLoadingIndicator();
+
+        // Проверяем, нужно ли скрыть индикатор навсегда (если все товары загружены)
+        const totalPages = Math.ceil(currentProducts.length / productsPerPage);
+        if (currentPage >= totalPages) {
+            hideLoadingIndicator(true);
+        }
+
+    }, 1000);
+}
+
+// Показать индикатор загрузки
+function showLoadingIndicator() {
+    let loadingIndicator = document.getElementById('loadingIndicator');
+    if (!loadingIndicator) {
+        loadingIndicator = document.createElement('div');
+        loadingIndicator.id = 'loadingIndicator';
+        loadingIndicator.className = 'loading-indicator';
+        loadingIndicator.innerHTML = `
+            <div class="loading-spinner"></div>
+            <span>Загрузка...</span>
+        `;
+        document.getElementById('beerContainer').appendChild(loadingIndicator);
+    }
+    loadingIndicator.style.display = 'flex';
+}
+
+// Скрыть индикатор загрузки
+function hideLoadingIndicator(hidePermanently = false) {
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    if (loadingIndicator) {
+        if (hidePermanently) {
+            loadingIndicator.style.display = 'none';
+        } else {
+            // Можно добавить логику для временного скрытия, если нужно
+        }
+    }
+}
 
 // Загрузка секций
 async function loadSections() {
@@ -59,6 +141,10 @@ async function loadSections() {
             // Добавляем обработчик кликов на кнопки секций
             sectionsContainer.addEventListener('click', function(e) {
                 if (e.target.classList.contains('radio-btn')) {
+                    // Сбрасываем страницу на первую при смене секции
+                    currentPage = 1;
+                    isLoading = false;
+
                     document.querySelectorAll('.radio-btn').forEach(btn => {
                         btn.classList.remove('selected');
                     });
@@ -68,13 +154,15 @@ async function loadSections() {
                         const filteredProducts = allProducts.filter(product => {
                             return product.section_name !== "Пэт-тара, стаканы и CO2";
                         });
-                        displayProducts(filteredProducts);
+                        currentProducts = filteredProducts;
+                        displayProducts(currentProducts);
                     } else {
                         const originalName = e.target.dataset.originalName;
                         const filteredProducts = allProducts.filter(product => {
                             return product.section_name === originalName;
                         });
-                        displayProducts(filteredProducts);
+                        currentProducts = filteredProducts;
+                        displayProducts(currentProducts);
                     }
                 }
             });
@@ -106,7 +194,8 @@ async function fetchBeerProducts() {
         const filteredProducts = allProducts.filter(product => {
             return product.section_name !== "Пэт-тара, стаканы и CO2";
         });
-        displayProducts(filteredProducts);
+        currentProducts = filteredProducts;
+        displayProducts(currentProducts);
     } catch (error) {
         const beerGrid = beerContainer.querySelector('.beer-grid');
         beerGrid.innerHTML = '';
@@ -118,15 +207,40 @@ async function fetchBeerProducts() {
     }
 }
 
-// Функция для отображения товаров
-function displayProducts(products) {
+// Функция для отображения товаров с бесконечной подгрузкой
+function displayProducts(products, append = false) {
     const beerContainer = document.getElementById('beerContainer');
-    const beerGrid = document.createElement('div');
-    beerGrid.className = 'beer-grid';
-    if (products.length === 0) {
+
+    // Если не append, очищаем контейнер и создаем новую сетку
+    if (!append) {
+        beerContainer.innerHTML = '';
+
+        const beerGrid = document.createElement('div');
+        beerGrid.className = 'beer-grid';
+        beerGrid.id = 'beerGrid';
+        beerContainer.appendChild(beerGrid);
+    }
+
+    const beerGrid = document.getElementById('beerGrid') || beerContainer.querySelector('.beer-grid');
+
+    // Рассчитываем индексы товаров для текущей страницы
+    const startIndex = 0; // Всегда показываем с начала при смене секции
+    const endIndex = currentPage * productsPerPage;
+    const productsToShow = products.slice(startIndex, endIndex);
+
+    if (productsToShow.length === 0 && !append) {
         beerGrid.innerHTML = '<div class="error">Товары не найдены</div>';
     } else {
-        products.forEach(product => {
+        // Если append = false, очищаем сетку перед добавлением новых товаров
+        if (!append) {
+            beerGrid.innerHTML = '';
+        }
+
+        // Добавляем только новые товары (для append = true)
+        const currentItemCount = beerGrid.children.length;
+        const newProducts = productsToShow.slice(currentItemCount);
+
+        newProducts.forEach(product => {
             const beerElement = document.createElement('div');
             beerElement.className = 'beer-1';
             beerElement.innerHTML = `
@@ -163,8 +277,27 @@ function displayProducts(products) {
             beerGrid.appendChild(beerElement);
         });
     }
-    beerContainer.innerHTML = '';
-    beerContainer.appendChild(beerGrid);
+
+    // Удаляем старый индикатор загрузки если он есть
+    const oldIndicator = document.getElementById('loadingIndicator');
+    if (oldIndicator) {
+        oldIndicator.remove();
+    }
+
+    // Добавляем индикатор загрузки в конец, если есть еще товары для подгрузки
+    const totalPages = Math.ceil(products.length / productsPerPage);
+    if (currentPage < totalPages) {
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.id = 'loadingIndicator';
+        loadingIndicator.className = 'loading-indicator';
+        loadingIndicator.style.display = 'none'; // Скрыт по умолчанию
+        loadingIndicator.innerHTML = `
+            <div class="loading-spinner"></div>
+            <span>Загрузка...</span>
+        `;
+        beerContainer.appendChild(loadingIndicator);
+    }
+
     addEventListeners();
 }
 
