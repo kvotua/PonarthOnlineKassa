@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Добавляем обработчик скролла для бесконечной подгрузки
     setupInfiniteScroll();
+
+    initializeSearch();
 });
 
 // Настройка бесконечного скролла на choice-container
@@ -324,3 +326,217 @@ function addEventListeners() {
         }
     });
 }
+
+// Переменные для поиска
+let searchTimeout;
+let isSearching = false;
+
+// Инициализация поиска
+function initializeSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearch');
+
+    // Обработчик ввода текста
+    searchInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.trim();
+
+        // Показываем/скрываем кнопку очистки
+        clearSearchBtn.style.display = searchTerm ? 'block' : 'none';
+
+        // Сбрасываем предыдущий таймер
+        clearTimeout(searchTimeout);
+
+        if (searchTerm.length >= 2) {
+            // Запускаем поиск с задержкой 500ms
+            searchTimeout = setTimeout(() => {
+                performSearch(searchTerm);
+            }, 500);
+        } else if (searchTerm.length === 0) {
+            // Если поле пустое, показываем все товары
+            resetSearch();
+        }
+    });
+
+    // Обработчик очистки поиска
+    clearSearchBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        clearSearchBtn.style.display = 'none';
+        resetSearch();
+        searchInput.focus();
+    });
+
+    // Обработчик клавиши Escape
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            searchInput.value = '';
+            clearSearchBtn.style.display = 'none';
+            resetSearch();
+        }
+    });
+}
+
+// Функция выполнения поиска
+async function performSearch(searchTerm) {
+    if (isSearching) return;
+
+    isSearching = true;
+    currentPage = 1;
+
+    try {
+        // Показываем индикатор загрузки
+        showSearchLoading();
+
+        // Выполняем запрос к API поиска
+        const response = await fetch(`${host}/api/v1/goods/search/${encodeURIComponent(searchTerm)}`);
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                currentProducts = [];
+                displaySearchResults([], searchTerm);
+                return;
+            } else {
+                throw new Error(`Ошибка сервера: ${response.status}`);
+            }
+        }
+
+        const searchResults = await response.json();
+
+        // Обновляем текущие товары результатами поиска
+        currentProducts = searchResults.filter(product => {
+            return product.section_name !== "Пэт-тара, стаканы и CO2";
+        });
+
+        // Показываем результаты
+        displaySearchResults(currentProducts, searchTerm);
+
+    } catch (error) {
+        console.error('Ошибка поиска:', error);
+
+        // Если ошибка сети или другие ошибки - показываем "Товар не найден"
+        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+            showSearchError("Товар не найден");
+        } else {
+            showSearchError("Товар не найден");
+        }
+    } finally {
+        isSearching = false;
+        hideSearchLoading();
+    }
+}
+
+// Функция сброса поиска
+function resetSearch() {
+    currentPage = 1;
+    // Возвращаем отфильтрованные товары (без секции "Пэт-тара")
+    currentProducts = allProducts.filter(product => {
+        return product.section_name !== "Пэт-тара, стаканы и CO2";
+    });
+
+    // Убираем информацию о поиске
+    const existingInfo = document.getElementById('searchResultsInfo');
+    if (existingInfo) {
+        existingInfo.remove();
+    }
+
+    displayProducts(currentProducts);
+
+    document.querySelectorAll('.radio-btn').forEach(btn => {
+        if (btn.dataset.sectionId === 'all') {
+            btn.classList.add('selected');
+        } else {
+            btn.classList.remove('selected');
+        }
+    });
+}
+
+//  Результаты поиска
+function displaySearchResults(products, searchTerm) {
+    const beerContainer = document.getElementById('beerContainer');
+
+    const existingInfo = document.getElementById('searchResultsInfo');
+    if (existingInfo) {
+        existingInfo.remove();
+    }
+
+    //  информацию о результатах поиска
+    const resultsInfo = document.createElement('div');
+    resultsInfo.id = 'searchResultsInfo';
+    resultsInfo.className = 'search-results-info';
+
+    if (products.length === 0) {
+        resultsInfo.innerHTML = `По запросу "<strong>${searchTerm}</strong>" ничего не найдено`;
+    } else {
+        resultsInfo.innerHTML = `Найдено ${products.length} товаров по запросу "<strong>${searchTerm}</strong>"`;
+    }
+
+    beerContainer.insertBefore(resultsInfo, beerContainer.firstChild);
+
+    // Показываем товары
+    displayProducts(products);
+
+    // Снимаем выделение с секций
+    document.querySelectorAll('.radio-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+}
+
+// Показать индикатор загрузки поиска
+function showSearchLoading() {
+    const beerContainer = document.getElementById('beerContainer');
+    beerContainer.innerHTML = `
+        <div class="loading-search">
+            <div class="loading-spinner"></div>
+            <span>Ищем товары...</span>
+        </div>
+    `;
+}
+
+// Скрыть индикатор загрузки поиска
+function hideSearchLoading() {
+    // Автоматически скроется при отображении результатов
+}
+
+// Показать ошибку поиска
+function showSearchError(errorMessage) {
+    const beerContainer = document.getElementById('beerContainer');
+    beerContainer.innerHTML = `
+        <div class="error">
+            ${errorMessage}<br>
+            <button onclick="resetSearch()" style="margin-top: 10px; padding: 8px 16px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; color: white; cursor: pointer;">
+                Показать все товары
+            </button>
+        </div>
+    `;
+}
+
+//  CSS для индикатора загрузки поиска
+const searchLoadingStyles = `
+.loading-search {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.loading-search .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+`;
+
+//  стили в документ
+const styleSheet = document.createElement('style');
+styleSheet.textContent = searchLoadingStyles;
+document.head.appendChild(styleSheet);
