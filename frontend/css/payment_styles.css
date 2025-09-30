@@ -14,19 +14,20 @@
 
 /*BACKGROUND START*/
 .background {
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.5);
     position: relative;
-    width: 375px;
-    height: 892px;
-    top: 0;
-    left: 0;
+    display: flex
+;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    box-sizing: border-box;
     background: #171616;
-    backdrop-filter: blur(30px);
-    border-radius: 40px;
-    overflow: hidden;
-    background: #171616;
-    backdrop-filter: blur(30px);
-    border-radius: 40px;
-    overflow: hidden;
+    border-radius: 20px;
+    /* overflow: hidden; */
     border: 1px solid rgba(105, 105, 105, 1);
     box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
 }
@@ -311,30 +312,24 @@
 
 /* TOTAL START */
 .total {
-    position: absolute;
-    width: 290px;
-    height: 44px;
-    left: 30px;
-    top: 609px;
-    font-family: 'Montserrat';
-    font-style: normal;
-    font-weight: 500;
-    font-size: 36px;
-    line-height: 44px;
+    font-family: 'Montserrat', sans-serif;
     color: #FCF9F2;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 43.88px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
 }
 
 .total-price {
-    position: absolute;
-    width: 290px;
-    height: 44px;
-    left: 30px;
-    top: 649px;
-    font-family: 'Montserrat';
-    font-style: normal;
-    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
     font-size: 36px;
-    line-height: 44px;
+    font-weight: 400;
+    line-height: 43.88px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
     color: #F8D040;
 }
 /* TOTAL END */
@@ -349,7 +344,7 @@
     width: 315px;
     height: 56px;
     left: 30px;
-    top: 738px;
+    top: 782px;
     background: linear-gradient(95.15deg, #F9D03F 17.18%, #E9B32A 71.35%);
     box-shadow: 0px 4px 24px 4px rgba(249, 209, 64, 0.2);
     border-radius: 12px;
@@ -361,7 +356,7 @@
     width: 315px;
     height: 56px;
     left: 30px;
-    top: 805px;
+    top: 851px;
     border: 1px solid #F8D040;
     background-color: rgba(0, 0, 0, 0);
     box-shadow: 
@@ -384,3 +379,235 @@
     color: #F8D040;
 }
 /* ONLINE OFFLINE BUTTONS END */
+
+
+.back-btn {
+    width: 24px;
+    height: 24px;
+    background-color: transparent;
+    padding: 4px 0px 0px 0px;
+    position: absolute;
+    top: 30px;
+    left: 30px;
+}
+
+.logo {
+    width: 89px;
+    height: 69px;
+    margin-bottom: 20px;
+    margin-top: 3px;
+    align-self: center;
+}
+
+.go_on {
+    border: none;
+    width: 340px;
+    height: 56px;
+    cursor: pointer;
+    background: linear-gradient(95.15deg, #F9D03F 17.18%, #E9B32A 71.35%);
+    box-shadow: 0px 4px 24px 4px rgba(249, 209, 64, 0.2);
+    border-radius: 12px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+    text-align: center;
+    color: #000000;
+    margin-bottom: 10px;
+}
+
+
+.bascket {
+    font-family: 'Montserrat', sans-serif;
+    color: #FCF9F2;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 43.88px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+}
+
+.go-to-cart{
+    font-size: 18px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    line-height: 24.94px;
+    text-align: center;
+    color: #F8D040;
+
+    width: 100%;
+    max-width: 400px;
+    height: 56px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin-bottom: 0px;
+    cursor: pointer;
+
+    border-radius: 12px;
+    border: 1px solid #F8D040;
+    background-color: #2B271A;
+    box-shadow: 0px 4px 24px 4px #F9D14033;
+}
+
+/* Базовые стили шаров */
+.euler-top-left,
+.euler-bottom-right {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 200px 80px rgba(249, 209, 63, 0.308);
+    pointer-events: none;
+    z-index: -1;
+    will-change: transform; /* Оптимизация для анимации */
+    transition: filter 0.5s ease; /* Плавное изменение фильтра при наведении */
+}
+
+/* Позиционирование верхнего шара */
+.euler-top-left {
+    top: 25px;
+    left: 55px;
+}
+
+/* Позиционирование нижнего шара */
+.euler-bottom-right {
+    bottom: 75px;
+    right: -50px;
+}
+
+/* Анимация для верхнего шара */
+.euler-top-left {
+    animation:
+            floatVerticalDown 60s ease-in-out infinite, /* Движение */
+            glowPulse 8s ease-in-out infinite alternate; /* Пульсация свечения */
+}
+
+/* Анимация для нижнего шара */
+.euler-bottom-right {
+    animation:
+            floatVerticalUp 70s ease-in-out infinite, /* Движение */
+            glowPulse 10s ease-in-out infinite alternate 1s; /* Пульсация свечения с задержкой */
+}
+
+/* Эффект при наведении на шары */
+.euler-top-left:hover,
+.euler-bottom-right:hover {
+    filter: blur(1px);
+}
+
+/* Анимация движения верхнего шара (вниз → вверх) */
+@keyframes floatVerticalDown {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translate(30px, calc(100vh - 100px));
+    }
+}
+
+/* Анимация движения нижнего шара (вверх → вниз) */
+@keyframes floatVerticalUp {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translate(-80px, calc(-100vh + 100px));
+    }
+}
+
+/* Анимация пульсации свечения */
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 0 0 180px 80px rgba(249, 230, 63, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 220px 100px rgba(245, 205, 45, 0.45);
+    }
+}
+.time-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    color: #333;
+    margin: 3px
+}
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 12px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+input:checked + .slider {
+    background-color: #ffcc00;
+}
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+.points-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 0px;
+    border-radius: 8px;
+    border: 1px solid #ffcc00;
+    height: 40px;
+    font-size: 18px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+.points-text {
+    font-weight: 500;
+    color: #ffcc00;
+    position: relative;
+    left: 16px;
+}
+.total-points {
+    background-color: #ffcc00;
+    padding: 5px 15px;
+    border-radius: 8px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+}
+.order-timer{
+    font-size: 16px;
+}
+
