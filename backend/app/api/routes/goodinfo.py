@@ -82,3 +82,42 @@ async def get_good_with_price_by_id(
         section_name=row.section_name
 
     )
+
+@router.get("/goods/search/{search_name}", response_model=List[GoodPriceResponse])
+async def get_good_search_by_name(
+    search_name: str,
+        db: AsyncSession = Depends(get_mysql_session)
+):
+    stmt = (
+        select(
+            Good.id,
+            Good.name,
+            Good.name_kassa,
+            GoodPrice.price_real,
+            Section.name.label("section_name")
+        )
+        .join(GoodPrice, Good.id == GoodPrice.good_id)
+        .join(Section, Good.sect_id == Section.id)
+        .where(
+            and_(
+                GoodPrice.status == 1,
+                Good.name.ilike(f"%{search_name}%"), # Поиск с учетом регистра
+            )
+        )
+    )
+    result = await db.execute(stmt)
+    results = result.all()
+
+    if not results:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Goods with name containing '{search_name}' not found"
+        )
+
+    return [GoodPriceResponse(
+        id=row.id,
+        name=row.name,
+        name_kassa=row.name_kassa,
+        price_real=row.price_real,
+        section_name=row.section_name
+    ) for row in results]
