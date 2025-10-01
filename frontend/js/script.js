@@ -228,7 +228,7 @@ function registerDiscount(callId) {
 
             localStorage.setItem('timePassed', `Вы сегодня зарегистрировали карту! <br> Дата оформления карты: ${day}.${month}.${year}`);
 
-            localStorage.setItem('scoreAmount', '150.00');
+            localStorage.setItem('scoreAmount', '150');
             localStorage.setItem('h1Element', `Поздравляем!`);
             localStorage.setItem('new_user_score', 'true');
 
