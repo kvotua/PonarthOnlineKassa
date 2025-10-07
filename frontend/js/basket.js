@@ -70,10 +70,12 @@ function displayCartItems(cartItems) {
 
         // Отдельный элемент для тары (если есть стоимость тары)
         if (item.containerPrice > 0) {
+            const containerImage = item.containerImage || './img/bottle.svg';
+
             html += `
 <div class="item container-item" data-item-key="${item.itemKey}_container">
     <div class="image-container">
-        <img src="${item.image}" alt="${item.name}">
+        <img src="${containerImage}" alt="Бутылка">
         <span class="volume-label">${item.volume}л</span>
     </div>
     <span class="item-name" title="Тара">Бутылка</span>
