@@ -8,6 +8,23 @@ const productsPerPage = 20;
 let isLoading = false;
 let currentProducts = [];
 
+// Store container prices globally
+let containerPrices = {
+    0.5: 0,
+    1: 0,
+    1.5: 0,
+    2: 0
+};
+
+// Простой store для корзины
+let cartStore = {
+    cartItems: [],
+    totalAmount: 0
+};
+
+// Флаг для отслеживания инициализации обработчиков
+let eventListenersInitialized = false;
+
 // Функция для преобразования названий секций
 function getSectionDisplayName(originalName) {
     const nameMap = {
@@ -23,7 +40,120 @@ function getSectionDisplayName(originalName) {
     return nameMap[originalName] || originalName;
 }
 
+// Загрузка цен тары
+async function fetchContainerPrices() {
+    try {
+        const response = await fetch(`${host}/api/v1/goods-with-prices`);
+        if (!response.ok) {
+            throw new Error('Ошибка загрузки тары');
+        }
+        const products = await response.json();
+        const containers = products.filter(product => product.section_name === "Пэт-тара, стаканы и CO2");
+
+        containers.forEach(container => {
+            if (container.name === "Бутылка 0.5л ") {
+                containerPrices[0.5] = container.price_real;
+            } else if (container.name === "Бутылка 1 литра" || container.name === "Бутылка 1л") {
+                containerPrices[1] = container.price_real;
+            } else if (container.name === "Бутылка 1.5л") {
+                containerPrices[1.5] = container.price_real;
+            } else if (container.name === "Бутылка 2 литра") {
+                containerPrices[2] = container.price_real;
+            }
+        });
+        console.log('Container prices:', containerPrices);
+    } catch (error) {
+        console.error('Ошибка загрузки цен на тару:', error);
+        containerPrices = {
+            0.5: 7.85,
+            1: 10.00,
+            1.5: 6.90,
+            2: 8.00
+        };
+    }
+}
+
+// Функции для работы с корзиной
+function loadCartState() {
+    const savedState = localStorage.getItem('cartState');
+    if (savedState) {
+        try {
+            cartStore = JSON.parse(savedState);
+        } catch (e) {
+            console.error('Error parsing cartState:', e);
+        }
+    }
+}
+
+function saveCartState() {
+    localStorage.setItem('cartState', JSON.stringify(cartStore));
+}
+
+function updateCart(itemKey, newQuantity, productData = null) {
+    const existingItemIndex = cartStore.cartItems.findIndex(item => item.itemKey === itemKey);
+
+    if (existingItemIndex !== -1) {
+        if (newQuantity > 0) {
+            // Обновляем существующий товар
+            cartStore.cartItems[existingItemIndex].quantity = newQuantity;
+            cartStore.cartItems[existingItemIndex].liquidPrice =
+                cartStore.cartItems[existingItemIndex].pricePerLiter *
+                cartStore.cartItems[existingItemIndex].volume *
+                newQuantity;
+            cartStore.cartItems[existingItemIndex].containerPrice =
+                cartStore.cartItems[existingItemIndex].containerCost *
+                newQuantity;
+            cartStore.cartItems[existingItemIndex].totalPrice =
+                cartStore.cartItems[existingItemIndex].liquidPrice +
+                cartStore.cartItems[existingItemIndex].containerPrice;
+        } else {
+            // Удаляем товар если количество 0
+            cartStore.cartItems.splice(existingItemIndex, 1);
+        }
+    } else if (productData && newQuantity > 0) {
+        // Добавляем новый товар
+        cartStore.cartItems.push({
+            ...productData,
+            quantity: newQuantity,
+            liquidPrice: productData.pricePerLiter * productData.volume * newQuantity,
+            containerPrice: productData.containerCost * newQuantity,
+            totalPrice: (productData.pricePerLiter * productData.volume + productData.containerCost) * newQuantity
+        });
+    }
+
+    // Пересчитываем общую сумму
+    cartStore.totalAmount = cartStore.cartItems.reduce((total, item) => total + item.totalPrice, 0);
+
+    // Сохраняем в localStorage
+    saveCartState();
+}
+
+// Функция для обновления цены в карточке товара
+function updateProductPrice(productElement) {
+    const selectedVolume = parseFloat(productElement.querySelector('.radio-btn-volume1.selected').dataset.volume);
+    const basePrice = parseFloat(productElement.querySelector('.cost').dataset.basePrice || 0);
+
+    // Calculate product cost (only the liquid) - как в scriptinfomenu.js
+    const productCost = basePrice * selectedVolume;
+
+    // Get container cost for the selected volume
+    const containerCost = containerPrices[selectedVolume] || 0;
+
+    // Общая цена (напиток + тара)
+    const total = productCost + containerCost;
+
+    // Обновляем отображение цены
+    const costElement = productElement.querySelector('.cost');
+    costElement.textContent = `${total.toFixed(2)} р.`;
+}
+
 document.addEventListener('DOMContentLoaded', async function() {
+    // Загружаем состояние корзины
+    loadCartState();
+
+    // Загружаем цены тары перед всеми операциями
+    await fetchContainerPrices();
+
     // Existing code for loading sections and products
     await loadSections();
     await fetchBeerProducts();
@@ -38,18 +168,19 @@ document.addEventListener('DOMContentLoaded', async function() {
 function setupInfiniteScroll() {
     const choiceContainer = document.querySelector('.choice-container');
 
-    choiceContainer.addEventListener('scroll', function() {
-        if (isLoading) return;
+    if (choiceContainer) {
+        choiceContainer.addEventListener('scroll', function() {
+            if (isLoading) return;
 
-        const scrollTop = choiceContainer.scrollTop;
-        const scrollHeight = choiceContainer.scrollHeight;
-        const clientHeight = choiceContainer.clientHeight;
+            const scrollTop = choiceContainer.scrollTop;
+            const scrollHeight = choiceContainer.scrollHeight;
+            const clientHeight = choiceContainer.clientHeight;
 
-        // Проверяем, достигли ли мы нижней части контейнера (за 100px до конца)
-        if (scrollTop + clientHeight >= scrollHeight - 100) {
-            loadMoreProducts();
-        }
-    });
+            if (scrollTop + clientHeight >= scrollHeight - 100) {
+                loadMoreProducts();
+            }
+        });
+    }
 }
 
 // Загрузка дополнительных товаров
@@ -57,27 +188,21 @@ function loadMoreProducts() {
     if (isLoading) return;
 
     const totalPages = Math.ceil(currentProducts.length / productsPerPage);
-    if (currentPage >= totalPages) return; // Все товары уже показаны
+    if (currentPage >= totalPages) return;
 
     isLoading = true;
-
-    // Показываем индикатор загрузки
     showLoadingIndicator();
 
-    // Задержка 1 секунда перед подгрузкой
     setTimeout(() => {
         currentPage++;
-        displayProducts(currentProducts, true); // true - значит добавляем к существующим
-
+        displayProducts(currentProducts, true);
         isLoading = false;
         hideLoadingIndicator();
 
-        // Проверяем, нужно ли скрыть индикатор навсегда (если все товары загружены)
         const totalPages = Math.ceil(currentProducts.length / productsPerPage);
         if (currentPage >= totalPages) {
             hideLoadingIndicator(true);
         }
-
     }, 1000);
 }
 
@@ -103,8 +228,6 @@ function hideLoadingIndicator(hidePermanently = false) {
     if (loadingIndicator) {
         if (hidePermanently) {
             loadingIndicator.style.display = 'none';
-        } else {
-            // Можно добавить логику для временного скрытия, если нужно
         }
     }
 }
@@ -118,19 +241,17 @@ async function loadSections() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         let sections = await response.json();
-        // ФИЛЬТРАЦИЯ: Убираем секцию "Пэт-тара, стаканы и CO2"
         sections = sections.filter(section => section.name !== "Пэт-тара, стаканы и CO2");
         sectionsContainer.innerHTML = '';
         if (sections.length === 0) {
             sectionsContainer.innerHTML = '<div class="error">Секции не найдены</div>';
         } else {
-            // Добавляем кнопку "Все" для отображения всех товаров
             const allButton = document.createElement('button');
             allButton.className = 'radio-btn selected';
             allButton.textContent = 'Все';
             allButton.dataset.sectionId = 'all';
             sectionsContainer.appendChild(allButton);
-            // Добавляем кнопки для каждой секции с преобразованными названиями
+
             sections.forEach(section => {
                 const displayName = getSectionDisplayName(section.name);
                 const button = document.createElement('button');
@@ -140,10 +261,9 @@ async function loadSections() {
                 button.dataset.originalName = section.name;
                 sectionsContainer.appendChild(button);
             });
-            // Добавляем обработчик кликов на кнопки секций
+
             sectionsContainer.addEventListener('click', function(e) {
                 if (e.target.classList.contains('radio-btn')) {
-                    // Сбрасываем страницу на первую при смене секции
                     currentPage = 1;
                     isLoading = false;
 
@@ -213,10 +333,8 @@ async function fetchBeerProducts() {
 function displayProducts(products, append = false) {
     const beerContainer = document.getElementById('beerContainer');
 
-    // Если не append, очищаем контейнер и создаем новую сетку
     if (!append) {
         beerContainer.innerHTML = '';
-
         const beerGrid = document.createElement('div');
         beerGrid.className = 'beer-grid';
         beerGrid.id = 'beerGrid';
@@ -224,21 +342,17 @@ function displayProducts(products, append = false) {
     }
 
     const beerGrid = document.getElementById('beerGrid') || beerContainer.querySelector('.beer-grid');
-
-    // Рассчитываем индексы товаров для текущей страницы
-    const startIndex = 0; // Всегда показываем с начала при смене секции
+    const startIndex = 0;
     const endIndex = currentPage * productsPerPage;
     const productsToShow = products.slice(startIndex, endIndex);
 
     if (productsToShow.length === 0 && !append) {
         beerGrid.innerHTML = '<div class="error">Товары не найдены</div>';
     } else {
-        // Если append = false, очищаем сетку перед добавлением новых товаров
         if (!append) {
             beerGrid.innerHTML = '';
         }
 
-        // Добавляем только новые товары (для append = true)
         const currentItemCount = beerGrid.children.length;
         const newProducts = productsToShow.slice(currentItemCount);
 
@@ -251,13 +365,13 @@ function displayProducts(products, append = false) {
                                 <img class="light-beer" alt="${product.name}" src="img/light_beer.png">
                             </a>
                             <h2>${product.name}</h2>
-                            <h3 class="cost">${product.price_real.toFixed(2)}</h3>
+                            <h3 class="cost" data-base-price="${product.price_real}">${product.price_real.toFixed(2)} р.</h3>
                             <div class="panelmenu">
                                 <div class="btn-container">
-                                    <button class="radio-btn-volume1">0,5</button>
-                                    <button class="radio-btn-volume1 selected">1</button>
-                                    <button class="radio-btn-volume1">1,5</button>
-                                    <button class="radio-btn-volume1">2</button>
+                                    <button class="radio-btn-volume1" data-volume="0.5">0,5</button>
+                                    <button class="radio-btn-volume1 selected" data-volume="1">1</button>
+                                    <button class="radio-btn-volume1" data-volume="1.5">1,5</button>
+                                    <button class="radio-btn-volume1" data-volume="2">2</button>
                                 </div>
                                 <div class="counter-container1">
                                     <button class="subtract">
@@ -277,22 +391,23 @@ function displayProducts(products, append = false) {
                         </div>
                     `;
             beerGrid.appendChild(beerElement);
+
+            // Инициализируем цену для нового товара
+            updateProductPrice(beerElement);
         });
     }
 
-    // Удаляем старый индикатор загрузки если он есть
     const oldIndicator = document.getElementById('loadingIndicator');
     if (oldIndicator) {
         oldIndicator.remove();
     }
 
-    // Добавляем индикатор загрузки в конец, если есть еще товары для подгрузки
     const totalPages = Math.ceil(products.length / productsPerPage);
     if (currentPage < totalPages) {
         const loadingIndicator = document.createElement('div');
         loadingIndicator.id = 'loadingIndicator';
         loadingIndicator.className = 'loading-indicator';
-        loadingIndicator.style.display = 'none'; // Скрыт по умолчанию
+        loadingIndicator.style.display = 'none';
         loadingIndicator.innerHTML = `
             <div class="loading-spinner"></div>
             <span>Загрузка...</span>
@@ -300,31 +415,73 @@ function displayProducts(products, append = false) {
         beerContainer.appendChild(loadingIndicator);
     }
 
-    addEventListeners();
+    // Инициализируем обработчики только один раз
+    if (!eventListenersInitialized) {
+        addEventListeners();
+        eventListenersInitialized = true;
+    }
 }
 
-// Добавление обработчиков событий для кнопок товаров
+// Добавление обработчиков событий для кнопок товаров (ТОЛЬКО ОДИН РАЗ)
 function addEventListeners() {
+    // Используем делегирование событий для обработки кликов на динамически созданных элементах
     document.addEventListener('click', function(e) {
+        // Обработчик добавления количества
         if (e.target.closest('.add')) {
             const counter = e.target.closest('.counter-container1').querySelector('.counter1');
-            counter.textContent = parseInt(counter.textContent) + 1;
+            const currentValue = parseInt(counter.textContent);
+            counter.textContent = currentValue + 1;
+            updateCartFromCard(e.target.closest('.beer-1'));
         }
+
+        // Обработчик уменьшения количества
         if (e.target.closest('.subtract')) {
             const counter = e.target.closest('.counter-container1').querySelector('.counter1');
             const currentValue = parseInt(counter.textContent);
             if (currentValue > 0) {
                 counter.textContent = currentValue - 1;
+                updateCartFromCard(e.target.closest('.beer-1'));
             }
         }
+
+        // Обработчик выбора объема
         if (e.target.classList.contains('radio-btn-volume1')) {
             const container = e.target.closest('.btn-container');
             container.querySelectorAll('.radio-btn-volume1').forEach(btn => {
                 btn.classList.remove('selected');
             });
             e.target.classList.add('selected');
+
+            // Обновляем цену при смене объема
+            updateProductPrice(e.target.closest('.beer-1'));
+            updateCartFromCard(e.target.closest('.beer-1'));
         }
     });
+}
+
+// Обновление корзины из карточки товара
+function updateCartFromCard(productElement) {
+    const quantity = parseInt(productElement.querySelector('.counter1').textContent);
+    const selectedVolume = parseFloat(productElement.querySelector('.radio-btn-volume1.selected').dataset.volume);
+    const basePrice = parseFloat(productElement.querySelector('.cost').dataset.basePrice || 0);
+    const productId = productElement.querySelector('a').href.split('id=')[1];
+    const productName = productElement.querySelector('h2').textContent;
+    const image = productElement.querySelector('img').src;
+
+    const containerCost = containerPrices[selectedVolume] || 0;
+    const itemKey = `${productId}_${selectedVolume}`;
+
+    const productData = {
+        id: productId,
+        name: productName,
+        volume: selectedVolume,
+        pricePerLiter: basePrice,
+        containerCost: containerCost,
+        image: image,
+        itemKey: itemKey
+    };
+
+    updateCart(itemKey, quantity, productData);
 }
 
 // Переменные для поиска
@@ -336,43 +493,36 @@ function initializeSearch() {
     const searchInput = document.getElementById('searchInput');
     const clearSearchBtn = document.getElementById('clearSearch');
 
-    // Обработчик ввода текста
-    searchInput.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.trim();
+    if (searchInput && clearSearchBtn) {
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.trim();
+            clearSearchBtn.style.display = searchTerm ? 'block' : 'none';
+            clearTimeout(searchTimeout);
 
-        // Показываем/скрываем кнопку очистки
-        clearSearchBtn.style.display = searchTerm ? 'block' : 'none';
+            if (searchTerm.length >= 2) {
+                searchTimeout = setTimeout(() => {
+                    performSearch(searchTerm);
+                }, 500);
+            } else if (searchTerm.length === 0) {
+                resetSearch();
+            }
+        });
 
-        // Сбрасываем предыдущий таймер
-        clearTimeout(searchTimeout);
-
-        if (searchTerm.length >= 2) {
-            // Запускаем поиск с задержкой 500ms
-            searchTimeout = setTimeout(() => {
-                performSearch(searchTerm);
-            }, 500);
-        } else if (searchTerm.length === 0) {
-            // Если поле пустое, показываем все товары
-            resetSearch();
-        }
-    });
-
-    // Обработчик очистки поиска
-    clearSearchBtn.addEventListener('click', function() {
-        searchInput.value = '';
-        clearSearchBtn.style.display = 'none';
-        resetSearch();
-        searchInput.focus();
-    });
-
-    // Обработчик клавиши Escape
-    searchInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
+        clearSearchBtn.addEventListener('click', function() {
             searchInput.value = '';
             clearSearchBtn.style.display = 'none';
             resetSearch();
-        }
-    });
+            searchInput.focus();
+        });
+
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                clearSearchBtn.style.display = 'none';
+                resetSearch();
+            }
+        });
+    }
 }
 
 // Функция выполнения поиска
@@ -383,10 +533,7 @@ async function performSearch(searchTerm) {
     currentPage = 1;
 
     try {
-        // Показываем индикатор загрузки
         showSearchLoading();
-
-        // Выполняем запрос к API поиска
         const response = await fetch(`${host}/api/v1/goods/search/${encodeURIComponent(searchTerm)}`);
 
         if (!response.ok) {
@@ -400,19 +547,14 @@ async function performSearch(searchTerm) {
         }
 
         const searchResults = await response.json();
-
-        // Обновляем текущие товары результатами поиска
         currentProducts = searchResults.filter(product => {
             return product.section_name !== "Пэт-тара, стаканы и CO2";
         });
 
-        // Показываем результаты
         displaySearchResults(currentProducts, searchTerm);
 
     } catch (error) {
         console.error('Ошибка поиска:', error);
-
-        // Если ошибка сети или другие ошибки - показываем "Товар не найден"
         if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
             showSearchError("Товар не найден");
         } else {
@@ -427,12 +569,10 @@ async function performSearch(searchTerm) {
 // Функция сброса поиска
 function resetSearch() {
     currentPage = 1;
-    // Возвращаем отфильтрованные товары (без секции "Пэт-тара")
     currentProducts = allProducts.filter(product => {
         return product.section_name !== "Пэт-тара, стаканы и CO2";
     });
 
-    // Убираем информацию о поиске
     const existingInfo = document.getElementById('searchResultsInfo');
     if (existingInfo) {
         existingInfo.remove();
@@ -449,7 +589,7 @@ function resetSearch() {
     });
 }
 
-//  Результаты поиска
+// Результаты поиска
 function displaySearchResults(products, searchTerm) {
     const beerContainer = document.getElementById('beerContainer');
 
@@ -458,7 +598,6 @@ function displaySearchResults(products, searchTerm) {
         existingInfo.remove();
     }
 
-    //  информацию о результатах поиска
     const resultsInfo = document.createElement('div');
     resultsInfo.id = 'searchResultsInfo';
     resultsInfo.className = 'search-results-info';
@@ -470,11 +609,8 @@ function displaySearchResults(products, searchTerm) {
     }
 
     beerContainer.insertBefore(resultsInfo, beerContainer.firstChild);
-
-    // Показываем товары
     displayProducts(products);
 
-    // Снимаем выделение с секций
     document.querySelectorAll('.radio-btn').forEach(btn => {
         btn.classList.remove('selected');
     });
@@ -509,34 +645,7 @@ function showSearchError(errorMessage) {
     `;
 }
 
-//  CSS для индикатора загрузки поиска
-const searchLoadingStyles = `
-.loading-search {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.loading-search .loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-top: 3px solid white;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 15px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-`;
-
-//  стили в документ
+// Добавляем стили в документ
 const styleSheet = document.createElement('style');
-styleSheet.textContent = searchLoadingStyles;
+styleSheet.textContent = additionalStyles;
 document.head.appendChild(styleSheet);
