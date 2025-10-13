@@ -26,10 +26,9 @@ async def get_goods_with_prices(db: AsyncSession = Depends(get_mysql_session)):
         .join(GoodPrice, Good.id == GoodPrice.good_id)
         .join(Section, Good.sect_id == Section.id)  # Связь через sect_id
         .where(
-            and_(
                 GoodPrice.status == 1,
-                Good.name_kassa == "Товар"
-            )
+                Good.name_kassa == "Товар",
+                Good.firm_id == "67"
         )
     )
 
