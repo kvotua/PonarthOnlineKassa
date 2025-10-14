@@ -8,27 +8,33 @@
     padding: 0;
     border: 0;
 }
- body {
-    justify-content: center;
-    align-items: center;
-    display: flex;
+html,
+body {
+    height: 100%;
+    width: 100vw;
+    scroll-behavior: smooth;
+    font-family: 'Lato', sans-serif;
     background: #171616;
+    justify-content: center;
+    display: flex;
+    align-items: center;
     backdrop-filter: blur(60px);
-    position: relative; 
- }
-
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+}
 /*BACKGROUND START*/
 .background {
     z-index: 1;
     background: rgba(0, 0, 0, 0.5);
     position: relative;
-    display: flex
-;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
     flex-direction: column;
     height: 100vh;
     width: 100%;
     max-width: 400px;
-    padding: 30px;
+    padding: 11px 30px 28px 30px;
     box-sizing: border-box;
     background: #171616;
     border-radius: 20px;
@@ -36,6 +42,29 @@
     border: 1px solid rgba(105, 105, 105, 1);
     box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
 }
+
+@media (max-width: 500px) {
+    .background {
+        border: none;
+        box-shadow: none;
+        position: static;
+    }
+    body{
+        overflow-x: hidden;
+
+    }
+}
+
+@media (max-height: 700px) {
+    .background {
+        padding: 10px 30px;
+    }
+    body{
+        overflow-x: hidden;
+
+    }
+}
+
 
 .shadow-top {
     position: absolute;
@@ -631,7 +660,13 @@ input:checked + .slider:before {
 .order-timer{
     font-size: 16px;
 }
-
+@media (max-width: 376px) {
+    .total-points{
+        min-width: 1px;
+        display: flex;
+        align-items: center;
+    }
+}
 
 
 .time-picker {

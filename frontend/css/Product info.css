@@ -241,12 +241,22 @@ body {
         border: none;
         box-shadow: none;
         position: static;
+        overflow-x: hidden;
     }
+    body{
+        overflow-x: hidden;
+
+    }
+
 }
 
 @media (max-height: 700px) {
     .choice-container {
         padding: 10px 30px;
+    }
+    body{
+        overflow-x: hidden;
+
     }
 }
 
@@ -406,6 +416,11 @@ h1{
     box-sizing: border-box;
 
     background-color: #212121;
+}
+@media (max-width: 394px) {
+    .beer-1{
+        padding: 15px;
+    }
 }
 
 .beer-2 {
@@ -851,29 +866,27 @@ h2{
 
 @media (max-width: 412px){
     .beer-grid{
-        grid-template-columns: repeat(1, 0fr);
+        grid-template-columns: repeat(2, 0fr);
         justify-content: center;
     }
 }
 /* Адаптивность для мобильных */
-@media (max-width: 768px) {
-    .search-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        margin: 0;
-        padding: 15px;
-        backdrop-filter: blur(20px);
-    }
+/*@media (max-width: 482px) {*/
+/*    .search-container {*/
+/*        position: fixed;*/
+/*        top: 0;*/
+/*        left: 0;*/
+/*        right: 0;*/
+/*        width: 100%;*/
+/*        margin: 0;*/
+/*        padding: 15px;*/
+/*        backdrop-filter: blur(20px);*/
+/*    }*/
 
-    .search-input-wrapper {
-        width: 100%;
-    }
 
-    .search-button {
-        position: relative;
-        z-index: 101;
-    }
-}
+
+/*    .search-button {*/
+/*        position: relative;*/
+/*        z-index: 101;*/
+/*    }*/
+/*}*/

@@ -4,32 +4,65 @@
     border: 0;
 }
 
+html,
 body {
+    height: 100%;
+    width: 100vw;
+    scroll-behavior: smooth;
+    font-family: 'Lato', sans-serif;
+    background: #171616;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #171616;
     backdrop-filter: blur(60px);
     position: relative;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
 }
-
 /* BACKGROUND START */
 .background {
     z-index: 1;
     background: rgba(0, 0, 0, 0.5);
     position: relative;
+    -webkit-overflow-scrolling: touch;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     height: 100vh;
     width: 100%;
     max-width: 400px;
-    padding: 30px;
+    padding: 11px 30px 28px 30px;
     box-sizing: border-box;
     background: #171616;
     border-radius: 20px;
-    /*overflow: hidden;*/
     border: 1px solid rgba(105, 105, 105, 1);
     box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+    /*overflow: hidden;*/
+
+
+}
+
+
+@media (max-width: 500px) {
+    .background {
+        border: none;
+        box-shadow: none;
+        position: static;
+    }
+    body{
+        overflow-x: hidden;
+
+    }
+}
+
+@media (max-height: 700px) {
+    .background {
+        padding: 10px 30px;
+    }
+    body{
+        overflow-x: hidden;
+
+    }
 }
 
 .logo {
@@ -93,11 +126,15 @@ body {
     width: 100%;
     padding-top: 30px;
     padding-bottom: 40px;
+    overflow: visible;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-width: none; /* Для Firefox */
+    -ms-overflow-style: none; /* Для IE/Edge */
 }
 
 .item {
     position: relative;
-    width: 315px;
     height: 56px;
     background: #1F1F1F;
     border-radius: 12px;
@@ -676,4 +713,7 @@ body {
 
 .info{
 
+    display: flex;
+    flex-flow: column;
+    align-items: center;
 }
