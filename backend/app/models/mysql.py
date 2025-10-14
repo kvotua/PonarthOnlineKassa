@@ -69,7 +69,7 @@ class UserScore(Base_mysql):
     scores: Mapped[float] = mapped_column(DECIMAL(12, 2), nullable=False)
 
 class Good(Base_mysql):
-    __tablename__ = 'goods'
+    __tablename__ = 'good'
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     status: Mapped[int] = mapped_column(Integer, default=0, comment='1 - товар удалён')
@@ -125,7 +125,7 @@ class GoodPrice(Base_mysql):
     __tablename__ = 'good_price'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    good_id = Column(Integer, ForeignKey('goods.id'))
+    good_id = Column(Integer, ForeignKey('good.id'))
     user_id: Mapped[int] = mapped_column(Integer, nullable=False,  comment='ID пользователя')
     status: Mapped[int] = mapped_column(   Integer, nullable=False,  default=1,comment='0 - не активен, 1 - активен' )
     price: Mapped[float] = mapped_column( Numeric(10, 2), nullable=False, default=0.00, comment='Цена' )
