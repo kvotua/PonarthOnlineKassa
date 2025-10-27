@@ -40,9 +40,11 @@ body {
     pointer-events: none;
     z-index: -1;
 }
-.labeltext{
+
+.labeltext {
     font-family: "Montserrat", sans-serif;
 }
+
 .euler-top-left {
     top: 25px;
     left: 55px;
@@ -54,11 +56,11 @@ body {
 }
 
 .greet-container {
-    position: relative;
+    position: absolute;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100vh;
+    height: 100svh;
     width: 100%;
     max-width: 400px;
     padding: 20px;
@@ -244,10 +246,11 @@ input::placeholder {
 }
 
 #confirm-code {
-    display: none; /* Изначально скрыта */
+    display: none;
+    /* Изначально скрыта */
     opacity: 0;
     transform: translateY(15px);
-    transition: 
+    transition:
         opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
         transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform, opacity;
@@ -323,14 +326,16 @@ span {
     text-align: center;
     height: 57px;
     padding: 10px;
-    border: 1px solid rgba(105, 105, 105, 1) !important; /* Серая обводка по умолчанию */
+    border: 1px solid rgba(105, 105, 105, 1) !important;
+    /* Серая обводка по умолчанию */
     border-radius: 8px;
     background: #17161600;
     color: rgba(249, 208, 63, 1);
-    transition: border-color 0.3s ease; /* Добавляем плавность */
+    transition: border-color 0.3s ease;
+    /* Добавляем плавность */
 }
 
-#sms-code:hover{
+#sms-code:hover {
     border-color: rgba(249, 208, 63, 1);
     outline: none;
 }
@@ -339,20 +344,20 @@ span {
     color: rgba(248, 208, 64, 1);
 }
 
-#sms-code:focus{
+#sms-code:focus {
     border-color: rgba(249, 208, 63, 1) !important;
     outline: none;
 }
 
 
 input:not(:placeholder-shown) {
-    border-color: rgba(105, 105, 105, 1); 
+    border-color: rgba(105, 105, 105, 1);
 }
 
 .euler-top-left {
     top: 25px;
     left: 55px;
-    animation: 
+    animation:
         floatVerticalDown 60s ease-in-out infinite,
         glowPulse 8s ease-in-out infinite alternate;
 }
@@ -360,16 +365,19 @@ input:not(:placeholder-shown) {
 .euler-bottom-right {
     bottom: 75px;
     right: -50px;
-    animation: 
+    animation:
         floatVerticalUp 70s ease-in-out infinite,
         glowPulse 10s ease-in-out infinite alternate 1s;
 }
 
 /* Первый шарик: вниз → вверх */
 @keyframes floatVerticalDown {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translate(30px, calc(100vh - 100px));
     }
@@ -377,27 +385,36 @@ input:not(:placeholder-shown) {
 
 /* Второй шарик: вверх → вниз */
 @keyframes floatVerticalUp {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translate(-80px, calc(-100vh + 100px));
     }
 }
 
 @keyframes glowPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         box-shadow: 0 0 180px 80px rgba(249, 230, 63, 0.3);
     }
+
     50% {
         box-shadow: 0 0 220px 100px rgba(245, 205, 45, 0.45);
     }
 }
-.euler-top-left, .euler-bottom-right {
+
+.euler-top-left,
+.euler-bottom-right {
     will-change: transform;
     transition: filter 0.5s ease;
 }
-.euler-top-left:hover, .euler-bottom-right:hover {
+
+.euler-top-left:hover,
+.euler-bottom-right:hover {
     filter: blur(1px);
 }
-

@@ -16,9 +16,20 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-input::-ms-clear { display: none; }
-button { cursor: pointer; background: none; border: none; }
-button::-moz-focus-inner { padding: 0; border: 0; }
+input::-ms-clear {
+  display: none;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
 
 /* Base Styles */
 body {
@@ -28,7 +39,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 100svh;
   position: relative;
   overflow-x: hidden;
   backdrop-filter: blur(60px);
@@ -36,12 +47,12 @@ body {
 
 /* Main Container */
 .choice-container {
-  position: relative;
+  position: absolute;
   display: flex;
   flex-direction: column;
   width: 100%;
   max-width: 400px;
-  min-height: 100vh;
+  min-height: 100svh;
   padding: 30px;
   background: var(--bg-color);
   border: 1px solid var(--border-color);
@@ -63,7 +74,9 @@ body {
 }
 
 /* Typography */
-h1, h2, .amount {
+h1,
+h2,
+.amount {
   font-family: 'Montserrat', sans-serif;
   color: var(--text-color);
 }
@@ -168,69 +181,82 @@ h1 {
   margin: 35px auto 20px;
   align-self: center;
 }
+
 .euler-top-left,
 .euler-bottom-right {
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    box-shadow: 0 0 200px 80px rgba(249, 209, 63, 0.308);
-    pointer-events: none;
-    z-index: -1;
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 200px 80px rgba(249, 209, 63, 0.308);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .euler-top-left {
-    top: 25px;
-    left: 55px;
-    animation: 
-        floatVerticalDown 60s ease-in-out infinite,
-        glowPulse 8s ease-in-out infinite alternate;
+  top: 25px;
+  left: 55px;
+  animation:
+    floatVerticalDown 60s ease-in-out infinite,
+    glowPulse 8s ease-in-out infinite alternate;
 }
 
 .euler-bottom-right {
-    bottom: 75px;
-    right: -50px;
-    animation: 
-        floatVerticalUp 70s ease-in-out infinite,
-        glowPulse 10s ease-in-out infinite alternate 1s;
+  bottom: 75px;
+  right: -50px;
+  animation:
+    floatVerticalUp 70s ease-in-out infinite,
+    glowPulse 10s ease-in-out infinite alternate 1s;
 }
 
 /* Первый шарик: вниз → вверх */
 @keyframes floatVerticalDown {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translate(30px, calc(100vh - 100px));
-    }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translate(30px, calc(100vh - 100px));
+  }
 }
 
 /* Второй шарик: вверх → вниз */
 @keyframes floatVerticalUp {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translate(-80px, calc(-100vh + 100px));
-    }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translate(-80px, calc(-100vh + 100px));
+  }
 }
 
 @keyframes glowPulse {
-    0%, 100% {
-        box-shadow: 0 0 180px 80px rgba(249, 230, 63, 0.3);
-    }
-    50% {
-        box-shadow: 0 0 220px 100px rgba(245, 205, 45, 0.45);
-    }
-}
-.euler-top-left, .euler-bottom-right {
-    will-change: transform;
-    transition: filter 0.5s ease;
-}
-.euler-top-left:hover, .euler-bottom-right:hover {
-    filter: blur(1px);
+
+  0%,
+  100% {
+    box-shadow: 0 0 180px 80px rgba(249, 230, 63, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 220px 100px rgba(245, 205, 45, 0.45);
+  }
 }
 
+.euler-top-left,
+.euler-bottom-right {
+  will-change: transform;
+  transition: filter 0.5s ease;
+}
+
+.euler-top-left:hover,
+.euler-bottom-right:hover {
+  filter: blur(1px);
+}
 
 .coin-icon {
   animation: pulse 2s infinite;
