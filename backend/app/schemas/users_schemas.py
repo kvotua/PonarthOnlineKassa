@@ -5,6 +5,9 @@ from fastapi import HTTPException
 
 from app.utils import validate_phone
 
+class AchievementSchema(BaseModel):
+    name: str
+    description: str
      
 class RegisterUserLoyaltySystem(BaseModel):
     last_name: Annotated[str, Field(title="The user's last name", examples=["Игнатьев"])]
@@ -14,6 +17,24 @@ class RegisterUserLoyaltySystem(BaseModel):
     gender: Annotated[int, Field(title="1-Male, 2-Female", examples=[1], ge=1, le=2)]
     call_id: Annotated[int, Field(title='The ID received after sending the number', examples=['1191273219673078'])]
 
+class UserInfo(BaseModel):
+    id: Annotated[int, Field(title="ID Discount_card", examples=[1])]
+    card_num: Annotated[Optional[str], Field(title="ID Discount_card", examples=["card_num"], default=None)]
+    phone: Annotated[int, Field(title="ID Discount_card", examples=[9632928738])]
+    first: Annotated[str, Field(title="ID Discount_card", examples=["Игнатьев"])]
+    second: Annotated[str, Field(title="ID Discount_card", examples=["Алексей"])]
+    third: Annotated[str, Field(title="ID Discount_card", examples=["Алиевич"])]
+    bday: Annotated[date, Field(title="ID Discount_card", examples=["2004-12-07"])]
+    gender: Annotated[int, Field(title="ID Discount_card", examples=[1])]
+    email: Annotated[Optional[str], Field(title="ID Discount_card", examples=["example@gmail.com"], default=None)]
+    telegram: Annotated[Optional[int], Field(title="ID Discount_card", examples=[112345123], default=None)]
+    send_telegram: Annotated[Optional[int], Field(title="ID Discount_card", examples=[1], default=None)]
+    chat_id: Annotated[Optional[str], Field(title="ID Discount_card", examples=[""], default=None)]
+    date_added: Annotated[datetime, Field(title="ID Discount_card", examples=["2025-05-17T20:07:00.803074"], default=None)]
+    achievements: Annotated[
+        list[AchievementSchema],
+        Field(title="User Achievements", default=[])
+    ]
 
 class InfoUserLoyaltySystem(BaseModel):
     id: Annotated[int, Field(title="ID Discount_card", examples=[1])]

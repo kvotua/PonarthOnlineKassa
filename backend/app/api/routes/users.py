@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from app.schemas.users_schemas import ChangeUser, InfoUserLoyaltySystem
+from app.schemas.users_schemas import ChangeUser, InfoUserLoyaltySystem, UserInfo
 from app.api.dependensies import get_access_token
 from app.cruds import users_cruds
 from app.databases.postgresdb import get_postgres_session
@@ -13,7 +13,7 @@ router = APIRouter(tags=["Users"])
 
 
 
-@router.get('/profile', response_model=InfoUserLoyaltySystem)
+@router.get('/profile', response_model=UserInfo)
 async def get_profile(
     card_num: str,
     db: AsyncSession = Depends(get_mysql_session)

@@ -240,3 +240,16 @@ class Users(Base_mysql):
     cookie: Mapped[str] = mapped_column(String(32), nullable=True)
     photo: Mapped[str] = mapped_column(String(200), nullable=True)
     referer: Mapped[str] = mapped_column(String(300), nullable=True)
+
+class Achievements(Base_mysql):
+    __tablename__ = 'achievements'
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=True)
+    description: Mapped[str] = mapped_column(String(300), nullable=True)
+
+class DiscountAchievements(Base_mysql):
+    __tablename__ = 'discount_achievements'
+
+    discount_card_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("discount_cards.id"))
+    achievement_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("achievements.id"))
