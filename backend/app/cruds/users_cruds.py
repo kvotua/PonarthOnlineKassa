@@ -7,47 +7,50 @@ from app.models.mysql import DiscountCard
 from app.schemas.users_schemas import InfoUserLoyaltySystem
 
 
-async def get_user_loyalty_by_id(user_id: int, session_mysql: AsyncSession) -> InfoUserLoyaltySystem:
-    try:
-        stmt_user = select(DiscountCard).where(DiscountCard.user_id == user_id)
-        result_user: Result = await session_mysql.execute(stmt_user)
-        user = result_user.scalar_one_or_none()
-        if not user:
-            raise HTTPException(status_code=404, detail="Discount Cart not found")
-        return InfoUserLoyaltySystem(
-            id=user.id,
-            base_id=user.base_id,
-            mag_id=user.mag_id,
-            active=user.active,
-            status=user.status,
-            user_id=user.user_id,
-            card_num=user.card_num,
-            card_old_num=user.card_old_num,
-            discount_id=user.discount_id,
-            phone=user.phone,
-            send_check=user.send_check,
-            phone_pass=user.phone_pass,
-            phone_verify=user.phone_verify,
-            first=user.first,
-            second=user.second,
-            third=user.third,
-            boss=user.boss,
-            bday=user.bday,
-            gender=user.gender,
-            email=user.email,
-            photo=user.photo,
-            adress=user.adress,
-            avg_check=user.avg_check,
-            koef=user.koef,
-            telegram=user.telegram,
-            send_telegram=user.send_telegram,
-            chat_id=user.chat_id,
-            mode=user.mode,
-            date_added=user.date_added,
-            data=user.data
-        )
+async def get_user_loyalty_by_id(card_num: str, db: AsyncSession) -> InfoUserLoyaltySystem:
+    # try:
+        stmt_user = select(
+            DiscountCard.id,
+            DiscountCard.base_id,
+            DiscountCard.mag_id,
+            DiscountCard.active,
+            DiscountCard.status,
+            DiscountCard.user_id,
+            DiscountCard.card_num,
+            DiscountCard.card_old_num,
+            DiscountCard.discount_id,
+            DiscountCard.phone,
+            DiscountCard.send_check,
+            DiscountCard.phone_pass,
+            DiscountCard.phone_verify,
+            DiscountCard.first,
+            DiscountCard.second,
+            DiscountCard.third,
+            DiscountCard.boss,
+            DiscountCard.bday,
+            DiscountCard.gender,
+            DiscountCard.email,
+            DiscountCard.photo,
+            DiscountCard.adress,
+            DiscountCard.avg_check,
+            DiscountCard.koef,
+            DiscountCard.telegram,
+            DiscountCard.send_telegram,
+            DiscountCard.chat_id,
+            DiscountCard.mode,
+            DiscountCard.date_added,
+        ).where(DiscountCard.card_num == card_num)
 
-    except HTTPException as http_exc:
-        raise http_exc
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        result_user = await db.execute(stmt_user)
+        user_row = result_user.mappings().first()
+
+        if not user_row:
+            raise HTTPException(status_code=404, detail="Discount Card not found")
+
+        return InfoUserLoyaltySystem(**user_row)
+
+
+    # except HTTPException as http_exc:
+    #     raise http_exc
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=str(e))

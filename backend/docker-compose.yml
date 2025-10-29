@@ -13,9 +13,9 @@ services:
 #     container_name: mysql_db
 #     environment:
 #       MYSQL_ROOT_PASSWORD: rootpassword
-#       MYSQL_DATABASE: my_database
-#       MYSQL_USER: my_user
-#       MYSQL_PASSWORD: my_password
+#       MYSQL_DATABASE: ponarth
+#       MYSQL_USER: loyalitySystem
+#       MYSQL_PASSWORD: loyalitySystemPassword
 #     ports:
 #       - "3308:3306"
 #     volumes:

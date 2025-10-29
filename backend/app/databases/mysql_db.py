@@ -9,7 +9,7 @@ from app.config import mysql_db_url
 
 engine = create_async_engine(
     url=str(mysql_db_url),
-    echo=True,
+    echo=False,
     future=True,
     )
 

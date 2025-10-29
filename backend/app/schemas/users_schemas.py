@@ -45,14 +45,6 @@ class InfoUserLoyaltySystem(BaseModel):
     chat_id: Annotated[Optional[str], Field(title="ID Discount_card", examples=[""], default=None)]
     mode: Annotated[Optional[str], Field(title="ID Discount_card", examples=[""], default=None)]
     date_added: Annotated[datetime, Field(title="ID Discount_card", examples=["2025-05-17T20:07:00.803074"], default=None)]
-    data: Annotated[dict, Field(title="ID Discount_card", examples=[{
-        "first": "Алексей",
-        "second": "Игнатьев",
-        "third": "Алиевич",
-        "bday": "2004-12-07",
-        "gender": 1,
-        "phone": "9632928738"
-    }], default=None)]
 
 
 class ChangeUser(BaseModel):

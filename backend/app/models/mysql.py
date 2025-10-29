@@ -1,11 +1,11 @@
 from decimal import Decimal
 from typing import Optional
 
-from sqlalchemy import BigInteger, SmallInteger, Text, Integer, Date, DECIMAL, func, VARCHAR, JSON, Column, String, \
+from sqlalchemy import BigInteger, SmallInteger, Text, Integer, Date, DECIMAL, Time, func, VARCHAR, JSON, Column, String, \
     DateTime, Numeric, ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import datetime, date
+from datetime import datetime, date, time
 
 from app.config import base_id, firm_id, discount_id
 
@@ -76,7 +76,7 @@ class Good(Base_mysql):
     base_id: Mapped[int] = mapped_column(Integer)
     firm_id: Mapped[int] = mapped_column(Integer)
     mag_id: Mapped[int] = mapped_column(Integer)
-    sect_id: Mapped[int] = mapped_column(Integer, ForeignKey('section.id'))
+    sect_id: Mapped[int] = mapped_column(BigInteger)
     sect_menu_id: Mapped[int] = mapped_column(Integer, default=1)
     active: Mapped[int] = mapped_column(Integer, default=0)
     no_more_need: Mapped[int] = mapped_column(Integer, default=0, comment='1- больше не заказываем')
@@ -87,7 +87,7 @@ class Good(Base_mysql):
     country: Mapped[int] = mapped_column(Integer, default=1, comment='Страна-производитель')
     edinica: Mapped[int] = mapped_column(Integer, default=0, comment='1 - литры, 2 - кг, 3 - шт')
     kega: Mapped[int] = mapped_column(Integer, default=0, comment='1-вести учёт по кегам')
-    srok: Mapped[date] = mapped_column(Date, comment='срок годности')
+    srok: Mapped[date] = mapped_column(Date, comment='срок годности', nullable=True)
     srok_user_id: Mapped[int] = mapped_column(Integer)
     kran1: Mapped[int] = mapped_column(Integer, default=0)
     kran2: Mapped[int] = mapped_column(Integer, default=0)
@@ -114,25 +114,17 @@ class Good(Base_mysql):
     mark: Mapped[int] = mapped_column(Integer, default=0)
     category: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
-    section = relationship("Section", back_populates="goods")
-    prices = relationship("GoodPrice", back_populates="good")
-
-class DiscountCard(Base_mysql):
-    __tablename__ = 'discount_cards'
-
-
 class GoodPrice(Base_mysql):
     __tablename__ = 'good_price'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    good_id = Column(Integer, ForeignKey('goods.id'))
+    good_id = Column(BigInteger)
     user_id: Mapped[int] = mapped_column(Integer, nullable=False,  comment='ID пользователя')
-    status: Mapped[int] = mapped_column(   Integer, nullable=False,  default=1,comment='0 - не активен, 1 - активен' )
-    price: Mapped[float] = mapped_column( Numeric(10, 2), nullable=False, default=0.00, comment='Цена' )
-    price_real: Mapped[float] = mapped_column(  Numeric(10, 2),nullable=False, comment='Реальная цена' )
-    date_added: Mapped[datetime] = mapped_column(DateTime,  nullable=False,  server_default=func.now(),  comment='Дата добавления')
+    status: Mapped[int] = mapped_column(Integer, nullable=False,  default=1,comment='0 - не активен, 1 - активен' )
+    price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False, default=0.00, comment='Цена' )
+    price_real: Mapped[float] = mapped_column(Numeric(10, 2),nullable=False, comment='Реальная цена' )
+    date_added: Mapped[datetime] = mapped_column(DateTime, nullable=False,  server_default=func.now(),  comment='Дата добавления')
 
-    good = relationship("Good", back_populates="prices")
     __table_args__ = (  PrimaryKeyConstraint('id', 'date_added'),  {'comment': 'Таблица цен товаров'},  )
 
 
@@ -149,4 +141,102 @@ class Section(Base_mysql):
     marzha: Mapped[int] = mapped_column(Integer, server_default="0", nullable=False)
     sort: Mapped[int] = mapped_column(Integer, server_default="1000", nullable=False)
 
-    goods = relationship("Good", back_populates="section")
+class Orders(Base_mysql):
+    __tablename__ = 'orders'
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    status: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    date_added: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    date_first_good_added: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    date_good_changed: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    date_good_del: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    date_otloz_in: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    date_otloz_out: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    date_closed: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    date_updated: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=True)
+    price_real: Mapped[float] = mapped_column(Numeric(10, 2), nullable=True)
+    price_save: Mapped[float] = mapped_column(Numeric(10, 2), nullable=True)
+    scores: Mapped[float] = mapped_column(Numeric(10, 2), nullable=True)
+    no_scores: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    firm_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    magazine_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    card_num: Mapped[str] = mapped_column(String(100), nullable=True)
+    card_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    discount_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    terminal: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    stock: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    old_new: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    sdacha: Mapped[float] = mapped_column(Numeric(10, 2), nullable=True)
+    agree: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    agree_sms: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    agree_sms_code: Mapped[str] = mapped_column(String(10), nullable=True)
+    print_check: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    short: Mapped[str] = mapped_column(String(300), nullable=True)
+    fn: Mapped[str] = mapped_column(String(300), nullable=True)
+    fd: Mapped[str] = mapped_column(String(300), nullable=True)
+    fpd: Mapped[str] = mapped_column(String(300), nullable=True)
+    qr_line: Mapped[str] = mapped_column(String(300), nullable=True)
+    online_not_print: Mapped[int] = mapped_column(BigInteger, nullable=True)
+
+class Basket(Base_mysql):
+    __tablename__ = 'basket'
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    date_added: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    date_updated: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    status: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    order_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    firm_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    magazine_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    good_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    sect_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    kega_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    discount_proc: Mapped[float] = mapped_column(Numeric(10, 2), nullable=True)
+    no_price_change: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=True)
+    price_wo: Mapped[float] = mapped_column(Numeric(10, 2), nullable=True)
+    price_real: Mapped[float] = mapped_column(Numeric(10, 2), nullable=True)
+    price_save: Mapped[float] = mapped_column(Numeric(10, 2), nullable=True)
+    price_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    terminal: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    znac: Mapped[float] = mapped_column(Numeric(10, 3), nullable=True)
+    znac_in_check: Mapped[float] = mapped_column(Numeric(10, 3), nullable=True)
+    new_name: Mapped[str] = mapped_column(String(50), nullable=True)
+    mark: Mapped[str] = mapped_column(String(255), nullable=True)
+    reqId: Mapped[str] = mapped_column(String(255), nullable=True)
+    reqTimestamp: Mapped[str] = mapped_column(String(255), nullable=True)
+
+class Users(Base_mysql):
+    __tablename__ = 'users'
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    active: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    date_registered: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_auth: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    base_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    firm_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    mag_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    login: Mapped[str] = mapped_column(String(150), nullable=True)
+    password: Mapped[str] = mapped_column("pass", String(150), nullable=True)
+    status: Mapped[float] = mapped_column(Numeric(10, 2), nullable=True)
+    fio: Mapped[int] = mapped_column(String(150), nullable=True)
+    smena_fio: Mapped[str] = mapped_column(String(100), nullable=True)
+    phone: Mapped[str] = mapped_column(String(100), nullable=True)
+    pay: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    pay_sum: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    pay_hour: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    user_level_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    is_helper: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    show_remains: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    time_from: Mapped[time] = mapped_column(Time, nullable=True)
+    time_to: Mapped[time] = mapped_column(Time, nullable=True)
+    nalog: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    no_telegram: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    telegram_phone: Mapped[str] = mapped_column(String(15), nullable=True)
+    chat_id: Mapped[str] = mapped_column(String(30), nullable=True)
+    cookie: Mapped[str] = mapped_column(String(32), nullable=True)
+    photo: Mapped[str] = mapped_column(String(200), nullable=True)
+    referer: Mapped[str] = mapped_column(String(300), nullable=True)

@@ -26,7 +26,7 @@ async def send_code(
     if response is not None and response is not False and (response or response == 0):
         scores = convert_decimal_to_float(response)
         if isinstance(scores, (int, float)):
-        	scores = [scores]
+            scores = [scores]
         total_score = sum(scores) if scores else 0
 
         stmt = select(DiscountCard).where(DiscountCard.phone == phone.phone[1:])
