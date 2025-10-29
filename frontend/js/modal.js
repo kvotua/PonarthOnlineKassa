@@ -386,10 +386,10 @@ function loadOperations() {
                         <div class="operation-date">${formattedDate}</div>
                         <div class="operation-prices">
                             ${operation.price_total !== operation.price_real
-                ? `<div class="operation-amount">${operation.price_real}</div>
-                                <div class="operation-total-amount">${operation.price_total} ₽</div>`
-                : `<div class="operation-total-amount">${operation.price_total} ₽</div>`
-            }
+                                ? `<div class="operation-amount">${operation.price_real}</div>
+                                                <div class="operation-total-amount">${operation.price_total} ₽</div>`
+                                : `<div class="operation-total-amount">${operation.price_total} ₽</div>`
+                            }
                         </div>
                     </div>
                     <div class="operation-items">
@@ -418,13 +418,21 @@ function loadProfileOperations() {
         const operationCard = document.createElement('div');
         operationCard.className = 'operation-card';
 
+        const dateObj = new Date(operation.date);
+
+        const formattedDate = dateObj.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+
         operationCard.innerHTML = `
                     <div class="operation-header">
-                        <div class="operation-date">${operation.date}</div>
-                        <div class="operation-amount">${operation.totalAmount} ₽</div>
+                        <div class="operation-date">${formattedDate}</div>
+                        <div class="operation-total-amount">${operation.price_total} ₽</div>
                     </div>
                     <div class="operation-points">
-                        <div class="points-earned">+${operation.pointsEarned} баллов</div>
+                        <div class="points-earned">+${parseFloat(operation.score_added)} баллов</div>
                     </div>
                 `;
 

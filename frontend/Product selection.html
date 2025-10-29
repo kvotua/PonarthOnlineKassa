@@ -431,7 +431,7 @@
             scoreElement.textContent = score ? `${score} баллов.` : "0 баллов.";
             scoreCoinElement.textContent = score ? `${parseInt(score)} баллов` : "0 баллов";
             scoreModal.textContent = score ? `${parseInt(score)} баллов` : "0 баллов";
-            profilePoints.textContent = score ? `${parseInt(score)} баллов` : "0 баллов";
+            profilePoints.textContent = score ? `${parseInt(score)}` : "0";
 
             const user_info = document.querySelector('h1');
             user_info.textContent = localStorage.getItem('h1Element');
