@@ -15,6 +15,8 @@
 </head>
 
 <body>
+    <!-- <div id="loading" class="loading"></div>
+    <div id="main"> -->
     <div class="choice-container">
         <div class="euler-top-left"></div>
         <div class="euler-bottom-right"></div>
@@ -70,269 +72,349 @@
                 <span class="emoji-notification" id="emojiNotification">3</span>
             </button>
         </div>
-
-        <div class="notification" id="notification">
-            Номер телефона не найден в системе
-        </div>
     </div>
 
     <div class="modal-overlay" id="coinModalOverlay">
         <div class="modal-content">
-            <div class="modal-scroll">
-                <div class="modal-header">
-                    <div class="balance-left">
-                        <div class="account-title">Ваш счет</div>
-                        <div class="balance-amount">1 250 ₽</div>
+            <!-- <div class="modal-scroll"> -->
+            <div class="modal-header">
+                <div class="balance-left">
+                    <div class="account-title">Ваш счет</div>
+                    <div class="balance-amount" id="balanceAmount">1 250 ₽</div>
+                </div>
+                <button class="close-button" id="closeCoinButton">&times;</button>
+            </div>
+
+            <div class="glass-radio-group">
+                <input type="radio" name="coin-tab-type" id="coin-glass-account" checked />
+                <label for="coin-glass-account">Счет</label>
+
+                <input type="radio" name="coin-tab-type" id="coin-glass-transfers" />
+                <label for="coin-glass-transfers">Переводы</label>
+
+                <div class="glass-glider"></div>
+            </div>
+
+            <div class="tab-content active" id="coin-account-content">
+                <div class="operations-history">
+                    <h3 class="operations-title">История операций</h3>
+
+                    <div class="operations-controls">
+                        <div class="sort-button" id="sortButton">
+                            <span>Сортировка</span>
+                            <i>▼</i>
+                        </div>
+                        <input type="text" class="search-input" placeholder="Поиск по чекам...">
                     </div>
-                    <button class="close-button" id="closeCoinButton">&times;</button>
+
+                    <div class="sort-dropdown" id="sortDropdown">
+                        <div class="sort-option" data-sort="date-newest">По дате (сначала новые)</div>
+                        <div class="sort-option" data-sort="date-oldest">По дате (сначала старые)</div>
+                        <div class="sort-option" data-sort="amount-high">По сумме (больше)</div>
+                        <div class="sort-option" data-sort="amount-low">По сумме (меньше)</div>
+                    </div>
+
+                    <div class="operations-list" id="operationsList">
+                    </div>
                 </div>
+            </div>
 
-                <!-- Стеклянный переключатель для счета и переводов -->
-                <div class="glass-radio-group">
-                    <input type="radio" name="coin-tab-type" id="coin-glass-account" checked />
-                    <label for="coin-glass-account">Счет</label>
+            <div class="tab-content" id="coin-transfers-content">
+                <div class="transfer-section">
+                    <div class="phone-input-container">
+                        <input type="tel" class="phone-input" id="phoneInput" placeholder="Введите номер телефона">
+                    </div>
 
-                    <input type="radio" name="coin-tab-type" id="coin-glass-transfers" />
-                    <label for="coin-glass-transfers">Переводы</label>
+                    <div class="recipient-info" id="recipientInfo">
+                        <div class="recipient-name" id="recipientName"></div>
+                        <div class="recipient-phone" id="recipientPhone"></div>
+                    </div>
 
-                    <div class="glass-glider"></div>
-                </div>
+                    <button class="send-button" id="sendButton" disabled>Отправить</button>
 
-                <!-- Контент вкладки "Счет" -->
-                <div class="tab-content active" id="coin-account-content">
-                    <div class="operations-history">
-                        <h3 class="operations-title">История операций</h3>
-
-                        <div class="operations-controls">
-                            <div class="sort-button" id="sortButton">
+                    <div class="transfer-history">
+                        <div class="transfer-history-controls">
+                            <h3 class="transfer-history-title">История переводов</h3>
+                            <div class="sort-button" id="transferSortButton">
                                 <span>Сортировка</span>
                                 <i>▼</i>
                             </div>
-                            <input type="text" class="search-input" placeholder="Поиск по чекам...">
                         </div>
 
-                        <div class="sort-dropdown" id="sortDropdown">
+                        <div class="transfer-history-controls">
+                            <input type="text" class="transfer-search-input" id="transferSearchInput"
+                                placeholder="Поиск по дате или ФИО...">
+                        </div>
+
+                        <div class="sort-dropdown" id="transferSortDropdown">
                             <div class="sort-option" data-sort="date-newest">По дате (сначала новые)</div>
                             <div class="sort-option" data-sort="date-oldest">По дате (сначала старые)</div>
                             <div class="sort-option" data-sort="amount-high">По сумме (больше)</div>
                             <div class="sort-option" data-sort="amount-low">По сумме (меньше)</div>
                         </div>
 
-                        <div class="operations-list" id="operationsList">
-                            <!-- Карточки операций будут добавляться здесь -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Контент вкладки "Переводы" -->
-                <div class="tab-content" id="coin-transfers-content">
-                    <div class="transfer-section">
-                        <div class="phone-input-container">
-                            <input type="tel" class="phone-input" id="phoneInput" placeholder="Введите номер телефона">
-                        </div>
-
-                        <div class="recipient-info" id="recipientInfo">
-                            <div class="recipient-name" id="recipientName"></div>
-                            <div class="recipient-phone" id="recipientPhone"></div>
-                        </div>
-
-                        <button class="send-button" id="sendButton" disabled>Отправить</button>
-
-                        <div class="transfer-history">
-                            <div class="transfer-history-controls">
-                                <h3 class="transfer-history-title">История переводов</h3>
-                                <div class="sort-button" id="transferSortButton">
-                                    <span>Сортировка</span>
-                                    <i>▼</i>
-                                </div>
-                            </div>
-
-                            <div class="transfer-history-controls">
-                                <input type="text" class="transfer-search-input" id="transferSearchInput"
-                                    placeholder="Поиск по дате или ФИО...">
-                            </div>
-
-                            <div class="sort-dropdown" id="transferSortDropdown">
-                                <div class="sort-option" data-sort="date-newest">По дате (сначала новые)</div>
-                                <div class="sort-option" data-sort="date-oldest">По дате (сначала старые)</div>
-                                <div class="sort-option" data-sort="amount-high">По сумме (больше)</div>
-                                <div class="sort-option" data-sort="amount-low">По сумме (меньше)</div>
-                            </div>
-
-                            <div class="transfer-history-list" id="transferHistoryList">
-                            </div>
+                        <div class="transfer-history-list" id="transferHistoryList">
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- </div> -->
         </div>
     </div>
 
     <div class="modal-overlay" id="emojiModalOverlay">
         <div class="modal-content">
-            <div class="modal-scroll">
-                <div class="modal-header">
-                    <h2 class="modal-title">Профиль и награды</h2>
-                    <button class="close-button" id="closeEmojiButton">&times;</button>
-                </div>
+            <!-- <div class="modal-scroll"> -->
+            <div class="modal-header">
+                <h2 class="modal-title">Профиль и награды</h2>
+                <button class="close-button" id="closeEmojiButton">&times;</button>
+            </div>
 
-                <!-- Стеклянный переключатель для профиля и наград -->
-                <div class="glass-radio-group">
-                    <input type="radio" name="emoji-tab-type" id="emoji-glass-profile" checked />
-                    <label for="emoji-glass-profile">Профиль</label>
+            <div class="glass-radio-group">
+                <input type="radio" name="emoji-tab-type" id="emoji-glass-profile" checked />
+                <label for="emoji-glass-profile">Профиль</label>
 
-                    <input type="radio" name="emoji-tab-type" id="emoji-glass-rewards" />
-                    <label for="emoji-glass-rewards">Награды</label>
+                <input type="radio" name="emoji-tab-type" id="emoji-glass-rewards" />
+                <label for="emoji-glass-rewards">Награды</label>
 
-                    <div class="glass-glider"></div>
-                </div>
+                <div class="glass-glider"></div>
+            </div>
 
-                <!-- Контент вкладки "Профиль" -->
-                <div class="tab-content active" id="emoji-profile-content">
-                    <div class="profile-section">
-                        <div class="profile-info">
-                            <div class="profile-header">
-                                <div class="profile-avatar">😊</div>
-                                <div class="profile-details">
-                                    <div class="profile-name-container">
-                                        <div class="profile-name">Александр Иванов</div>
-                                        <div class="edit-icon" id="editNameButton">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                                stroke="currentColor" stroke-width="2">
-                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7">
-                                                </path>
-                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z">
-                                                </path>
-                                            </svg>
-                                        </div>
+            <div class="tab-content active" id="emoji-profile-content">
+                <div class="profile-section">
+                    <div class="profile-info">
+                        <div class="profile-header">
+                            <div class="profile-avatar">😊</div>
+                            <div class="profile-details">
+                                <div class="profile-name-container">
+                                    <div class="profile-name" id="userFio">Александр Иванов</div>
+                                    <div class="edit-icon" id="editNameButton">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7">
+                                            </path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z">
+                                            </path>
+                                        </svg>
                                     </div>
-                                    <div class="profile-birthdate">15 марта 1990</div>
-                                    <div class="profile-phone-container">
-                                        <div class="profile-phone">+7 912 345-67-89</div>
-                                        <div class="edit-icon" id="editPhoneButton">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                                stroke="currentColor" stroke-width="2">
-                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7">
-                                                </path>
-                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z">
-                                                </path>
-                                            </svg>
-                                        </div>
+                                </div>
+                                <div class="profile-birthdate" id="userBday">15 марта 1990</div>
+                                <div class="profile-phone-container">
+                                    <div class="profile-phone" id="userPhone">+7 912 345-67-89</div>
+                                    <div class="edit-icon" id="editPhoneButton">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7">
+                                            </path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z">
+                                            </path>
+                                        </svg>
                                     </div>
-                                    <button class="change-password-button" id="changePasswordButton">Изменить пароль для
-                                        входа</button>
                                 </div>
-                            </div>
-                            <div class="profile-stats">
-                                <div class="stat-item">
-                                    <div class="stat-value">1 250</div>
-                                    <div class="stat-label">Баллов</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value">12</div>
-                                    <div class="stat-label">Наград</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value">47</div>
-                                    <div class="stat-label">Операций</div>
-                                </div>
+                                <button class="change-password-button" id="changePasswordButton">Изменить пароль
+                                    для
+                                    входа</button>
                             </div>
                         </div>
-
-                        <!-- Тумблер для Telegram уведомлений -->
-                        <div class="telegram-toggle">
-                            <div class="toggle-container">
-                                <span class="toggle-label">Получать уведомления об операциях в Telegram</span>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="telegramToggle">
-                                    <span class="slider"></span>
-                                </label>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="profilePoints">1 250</div>
+                                <div class="stat-label">Баллов</div>
                             </div>
-                            <div class="telegram-input-container" id="telegramInputContainer">
-                                <input type="text" class="telegram-input" id="telegramInput"
-                                    placeholder="Введите ваш Telegram ID">
+                            <div class="stat-item">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Наград</div>
                             </div>
-                        </div>
-
-                        <div class="operations-history">
-                            <h3 class="operations-title">Недавние операции</h3>
-                            <div class="operations-list" id="profileOperationsList">
-                                <!-- Недавние операции будут добавляться здесь -->
+                            <div class="stat-item">
+                                <div class="stat-value">47</div>
+                                <div class="stat-label">Операций</div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Контент вкладки "Награды" -->
-                <div class="tab-content" id="emoji-rewards-content">
-                    <!-- Существующие награды -->
-                    <div class="reward-item">
-                        <div class="reward-icon">🏆</div>
-                        <div class="reward-info">
-                            <div class="reward-name">Кэшбэк 5%</div>
-                            <div class="reward-description">На все покупки в этом месяце</div>
+                    <div class="telegram-toggle">
+                        <div class="toggle-container">
+                            <span class="toggle-label">Получать уведомления об операциях в Telegram</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="telegramToggle">
+                                <span class="slider"></span>
+                            </label>
                         </div>
-                        <div class="reward-status">Активно</div>
-                    </div>
-                    <div class="reward-item">
-                        <div class="reward-icon">⭐</div>
-                        <div class="reward-info">
-                            <div class="reward-name">Бесплатная доставка</div>
-                            <div class="reward-description">Действует 30 дней</div>
-                        </div>
-                        <div class="reward-status">Активно</div>
-                    </div>
-                    <div class="reward-item">
-                        <div class="reward-icon">🎁</div>
-                        <div class="reward-info">
-                            <div class="reward-name">Подарочная карта</div>
-                            <div class="reward-description">1000 ₽ в магазине электроники</div>
-                        </div>
-                        <div class="reward-status">Доступно</div>
-                    </div>
-                    <div class="reward-item">
-                        <div class="reward-icon">🔔</div>
-                        <div class="reward-info">
-                            <div class="reward-name">Уведомления о скидках</div>
-                            <div class="reward-description">Персональные предложения</div>
-                        </div>
-                        <div class="reward-status">Активно</div>
-                    </div>
-                    <div class="reward-item">
-                        <div class="reward-icon">💎</div>
-                        <div class="reward-info">
-                            <div class="reward-name">VIP статус</div>
-                            <div class="reward-description">Привилегии для постоянных клиентов</div>
-                        </div>
-                        <div class="reward-status">Скоро</div>
-                    </div>
-
-                    <!-- Неиспользованные купоны -->
-                    <div class="unused-coupons-section">
-                        <h3 class="unused-coupons-title">Неиспользованные купоны</h3>
-                        <div class="unused-coupons-list" id="unusedCouponsList">
-                            <!-- Купоны будут добавляться здесь -->
-                        </div>
-                        <button class="scratch-button" id="scratchAllButton">Стереть все купоны</button>
-                    </div>
-
-                    <!-- Плитка призов -->
-                    <div class="prizes-grid-section">
-                        <h3 class="prizes-grid-title">Ваши призы</h3>
-                        <div class="prizes-grid" id="prizesGrid">
-                            <!-- Призы будут добавляться здесь -->
+                        <div class="telegram-input-container" id="telegramInputContainer">
+                            <input type="text" class="telegram-input" id="telegramInput"
+                                placeholder="Введите ваш Telegram ID">
                         </div>
                     </div>
 
-                    <!-- История призов -->
-                    <div class="prizes-history-section">
-                        <h3 class="prizes-history-title">История полученных призов</h3>
-                        <div class="prizes-history-list" id="prizesHistoryList">
-                            <!-- История призов будет добавляться здесь -->
+                    <div class="operations-history">
+                        <h3 class="operations-title">Недавние операции</h3>
+                        <div class="operations-list" id="profileOperationsList">
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="tab-content" id="emoji-rewards-content">
+                <div class="unused-coupons-section">
+                    <h3 class="unused-coupons-title">Неиспользованные купоны</h3>
+                    <div class="unused-coupons-list" id="unusedCouponsList">
+                    </div>
+                    <button class="scratch-button" id="viewAllCouponsButton">Смотреть все купоны</button>
+                </div>
+
+                <div class="rewards-grid" id="rewardsGrid">
+                </div>
+
+                <div class="prizes-history-section">
+                    <h3 class="prizes-history-title">История полученных призов</h3>
+                    <div class="prizes-history-list" id="prizesHistoryList">
+                    </div>
+                </div>
+            </div>
+            <!-- </div> -->
+        </div>
+    </div>
+    <!-- </div> -->
+
+    <div class="notification" id="notification">
+        Номер телефона не найден в системе
+    </div>
+
+    <div id="scratch-game-container">
+        <div class="euler-top-left"></div>
+        <div class="euler-bottom-right"></div>
+        <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo logo-scratch">
+        <div class="game-header">
+            <button class="back-button" id="backButton">←</button>
+        </div>
+        <div class="cards-container" id="cards-container">
+            <!-- Первая карточка -->
+            <div class="card-wrapper">
+                <div class="scratch-win" id="scratch-win-1">
+                    <!-- Контейнер для логотипа -->
+                    <div class="logo-container">
+                        <div class="logo-text">ЛОГОТИП</div>
+                    </div>
+
+                    <div class="scratch-win__scratcher">
+                        <div class="scratch-win__background">
+                            <div class="emoji" id="card-fish-1">🐟</div>
+                            Рыбка
+                        </div>
+                        <canvas id="canvas-1" class="scratch-win__foreground"></canvas>
+                    </div>
+
+                    <!-- Надпись "Царапай и выигрывай" теперь здесь -->
+                    <div class="scratch-win__title">Царапай и выигрывай</div>
+
+                    <div class="progress-info">Сотрите защитный слой</div>
+
+                    <button class="start-button" data-card="1">Приступить</button>
+                    <div class="instruction">Наведите курсор на карточку и двигайте мышью, чтобы стереть защитный слой
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вторая карточка -->
+            <div class="card-wrapper">
+                <div class="scratch-win" id="scratch-win-2">
+                    <!-- Контейнер для логотипа -->
+                    <div class="logo-container">
+                        <div class="logo-text">ЛОГОТИП</div>
+                    </div>
+
+                    <div class="scratch-win__scratcher">
+                        <div class="scratch-win__background">
+                            <div class="emoji" id="card-fish-2">🐠</div>
+                            Рыбка
+                        </div>
+                        <canvas id="canvas-2" class="scratch-win__foreground"></canvas>
+                    </div>
+
+                    <!-- Надпись "Царапай и выигрывай" теперь здесь -->
+                    <div class="scratch-win__title">Царапай и выигрывай</div>
+
+                    <div class="progress-info">Сотрите защитный слой</div>
+
+                    <button class="start-button" data-card="2">Приступить</button>
+                    <div class="instruction">Наведите курсор на карточку и двигайте мышью, чтобы стереть защитный слой
+                    </div>
+                </div>
+            </div>
+
+            <!-- Третья карточка -->
+            <div class="card-wrapper">
+                <div class="scratch-win" id="scratch-win-3">
+                    <!-- Контейнер для логотипа -->
+                    <div class="logo-container">
+                        <div class="logo-text">ЛОГОТИП</div>
+                    </div>
+
+                    <div class="scratch-win__scratcher">
+                        <div class="scratch-win__background">
+                            <div class="emoji" id="card-fish-3">🐡</div>
+                            Рыбка
+                        </div>
+                        <canvas id="canvas-3" class="scratch-win__foreground"></canvas>
+                    </div>
+
+                    <!-- Надпись "Царапай и выигрывай" теперь здесь -->
+                    <div class="scratch-win__title">Царапай и выигрывай</div>
+
+                    <div class="progress-info">Сотрите защитный слой</div>
+
+                    <button class="start-button" data-card="3">Приступить</button>
+                    <div class="instruction">Наведите курсор на карточку и двигайте мышью, чтобы стереть защитный слой
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Индикатор карточек -->
+        <div class="card-indicator" id="card-indicator">
+            <div class="indicator-dot active" data-card="1"></div>
+            <div class="indicator-dot" data-card="2"></div>
+            <div class="indicator-dot" data-card="3"></div>
+        </div>
+
+        <!-- Подсказка прокрутки -->
+        <div class="scroll-hint">Прокрутите вниз для других карточек</div>
+
+        <!-- Монеты для каждой карточки -->
+        <div class="scratch-win__coin" id="coin-1">
+            <div class="scratch-win__coin-side"></div>
+            <div class="scratch-win__coin-base"></div>
+        </div>
+
+        <div class="scratch-win__coin" id="coin-2">
+            <div class="scratch-win__coin-side"></div>
+            <div class="scratch-win__coin-base"></div>
+        </div>
+
+        <div class="scratch-win__coin" id="coin-3">
+            <div class="scratch-win__coin-side"></div>
+            <div class="scratch-win__coin-base"></div>
+        </div>
+
+        <div id="confetti" class="confetti">
+            <!-- SVG элементы конфетти -->
+            <svg class="confetti__item confetti__item--circle" width="6" height="6" viewBox="0 0 6 6" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M0.979033 1.30301C1.85813 0.337112 3.35383 0.26675 4.31973 1.14585C5.28563 2.02495 5.35599 3.52065 4.47684 4.48647C3.59775 5.45237 2.10205 5.52273 1.13623 4.64358C0.170248 3.76453 0.0999339 2.26891 0.979033 1.30301Z"
+                    fill="#a864fd" />
+            </svg>
+            <!-- Остальные SVG элементы конфетти -->
+            <!-- ... -->
+        </div>
+
+        <!-- Контейнер для анимации рыбки -->
+        <div id="fish-container" class="fish-container"></div>
+
+        <!-- Контейнер для корзины и счетчика -->
+        <div class="basket-container">
+            <div id="prize-counter" class="prize-counter">0</div>
+            <div id="basket" class="basket">🧺</div>
         </div>
     </div>
 
@@ -342,9 +424,14 @@
         document.addEventListener('DOMContentLoaded', function () {
             const scoreElement = document.getElementById('scoreAmount');
             const scoreCoinElement = document.getElementById('scoreCoinAmount');
+            const scoreModal = document.getElementById('balanceAmount')
+            const profilePoints = document.getElementById('profilePoints')
+
             const score = localStorage.getItem('scoreAmount');
-            scoreElement.textContent = score ? `${score} монет.` : "0 монет.";
-            scoreCoinElement.textContent = score ? `${parseInt(score)} монет` : "0 монет";
+            scoreElement.textContent = score ? `${score} баллов.` : "0 баллов.";
+            scoreCoinElement.textContent = score ? `${parseInt(score)} баллов` : "0 баллов";
+            scoreModal.textContent = score ? `${parseInt(score)} баллов` : "0 баллов";
+            profilePoints.textContent = score ? `${parseInt(score)} баллов` : "0 баллов";
 
             const user_info = document.querySelector('h1');
             user_info.textContent = localStorage.getItem('h1Element');
@@ -354,7 +441,6 @@
             if (!new_user) {
                 new_user_score.style.display = 'none';
             }
-
 
             const time_Passed = document.getElementById("timePassed");
             time_Passed.innerHTML = localStorage.getItem("timePassed");
