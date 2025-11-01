@@ -1,3 +1,5 @@
+const botUsername = "ponarthcrew_bot";
+
 const coinButton = document.getElementById('coinButton');
 const emojiButton = document.getElementById('emojiButton');
 const coinModalOverlay = document.getElementById('coinModalOverlay');
@@ -6,6 +8,9 @@ const closeCoinButton = document.getElementById('closeCoinButton');
 const closeEmojiButton = document.getElementById('closeEmojiButton');
 const body = document.body;
 const emojiNotification = document.getElementById('emojiNotification');
+
+const mainContainer = document.getElementById('mainContainer');
+const loadingBar = document.getElementById('loading');
 
 const coinTabRadios = document.querySelectorAll('input[name="coin-tab-type"]');
 const coinTabContents = document.querySelectorAll('#coinModalOverlay .tab-content');
@@ -31,17 +36,25 @@ const transferSearchInput = document.getElementById('transferSearchInput');
 
 const profileOperationsList = document.getElementById('profileOperationsList');
 const editNameButton = document.getElementById('editNameButton');
-const editPhoneButton = document.getElementById('editPhoneButton');
-const changePasswordButton = document.getElementById('changePasswordButton');
 const telegramToggle = document.getElementById('telegramToggle');
 const telegramInputContainer = document.getElementById('telegramInputContainer');
 const telegramInput = document.getElementById('telegramInput');
 
+let showTelegramInputContainer = true;
+
+telegramInput.onclick = () => {
+    const url = `https://t.me/${botUsername}?start=start`;
+
+    window.open(url, "_blank");
+};
+
+const unusedCouponsSection = document.getElementById('unusedCouponsSection');
 const rewardsGrid = document.getElementById('rewardsGrid');
 const unusedCouponsList = document.getElementById('unusedCouponsList');
 const viewAllCouponsButton = document.getElementById('viewAllCouponsButton');
 const prizesGrid = document.getElementById('prizesGrid');
 const prizesHistoryList = document.getElementById('prizesHistoryList');
+const prizesHistorySection = document.getElementById('prizesHistorySection');
 
 const scratchGameContainer = document.getElementById('scratch-game-container');
 const backButton = document.getElementById('backButton');
@@ -52,52 +65,9 @@ const basket = document.getElementById('basket');
 const prizeCounter = document.getElementById('prize-counter');
 
 let operationsData = [];
-
-// const operationsData = [
-//     {
-//         id: 1,
-//         date: "15 мая 2023",
-//         totalAmount: 3250,
-//         items: [
-//             { name: "Хлеб", price: 50 },
-//             { name: "Молоко", price: 80 },
-//             { name: "Сыр", price: 250 },
-//             { name: "Мясо", price: 500 }
-//         ],
-//         pointsEarned: 32,
-//         pointsBefore: 1218,
-//         pointsAfter: 1250,
-//         hasPrize: true
-//     },
-//     {
-//         id: 2,
-//         date: "14 мая 2023",
-//         totalAmount: 1780,
-//         items: [
-//             { name: "Кофе", price: 250 },
-//             { name: "Десерт", price: 350 },
-//             { name: "Сок", price: 180 }
-//         ],
-//         pointsEarned: 18,
-//         pointsBefore: 1200,
-//         pointsAfter: 1218,
-//         hasPrize: false
-//     },
-//     {
-//         id: 3,
-//         date: "12 мая 2023",
-//         totalAmount: 4500,
-//         items: [
-//             { name: "Книга", price: 800 },
-//             { name: "Ручка", price: 50 },
-//             { name: "Блокнот", price: 150 }
-//         ],
-//         pointsEarned: 45,
-//         pointsBefore: 1155,
-//         pointsAfter: 1200,
-//         hasPrize: false
-//     }
-// ];
+let rewardsData = [];
+let unusedCouponsData = [];
+let prizesHistoryData = [];
 
 const transferHistoryData = [
     {
@@ -140,28 +110,6 @@ const transferHistoryData = [
         type: "Перевод",
         receiptNumber: null
     }
-];
-
-const rewardsData = [
-    { id: 1, icon: "🏆", name: "Кэшбэк 5%", description: "На все покупки в этом месяце", status: "Активно" },
-    { id: 2, icon: "⭐", name: "Бесплатная доставка", description: "Действует 30 дней", status: "Активно" },
-    { id: 3, icon: "🎁", name: "Подарочная карта", description: "1000 ₽ в магазине электроники", status: "Доступно" },
-    { id: 4, icon: "🔔", name: "Уведомления о скидках", description: "Персональные предложения", status: "Активно" },
-    { id: 5, icon: "💎", name: "VIP статус", description: "Привилегии для постоянных клиентов", status: "Скоро" },
-    { id: 6, icon: "👑", name: "Золотой статус", description: "Эксклюзивные предложения", status: "Заблокировано" }
-];
-
-const unusedCouponsData = [
-    { id: 1, date: "15 мая 2023", receipt: "Чек №458792" },
-    { id: 2, date: "10 мая 2023", receipt: "Чек №321567" },
-    { id: 3, date: "8 мая 2023", receipt: "Чек №289345" }
-];
-
-const prizesHistoryData = [
-    { id: 1, icon: "🐟", name: "Рыбка", date: "15 мая 2023" },
-    { id: 2, icon: "🐠", name: "Рыбка", date: "10 мая 2023" },
-    { id: 3, icon: "🐡", name: "Рыбка", date: "8 мая 2023" },
-    { id: 4, icon: "🎁", name: "Подарок", date: "5 мая 2023" }
 ];
 
 const usersDatabase = [
@@ -301,14 +249,14 @@ emojiModalOverlay.addEventListener('click', function (event) {
     }
 });
 
-coinTabRadios.forEach(radio => {
-    radio.addEventListener('change', function () {
-        if (this.checked) {
-            const tabName = this.id.replace('coin-glass-', '');
-            switchCoinTab(tabName);
-        }
-    });
-});
+// coinTabRadios.forEach(radio => {
+//     radio.addEventListener('change', function () {
+//         if (this.checked) {
+//             const tabName = this.id.replace('coin-glass-', '');
+//             switchCoinTab(tabName);
+//         }
+//     });
+// });
 
 emojiTabRadios.forEach(radio => {
     radio.addEventListener('change', function () {
@@ -327,6 +275,8 @@ document.querySelectorAll('.sort-option').forEach(option => {
     option.addEventListener('click', function () {
         const sortType = this.getAttribute('data-sort');
         sortDropdown.style.display = 'none';
+        sortOperations(sortType);
+        loadOperations();
 
         sortButton.querySelector('span').textContent = this.textContent;
     });
@@ -355,10 +305,31 @@ document.addEventListener('click', function (event) {
     }
 });
 
-function loadOperations() {
+function sortOperations(type) {
+    if (!Array.isArray(operationsData)) return;
+
+    switch (type) {
+        case 'date-newest':
+            operationsData.sort((a, b) => new Date(b.date) - new Date(a.date));
+            break;
+        case 'date-oldest':
+            operationsData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            break;
+        case 'amount-high':
+            operationsData.sort((a, b) => b.price_total - a.price_total);
+            break;
+        case 'amount-low':
+            operationsData.sort((a, b) => a.price_total - b.price_total);
+            break;
+    }
+}
+
+function loadOperations(operationsFiltered) {
     operationsList.innerHTML = '';
 
-    operationsData.forEach(operation => {
+    const dataToRender = operationsFiltered || operationsData;
+
+    dataToRender.forEach(operation => {
         const operationCard = document.createElement('div');
         operationCard.className = 'operation-card';
 
@@ -386,10 +357,10 @@ function loadOperations() {
                         <div class="operation-date">${formattedDate}</div>
                         <div class="operation-prices">
                             ${operation.price_total !== operation.price_real
-                                ? `<div class="operation-amount">${operation.price_real}</div>
+                ? `<div class="operation-amount">${operation.price_real}</div>
                                                 <div class="operation-total-amount">${operation.price_total} ₽</div>`
-                                : `<div class="operation-total-amount">${operation.price_total} ₽</div>`
-                            }
+                : `<div class="operation-total-amount">${operation.price_total} ₽</div>`
+            }
                         </div>
                     </div>
                     <div class="operation-items">
@@ -400,12 +371,38 @@ function loadOperations() {
                         <div class="points-total">${operation.previous_scores} → ${parseFloat(operation.previous_scores) + parseFloat(operation.score_added)}</div>
                     </div>
                     <div class="operation-footer">
-                        <div class="prize-icon">${!operation.order_id ? '🎁' : ''}</div>
+                        <div class="prize-icon">${operation.order_id ? '🎁' : ''}</div>
                         <button class="share-button">Поделиться</button>
                     </div>
                 `;
 
         operationsList.appendChild(operationCard);
+
+        operationsList.addEventListener('click', (e) => {
+            const shareBtn = e.target.closest('.share-button');
+            if (!shareBtn) return;
+
+            const operationCard = shareBtn.closest('.operation-card');
+            if (!operationCard) return;
+
+            const index = Array.from(operationsList.children).indexOf(operationCard);
+            const operation = dataToRender[index];
+            if (!operation || !operation.order_id) return;
+
+            const shareUrl = `${window.location.origin}/bill.html?order_id=${operation.order_id}`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Мой чек',
+                    url: shareUrl
+                }).catch(err => console.error('Ошибка шаринга:', err));
+            } else {
+                window.open(shareUrl, '_blank');
+            }
+        });
+
+
+
     });
 }
 
@@ -447,10 +444,9 @@ function loadRewardsGrid() {
         const rewardItem = document.createElement('div');
         rewardItem.className = 'reward-grid-item';
         rewardItem.innerHTML = `
-                    <div class="reward-grid-icon">${reward.icon}</div>
-                    <div class="reward-grid-name">${reward.name}</div>
+                    <div class="reward-grid-icon">🎁</div>
+                    <div class="reward-grid-name">${reward.title}</div>
                     <div class="reward-grid-description">${reward.description}</div>
-                    <div class="reward-grid-status">${reward.status}</div>
                 `;
         rewardsGrid.appendChild(rewardItem);
     });
@@ -485,32 +481,63 @@ function loadTransferHistory() {
 function loadUnusedCoupons() {
     unusedCouponsList.innerHTML = '';
 
+    if (!unusedCouponsData || unusedCouponsData.length === 0) {
+        unusedCouponsSection.style.display = 'none';
+        return;
+    } else {
+        unusedCouponsSection.style.display = 'flex';
+    }
+
     unusedCouponsData.forEach(coupon => {
+        const dateObj = new Date(coupon.present_date);
+
+        const formattedDate = dateObj.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
         const couponItem = document.createElement('div');
         couponItem.className = 'unused-coupon-item';
         couponItem.innerHTML = `
                     <div class="unused-coupon-info">
-                        <div class="unused-coupon-date">${coupon.date}</div>
-                        <div class="unused-coupon-receipt">${coupon.receipt}</div>
+                        <div class="unused-coupon-date">${formattedDate}</div>
+                        <div class="unused-coupon-receipt">Чек №${coupon.order_id}</div>
                     </div>
                 `;
         unusedCouponsList.appendChild(couponItem);
     });
 
     emojiNotification.textContent = unusedCouponsData.length;
+    if (unusedCouponsData.length === 0) {
+        emojiNotification.style.display = 'none';
+    }
 }
 
 function loadPrizesHistory() {
     prizesHistoryList.innerHTML = '';
 
+    if (!prizesHistoryData || prizesHistoryData.length === 0) {
+        prizesHistorySection.style.display = 'none';
+        return;
+    } else {
+        prizesHistorySection.style.display = 'block';
+    }
+
     prizesHistoryData.forEach(prize => {
+        const dateObj = new Date(prize.date_cancelled);
+
+        const formattedDate = dateObj.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
         const prizeItem = document.createElement('div');
         prizeItem.className = 'prize-history-item';
         prizeItem.innerHTML = `
-                    <div class="prize-history-icon">${prize.icon}</div>
+                    <div class="prize-history-icon"><img href="${prize.image || 'https://www.diybeer.com/media/wysiwyg/Beer-Glasses/Steam_Beer_700x700px.png'}"/></div>
                     <div class="prize-history-info">
-                        <div class="prize-history-name">${prize.name}</div>
-                        <div class="prize-history-date">${prize.date}</div>
+                        <div class="prize-history-name">${prize.title}</div>
+                        <div class="prize-history-date">${formattedDate}</div>
                     </div>
                 `;
         prizesHistoryList.appendChild(prizeItem);
@@ -556,190 +583,6 @@ function filterTransferHistory() {
     });
 }
 
-let isScratchingAllowed = false;
-
-function initScratchGame() {
-    const cards = [1, 2, 3];
-    let prizeCount = 0;
-    let currentActiveCard = 1;
-
-    const cardsContainer = document.getElementById('cards-container');
-    const cardIndicator = document.getElementById('card-indicator');
-    const indicatorDots = document.querySelectorAll('.indicator-dot');
-
-    function updateCardIndicator(cardNumber) {
-        indicatorDots.forEach(dot => {
-            dot.classList.remove('active');
-            if (dot.getAttribute('data-card') == cardNumber) {
-                dot.classList.add('active');
-            }
-        });
-    }
-
-    cardsContainer.addEventListener('scroll', () => {
-        const scrollPosition = cardsContainer.scrollTop;
-        const cardHeight = cardsContainer.clientHeight;
-        const currentCard = Math.floor(scrollPosition / cardHeight) + 1;
-
-        if (currentCard !== currentActiveCard) {
-            currentActiveCard = currentCard;
-            updateCardIndicator(currentCard);
-        }
-    });
-
-    cardIndicator.addEventListener('click', (e) => {
-        if (e.target.classList.contains('indicator-dot')) {
-            const cardNumber = e.target.getAttribute('data-card');
-            const cardIndex = parseInt(cardNumber) - 1;
-            const cardHeight = cardsContainer.clientHeight;
-
-            cardsContainer.scrollTo({
-                top: cardIndex * cardHeight,
-                behavior: 'smooth'
-            });
-
-            currentActiveCard = cardNumber;
-            updateCardIndicator(cardNumber);
-        }
-    });
-
-    cards.forEach(cardNumber => {
-        const scratchWin = document.getElementById(`scratch-win-${cardNumber}`);
-        const coin = document.getElementById(`coin-${cardNumber}`);
-        const canvas = document.getElementById(`canvas-${cardNumber}`);
-        const ctx = canvas.getContext("2d");
-        const cardFish = document.getElementById(`card-fish-${cardNumber}`);
-        const startButton = scratchWin.querySelector('.start-button');
-        const instruction = scratchWin.querySelector('.instruction');
-
-        const scratcher = scratchWin.querySelector('.scratch-win__scratcher');
-
-        const width = scratcher.offsetWidth;
-        const height = scratcher.offsetHeight;
-
-        canvas.width = width;
-        canvas.height = height;
-
-        const gradient = ctx.createLinearGradient(0, 0, width, height);
-
-        gradient.addColorStop(0, "#d4af37");
-        gradient.addColorStop(0.3, "#a67c00");
-        gradient.addColorStop(0.5, "#d4af37");
-        gradient.addColorStop(0.8, "#a67c00");
-        gradient.addColorStop(1, "#d4af37");
-
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
-
-        scratchWin.classList.add("scratch-win--ready");
-
-        const confetti = document.getElementById("confetti");
-        const maxPixels = width * height;
-        let isWinTriggered = false;
-
-        const calculateTransparency = () => {
-            const imageData = ctx.getImageData(0, 0, width, height).data;
-            const alphaValues = imageData.filter(
-                (value, index) => index % 4 === 3 && value === 0
-            );
-
-            return alphaValues.length / maxPixels;
-        };
-
-        const updatePrizeCounter = () => {
-            prizeCount++;
-            prizeCounter.textContent = prizeCount;
-            prizeCounter.classList.add('increase');
-
-            setTimeout(() => {
-                prizeCounter.classList.remove('increase');
-            }, 500);
-        };
-
-        const createFishAnimation = () => {
-            basket.classList.add('show');
-            prizeCounter.classList.add('show');
-
-            cardFish.classList.add('fish-grow');
-
-            setTimeout(() => {
-                fishContainer.style.display = 'block';
-
-                const fish = document.createElement('div');
-                fish.className = 'fish-animation';
-                fish.textContent = cardFish.textContent;
-
-                const cardRect = scratchWin.getBoundingClientRect();
-                const scratcherRect = scratchWin.querySelector('.scratch-win__scratcher').getBoundingClientRect();
-
-                fish.style.left = `${scratcherRect.left + scratcherRect.width / 2}px`;
-                fish.style.top = `${scratcherRect.top + scratcherRect.height / 2}px`;
-
-                fishContainer.appendChild(fish);
-
-                setTimeout(() => {
-                    basket.classList.add('shake');
-                    updatePrizeCounter();
-
-                    setTimeout(() => {
-                        fish.remove();
-                        isScratchingAllowed = false;
-                        document.body.style.cursor = 'default';
-                        fishContainer.style.display = 'none';
-                    }, 500);
-                }, 1800);
-            }, 800);
-        };
-
-        const mouseFunction = (mouse) => {
-            if (!isScratchingAllowed) return;
-
-            if (mouse.type === 'touchmove') {
-                mouse.preventDefault();
-            }
-
-            const clientX = mouse.clientX ? mouse.clientX : mouse.touches[0].clientX;
-            const clientY = mouse.clientY ? mouse.clientY : mouse.touches[0].clientY;
-            coin.style = `--top: ${clientY}px; --left: ${clientX}px;`;
-
-            const canvasPosition = canvas.getBoundingClientRect();
-            const canvasX = clientX - canvasPosition.left;
-            const canvasY = clientY - canvasPosition.top;
-
-            if (canvasX > 0 && canvasX < width && canvasY > 0 && canvasY < height) {
-                ctx.clearRect(canvasX - 20, canvasY - 20, 40, 40);
-
-                const transparency = calculateTransparency();
-
-                if (transparency > 0.7 && !isWinTriggered) {
-                    isWinTriggered = true;
-                    confetti.classList.add("confetti--active");
-                    createFishAnimation();
-                }
-            }
-        };
-
-        const touchStartHandler = (e) => {
-            if (isScratchingAllowed) {
-                e.preventDefault();
-            }
-        };
-
-        startButton.addEventListener('click', () => {
-            isScratchingAllowed = true;
-            scratchWin.classList.add("scratch-win--active");
-            startButton.classList.add('hidden');
-            instruction.classList.add('hidden');
-            document.body.style.cursor = 'pointer';
-
-            canvas.addEventListener('touchstart', touchStartHandler, { passive: false });
-        });
-
-        window.addEventListener("mousemove", mouseFunction);
-        window.addEventListener("touchmove", mouseFunction, { passive: false });
-    });
-}
-
 function editName() {
     const currentName = document.querySelector('.profile-name').textContent;
     const newName = prompt('Введите новое имя и фамилию:', currentName);
@@ -750,31 +593,52 @@ function editName() {
     }
 }
 
-function editPhone() {
-    const currentPhone = document.querySelector('.profile-phone').textContent;
-    const newPhone = prompt('Введите новый номер телефона:', currentPhone);
-
-    if (newPhone && newPhone.trim() !== '') {
-        document.querySelector('.profile-phone').textContent = newPhone.trim();
-        showNotification('Номер телефона успешно изменен');
-    }
-}
-
-function changePassword() {
-    showNotification('Функция изменения пароля будет доступна в следующем обновлении');
-}
-
 function openScratchCard(couponId) {
     showNotification(`Открывается экран царапания для купона ${couponId}`);
 }
 
-function handleTelegramToggle() {
-    if (telegramToggle.checked) {
-        telegramInputContainer.style.display = 'block';
-    } else {
-        telegramInputContainer.style.display = 'none';
+async function handleTelegramToggle() {
+    if (showTelegramInputContainer) {
+        if (telegramToggle.checked) {
+            telegramInputContainer.style.display = 'block';
+        } else {
+            telegramInputContainer.style.display = 'none';
+        }
     }
+    await saveTelegramSend(telegramToggle.checked)
 }
+
+async function saveTelegramSend(toggle) {
+    const token = localStorage.getItem("access_token");
+    await fetch(`${host}/api/v1/telegram`, {
+        method: 'PATCH',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ send_telegram: toggle })
+    })
+}
+
+function searchOperations() {
+    const query = searchInput.value.trim().toLowerCase();
+
+    if (!query) {
+        loadOperations();
+        return;
+    }
+
+    const filtered = operationsData.filter(operation => {
+        return operation.goods.some(item =>
+            item.good_name.toLowerCase().includes(query)
+        );
+    });
+
+    loadOperations(filtered);
+}
+
+searchInput.addEventListener('input', searchOperations);
 
 transferSearchInput.addEventListener('input', filterTransferHistory);
 
@@ -809,36 +673,8 @@ sendButton.addEventListener('click', function () {
 });
 
 editNameButton.addEventListener('click', editName);
-editPhoneButton.addEventListener('click', editPhone);
-changePasswordButton.addEventListener('click', changePassword);
 
 telegramToggle.addEventListener('change', handleTelegramToggle);
-
-document.addEventListener('click', function (event) {
-    if (event.target.classList.contains('scratch-button')) {
-        const couponId = event.target.getAttribute('data-coupon-id');
-        if (couponId) {
-            openScratchCard(couponId);
-        }
-    }
-});
-
-function openScratchGame() {
-    closeModal();
-
-    scratchGameContainer.style.display = 'flex';
-
-    initScratchGame();
-}
-
-function closeScratchGame() {
-    isScratchingAllowed = false;
-    scratchGameContainer.style.display = 'none';
-    initScratchGame();
-}
-
-viewAllCouponsButton.addEventListener('click', openScratchGame);
-backButton.addEventListener('click', closeScratchGame);
 
 document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape' && body.classList.contains('modal-open')) {
@@ -865,6 +701,23 @@ document.querySelectorAll('.modal-content').forEach(modal => {
         const matrix = new WebKitCSSMatrix(style.transform);
         return matrix.m42;
     };
+
+    const modalObserver = new ResizeObserver(() => {
+        const modalHeight = modal.offsetHeight;
+        const viewportHeight = window.innerHeight;
+        const minTranslateY = viewportHeight - modalHeight;
+
+        const style = window.getComputedStyle(modal);
+        const matrix = new WebKitCSSMatrix(style.transform);
+        const currentTranslate = matrix.m42;
+
+        if (currentTranslate < minTranslateY) {
+            modal.style.transition = 'transform 0.2s ease';
+            modal.style.transform = `translateY(${minTranslateY}px)`;
+        }
+    });
+
+    modalObserver.observe(modal);
 
     const onPointerDown = (e) => {
         if (isOpening || isAnimating) return;
@@ -963,21 +816,15 @@ document.querySelectorAll('.modal-content').forEach(modal => {
     modal.addEventListener('touchstart', onPointerDown, { passive: false });
 });
 
-
-document.addEventListener('DOMContentLoaded', async function () {
+async function fetchProfile() {
     let phone_number = localStorage.getItem("phone");
-    let card_num = phone_number
-
-    if (phone_number) {
-        card_num = phone_number.replace(/\D/g, '');
-        card_num = card_num.slice(1);
-    }
-
-    await fetch(`${host}/api/v1/profile?card_num=${card_num}`, {
+    const token = localStorage.getItem("access_token");
+    await fetch(`${host}/api/v1/profile`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${token}`
         }
     })
         .then(response => {
@@ -988,7 +835,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             return response.json();
         })
         .then(data => {
-            console.log(data)
+            console.log(data);
+            const shareLink = document.getElementById("shareLink");
+
+            shareLink.value = `https://loyality-system.ponarth.com/?referal_id=${data.id}`;
+
             const fioElement = document.getElementById("userFio");
             const userBday = document.getElementById("userBday");
             const userPhone = document.getElementById("userPhone");
@@ -1004,24 +855,82 @@ document.addEventListener('DOMContentLoaded', async function () {
             fioElement.textContent = `${data.first} ${data.second}`
             userBday.textContent = `${formattedDate}`
             userPhone.textContent = `${phone_number}`
-        });
 
-    operationsData = await fetch(`${host}/api/v1/basket/all?card_num=${card_num}`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(response => {
-            if (!response.ok) {
-                return [];
+            rewardsData = data.gifts.filter(gift =>
+                gift.status === 'activated'
+            );
+            unusedCouponsData = data.gifts.filter(gift =>
+                gift.status === 'waiting' || gift.status === 'given'
+            );
+            prizesHistoryData = data.gifts.filter(gift =>
+                gift.status === 'used'
+            );
+
+            emojiNotification.textContent = unusedCouponsData.length;
+            if (unusedCouponsData.length === 0) {
+                emojiNotification.style.display = 'none';
             }
-            return response.json();
-        })
-        .then(data => {
-            return data;
+
+            const scoreCoinElement = document.getElementById('scoreCoinAmount');
+            const scoreModal = document.getElementById('balanceAmount')
+            const profilePoints = document.getElementById('profilePoints')
+            const profileRewards = document.getElementById('profileRewards')
+
+            const score = data.total_score
+            scoreCoinElement.textContent = score ? `${parseInt(score)} баллов` : "0 баллов";
+            scoreModal.textContent = score ? `${parseInt(score)} баллов` : "0 баллов";
+            profilePoints.textContent = score ? `${parseInt(score)}` : "0";
+            profileRewards.textContent = rewardsData ? `${parseInt(rewardsData.length)}` : "0";
+
+            telegramToggle.checked = data.send_telegram;
+            if (telegramToggle.checked) {
+                telegramInputContainer.style.display = 'block';
+            } else {
+                telegramInputContainer.style.display = 'none';
+            }
+
+            if (data.chat_id) {
+                if (data.chat_id > 0) {
+                    showTelegramInputContainer = false;
+                    telegramInputContainer.style.display = 'none';
+                }
+            }
         });
+}
+
+
+document.addEventListener('DOMContentLoaded', async function () {
+    let phone_number = localStorage.getItem("phone");
+
+    const token = localStorage.getItem("access_token");
+
+    try {
+        await fetchProfile();
+
+        operationsData = await fetch(`${host}/api/v1/basket/all`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return [];
+                }
+                return response.json();
+            })
+            .then(data => {
+                const profileOperations = document.getElementById('profileOperations')
+
+                profileOperations.textContent = data ? `${parseInt(data.length)}` : "0";
+                return data;
+            });
+    } finally {
+        mainContainer.style.display = 'flex';
+        loadingBar.style.display = 'none';
+    }
 
 
     // loadOperations();

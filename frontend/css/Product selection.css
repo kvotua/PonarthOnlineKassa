@@ -84,6 +84,7 @@ body {
 @media (max-width: 767px) {
   .choice-container {
     max-width: none;
+    border-radius: 0;
   }
 }
 

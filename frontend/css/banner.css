@@ -1,0 +1,365 @@
+:root {
+    --widget-width: 200px;
+    --widget-height: 280px;
+}
+
+.section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-direction: column;
+    padding: 20px;
+}
+
+/* iOS Widget Container */
+.ios-widget {
+    height: var(--widget-height);
+    background: rgba(23, 22, 22, 0.4);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 30px;
+}
+
+/* Widget Header */
+.widget-header {
+    padding: 20px 24px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.widget-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.widget-time {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Widget Content */
+.widget-content {
+    height: calc(var(--widget-height) - 60px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    text-align: center;
+}
+
+.banner-title {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.banner-subtitle {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+    max-width: 500px;
+}
+
+.banner-button {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    padding: 10px 24px;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.banner-button:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Smooth scrolling animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.widget-content {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.cookie-card {
+    width: 100%;
+    max-width: 540px;
+    background: rgba(23, 22, 22, 0.4);
+    border-radius: 20px;
+    padding: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+    z-index: 10;
+
+    margin-bottom: 15px;
+}
+
+.cookie-header {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.cookie-avatar {
+    width: 88px;
+    height: 88px;
+    background: linear-gradient(180deg, #ffd86b, #ffb703);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    box-shadow: 0 6px 18px rgba(255, 184, 3, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.cookie-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.cookie-lead {
+    margin: 6px 0 18px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 16px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.copy-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.copy-btn {
+    padding: 0 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+    white-space: nowrap;
+    height: 48px;
+    /* Высота равна высоте инпута */
+}
+
+.copy-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.copy-label {
+    margin: 0 0 20px 0;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: left;
+}
+
+.stats-section {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-left: -32px;
+    margin-right: -32px;
+
+    padding-left: 32px;
+    padding-right: 32px;
+
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.stats-row::-webkit-scrollbar {
+    height: 6px;
+}
+
+.stats-row::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.stats-row::-webkit-scrollbar-thumb {
+    background-color: rgba(200, 200, 200, 0.4);
+    border-radius: 3px;
+}
+
+.invite-stat-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    min-width: 120px;
+    text-align: center;
+    flex: 1;
+}
+
+.invite-stat-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.invite-stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+}
+
+.invite-stat-value.total {
+    color: #ffb703;
+}
+
+@media (max-width: 650px) {
+    :root {
+        --widget-width: 90vw;
+        --widget-height: 250px;
+    }
+
+    .banner-title {
+        font-size: 1.5rem;
+    }
+
+    .banner-subtitle {
+        font-size: 0.8rem;
+        max-width: 90%;
+    }
+
+    .cookie-avatar {
+        width: 72px;
+        height: 72px;
+        font-size: 34px;
+    }
+
+    .cookie-card {
+        padding: 20px;
+    }
+
+    .copy-section {
+        flex-direction: column;
+    }
+
+    .copy-btn {
+        height: auto;
+        padding: 12px 16px;
+    }
+
+    .stats-row {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+
+        margin-left: -20px;
+        margin-right: -20px;
+
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .invite-stat-item {
+        min-width: 130px;
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .banner-title {
+        font-size: 1.3rem;
+    }
+
+    .banner-subtitle {
+        font-size: 0.7rem;
+    }
+
+    .banner-button {
+        padding: 8px 16px;
+        font-size: 0.7rem;
+    }
+
+    .stats-row {
+        gap: 8px;
+    }
+
+    .invite-stat-item {
+        min-width: 120px;
+        padding: 12px;
+    }
+
+    .invite-stat-label {
+        font-size: 11px;
+    }
+
+    .invite-stat-value {
+        font-size: 14px;
+    }
+}

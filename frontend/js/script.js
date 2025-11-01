@@ -6,6 +6,13 @@ function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
+const urlParams = new URLSearchParams(window.location.search);
+const referalId = urlParams.get("referal_id");
+
+if (referalId) {
+    localStorage.setItem("referal_id", referalId);
+}
+
 function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
     let retryCount = 0;
 
@@ -19,81 +26,9 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
             body: JSON.stringify({ phone })
         })
             .then(async response => {
-                console.log(response);
                 const data = await response.json();
-
-                if (data.status_code === 400) {
-                    const formatScore = (value) => {
-                        if (!value) return "0.00";
-                        const num = parseFloat(value);
-                        return num >= 1000 ? `${(num / 1000).toFixed(2)}k` : num.toFixed(2);
-                    };
-
-                    const formattedScore = data.scores ? formatScore(data.scores) : "0.00";
-                    localStorage.setItem('scoreAmount', formattedScore);
-                    localStorage.setItem('phone', phone);
-                    localStorage.setItem('h1Element', `Ваша карта`);
-                    localStorage.setItem('new_user_score', 'false');
-
-                    if (data) {
-
-                        function formatTimePassed(startDate) {
-                            const start = new Date(startDate);
-                            const now = new Date();
-                            const diff = now - start;
-
-                            if (start.toDateString() === now.toDateString()) {
-                                return "Вы сегодня зарегистрировали карту";
-                            }
-
-
-                            const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
-                            if (totalDays >= 365) {
-                                const years = Math.floor(totalDays / 365);
-                                return `${years} ${getRussianWord(years, 'год', 'года', 'лет')}`;
-                            }
-                            else if (totalDays >= 30) {
-                                const months = Math.floor(totalDays / 30);
-                                return `${months} ${getRussianWord(months, 'месяц', 'месяца', 'месяцев')}`;
-                            }
-                            else {
-                                return `${totalDays} ${getRussianWord(totalDays, 'день', 'дня', 'дней')}`;
-                            }
-
-                            function getRussianWord(number, one, two, five) {
-                                number = Math.abs(number);
-                                if (number > 10 && number < 20) return five;
-                                const lastDigit = number % 10;
-                                if (lastDigit === 1) return one;
-                                if (lastDigit > 1 && lastDigit < 5) return two;
-                                return five;
-                            }
-                        }
-                        localStorage.setItem('userInfo', JSON.stringify({
-                            firstName: data.first,
-                            thirdName: data.third,
-                            registrationDate: data.date_added ?
-                                new Date(data.date_added).toLocaleDateString() : 'Не указана'
-                        }));
-                    }
-                    if (data && data.date_added) {
-                        const registrationDate = new Date(data.date_added);
-                        const day = registrationDate.getDate();
-                        const month = (registrationDate.getMonth() + 1).toString().padStart(2, '0');
-                        const year = registrationDate.getFullYear();
-
-
-                        const timePassed = formatTimePassed(data.date_added);
-                        if (timePassed === "Вы сегодня зарегистрировали карту") {
-                            localStorage.setItem('timePassed', `${timePassed}! <br> Дата оформления карты: ${day}.${month}.${year}`);
-                        } else {
-                            localStorage.setItem('timePassed', `Вы уже с нами ${timePassed}!<br>Дата оформления карты: ${day}.${month}.${year}`);
-                        }
-                    }
-                    window.location.href = './Product selection.html';
-                    return;
-                }
-                else if (data.call_id) {
+                console.log("Ответ сервера:", data);
+                if (data.call_id) {
                     return data;
                 }
                 else if (data.status_code === 422) {
@@ -135,12 +70,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const confirmButton = document.getElementById('confirm-code');
         const smsCode = document.getElementById('sms-code').value;
         const callId = localStorage.getItem('call_id');
+        const callType = localStorage.getItem('call_type');
         const phone = document.getElementById('phone').value;
 
         if (confirmButton.style.display !== 'none') {
             confirmButton.click();
             if (smsCode && callId) {
-                confirmPhoneCode(phone, callId, smsCode)
+                confirmPhoneCode(phone, callId, smsCode, callType)
                     .then(response => {
                         console.log('Код подтверждения успешно отправлен:', response);
                     })
@@ -160,8 +96,12 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-function confirmPhoneCode(phone, callId, code) {
-    return fetch(`${host}/api/v1/verify/phone/check`, {
+function confirmPhoneCode(phone, callId, code, callType) {
+    let url = `${host}/api/v1/verify/phone/check`
+    if (callType == 'auth') {
+        url = `${host}/api/v1/login`
+    }
+    return fetch(url, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -176,9 +116,18 @@ function confirmPhoneCode(phone, callId, code) {
             return response.json();
         })
         .then(data => {
-            if (data.status_code === 200) {
+            if (data.status_code === 200 || data.access_token) {
                 localStorage.setItem('call_id', data.call_id || callId);
                 localStorage.setItem('phone', phone);
+
+                if (callType == 'auth') {
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('refresh_token', data.refresh_token);
+
+                    window.location.href = './Product selection.html';
+                    return data;
+                }
+
                 window.location.href = './registration.html';
                 return data;
             } else {
@@ -199,8 +148,9 @@ function registerDiscount(callId) {
         }
     }
 
-    return fetch(`${host}/api/v1/register-discount`, {
+    const savedReferal = localStorage.getItem("referal_id") || null;
 
+    return fetch(`${host}/api/v1/register-discount`, {
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -212,7 +162,8 @@ function registerDiscount(callId) {
             'patronymic': localStorage.getItem('patronymic'),
             'birth_date': formattedDate,
             'gender': localStorage.getItem('gender'),
-            'call_id': callId
+            'call_id': callId,
+            'referal_discount_card_id': parseInt(savedReferal) || null
         })
     })
         .then(response => {
@@ -224,6 +175,8 @@ function registerDiscount(callId) {
             return response.json();
         })
         .then(data => {
+            localStorage.removeItem("referal_id");
+            console.log(data)
             const currentDate = new Date();
             const day = currentDate.getDate();
             const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
@@ -234,10 +187,30 @@ function registerDiscount(callId) {
             localStorage.setItem('scoreAmount', '150.00');
             localStorage.setItem('h1Element', `Поздравляем!`);
             localStorage.setItem('new_user_score', 'true');
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('refresh_token', data.refresh_token);
 
 
             window.location.href = './Product selection.html';
 
             return data;
         });
+}
+
+function isTokenExpired() {
+    const token = localStorage.getItem("access_token");
+    if (!token || !token.includes('.')) {
+        return true;
+    }
+
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (!payload.exp) return true;
+
+        const now = Math.floor(Date.now() / 1000);
+        return payload.exp <= now;
+    } catch (e) {
+        console.error("Ошибка при парсинге токена:", e);
+        return true;
+    }
 }

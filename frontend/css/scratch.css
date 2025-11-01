@@ -1,0 +1,800 @@
+.logo-scratch {
+    top: 0;
+    position: fixed;
+}
+
+.cards-container {
+    position: relative;
+    height: 100svh;
+    width: 100%;
+    max-width: 600px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    padding: 100px 0;
+}
+
+.cards-container::-webkit-scrollbar {
+    display: none;
+}
+
+.cards-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.cards-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.cards-container::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: 10px;
+}
+
+.card-wrapper {
+    scroll-snap-align: center;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    padding: 20px 0;
+}
+
+.scratch-win {
+    position: relative;
+    padding: 1rem 2rem 2rem 2rem;
+    background: linear-gradient(var(--bg-color) -150%, var(--black));
+    border: 0.2rem solid var(--yellow-light);
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0.2rem 0.2rem 1rem 0 rgba(0, 0, 56, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* width: 470px;
+    height: 554px; */
+    width: 400px;
+    height: 460px;
+}
+
+.scratch-win__scratcher {
+    position: relative;
+    width: 20rem;
+    /* 320px */
+    height: 10rem;
+    /* 160px */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* margin: 1rem 0; */
+}
+
+.scratch-win:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(-70deg,
+            transparent,
+            transparent 50%,
+            rgba(255, 255, 255, 0.1) 57%,
+            transparent 60%);
+    background-size: 300% 100%;
+    animation: shinning 6s infinite;
+    pointer-events: none;
+}
+
+@keyframes shinning {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 100% 0;
+    }
+}
+
+/* Контейнер для логотипа */
+.logo-container {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--yellow-light), var(--gold));
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logo-text {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--black);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+
+.scratch-win__background,
+.scratch-win__foreground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.scratch-win__background {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--grey);
+    background-color: var(--white);
+    text-transform: uppercase;
+    font-size: 1.25rem;
+}
+
+.scratch-win__background .emoji {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+    transition: all 2s ease;
+}
+
+.scratch-win__background:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(transparent,
+            transparent 0.5rem,
+            var(--grey) 0.5rem,
+            var(--grey) 0.6rem);
+    opacity: 0.5;
+}
+
+.scratch-win--ready .scratch-win__background {
+    display: flex;
+}
+
+.scratch-win__coin {
+    position: absolute;
+    z-index: 2;
+    top: calc(var(--top) - 5rem);
+    left: calc(var(--left) - 3rem);
+    width: 6rem;
+    height: 6rem;
+    pointer-events: none;
+    display: none;
+}
+
+.scratch-win--active .scratch-win__coin {
+    display: block;
+}
+
+.scratch-win__coin-side {
+    position: absolute;
+    top: -0.4rem;
+    left: 0;
+    z-index: -1;
+    width: calc(100% + 0.6rem);
+    height: calc(100% + 0.6rem);
+    border-radius: 50%;
+    outline: 0.1rem solid var(--gold-dark);
+    background: repeating-linear-gradient(90deg,
+            var(--gold) 0,
+            var(--gold) 0.5rem,
+            var(--yellow-light) 0.5rem,
+            var(--yellow-light) 0.7rem);
+    box-shadow: 0 1rem 1rem -0.5rem rgba(0, 0, 56, 0.5);
+}
+
+@supports (-webkit-hyphens: none) {
+    .scratch-win__coin-side {
+        outline: none;
+    }
+}
+
+.scratch-win__coin-base {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0.3rem dashed var(--gold);
+    outline: 0.1rem solid var(--gold-dark);
+    border-radius: 50%;
+    background: radial-gradient(circle at 0 0, var(--yellow-light), var(--gold) 150%);
+    box-shadow: inset 0 -0.1rem 0 0 var(--gold-dark);
+}
+
+@supports (-webkit-hyphens: none) {
+    .scratch-win__coin-base {
+        outline: none;
+    }
+}
+
+.scratch-win__coin-base:before,
+.scratch-win__coin-base:after {
+    content: "€";
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    font-size: 4rem;
+}
+
+.scratch-win__coin-base:before {
+    color: var(--gold-dark);
+    transform: rotate(45deg) translateX(-0.4rem) translateY(-0.25rem);
+}
+
+.scratch-win__coin-base:after {
+    color: var(--gold);
+    transform: rotate(45deg) translateX(-0.3rem) translateY(-0.2rem);
+    background: linear-gradient(var(--yellow-light) -50%, var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Надпись "Царапай и выигрывай" под карточкой */
+.scratch-win__title {
+    width: 100%;
+    margin: 1rem auto 0.5rem;
+    color: var(--yellow-light);
+    font-size: 1.8rem;
+    text-align: center;
+    text-transform: uppercase;
+    background: linear-gradient(var(--yellow-light), var(--gold-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.confetti {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    width: 100%;
+    height: 200%;
+    pointer-events: none;
+    --top-position: -350vh;
+}
+
+.confetti__item {
+    position: absolute;
+    box-shadow: 1rem 1rem 1rem 0 rgba(0, 0, 56, 0.5);
+}
+
+/* Positioning confetti */
+.confetti__item:nth-child(1) {
+    top: calc(0.1 * 150% + var(--top-position));
+    left: calc(0.1 * 100%);
+    transform: scale(2) rotate(10deg);
+}
+
+.confetti__item:nth-child(2) {
+    top: calc(0.2 * 150% + var(--top-position));
+    left: calc(0.2 * 100%);
+    transform: scale(2) rotate(20deg);
+}
+
+.confetti__item:nth-child(3) {
+    top: calc(0.3 * 150% + var(--top-position));
+    left: calc(0.3 * 100%);
+    transform: scale(2) rotate(30deg);
+}
+
+.confetti__item:nth-child(4) {
+    top: calc(0.4 * 150% + var(--top-position));
+    left: calc(0.4 * 100%);
+    transform: scale(2) rotate(40deg);
+}
+
+.confetti__item:nth-child(5) {
+    top: calc(0.5 * 150% + var(--top-position));
+    left: calc(0.5 * 100%);
+    transform: scale(2.5) rotate(50deg);
+}
+
+.confetti__item:nth-child(6) {
+    top: calc(0.6 * 150% + var(--top-position));
+    left: calc(0.6 * 100%);
+    transform: scale(3) rotate(60deg);
+}
+
+.confetti__item:nth-child(7) {
+    top: calc(0.7 * 150% + var(--top-position));
+    left: calc(0.7 * 100%);
+    transform: scale(3.5) rotate(70deg);
+}
+
+.confetti__item:nth-child(8) {
+    top: calc(0.8 * 150% + var(--top-position));
+    left: calc(0.8 * 100%);
+    transform: scale(4) rotate(80deg);
+}
+
+.confetti__item:nth-child(9) {
+    top: calc(0.9 * 150% + var(--top-position));
+    left: calc(0.9 * 100%);
+    transform: scale(4.5) rotate(90deg);
+}
+
+.confetti__item:nth-child(10) {
+    top: calc(0.05 * 150% + var(--top-position));
+    left: calc(0.95 * 100%);
+    transform: scale(2) rotate(5deg);
+}
+
+.confetti__item:nth-child(11) {
+    top: calc(0.15 * 150% + var(--top-position));
+    left: calc(0.85 * 100%);
+    transform: scale(2) rotate(15deg);
+}
+
+.confetti__item:nth-child(12) {
+    top: calc(0.25 * 150% + var(--top-position));
+    left: calc(0.75 * 100%);
+    transform: scale(2.5) rotate(25deg);
+}
+
+.confetti__item:nth-child(13) {
+    top: calc(0.35 * 150% + var(--top-position));
+    left: calc(0.65 * 100%);
+    transform: scale(3.5) rotate(35deg);
+}
+
+.confetti__item:nth-child(14) {
+    top: calc(0.45 * 150% + var(--top-position));
+    left: calc(0.55 * 100%);
+    transform: scale(4.5) rotate(45deg);
+}
+
+.confetti__item:nth-child(15) {
+    top: calc(0.55 * 150% + var(--top-position));
+    left: calc(0.45 * 100%);
+    transform: scale(2) rotate(55deg);
+}
+
+.confetti__item:nth-child(16) {
+    top: calc(0.65 * 150% + var(--top-position));
+    left: calc(0.35 * 100%);
+    transform: scale(2) rotate(65deg);
+}
+
+.confetti__item:nth-child(17) {
+    top: calc(0.75 * 150% + var(--top-position));
+    left: calc(0.25 * 100%);
+    transform: scale(2.5) rotate(75deg);
+}
+
+.confetti__item:nth-child(18) {
+    top: calc(0.85 * 150% + var(--top-position));
+    left: calc(0.15 * 100%);
+    transform: scale(3.5) rotate(85deg);
+}
+
+.confetti__item:nth-child(19) {
+    top: calc(0.95 * 150% + var(--top-position));
+    left: calc(0.05 * 100%);
+    transform: scale(4.5) rotate(95deg);
+}
+
+.confetti__item:nth-child(20) {
+    top: calc(0.12 * 150% + var(--top-position));
+    left: calc(0.88 * 100%);
+    transform: scale(2) rotate(12deg);
+}
+
+.confetti--active {
+    --top-position: 200vh;
+}
+
+.confetti--active .confetti__item {
+    transition: top 10s ease;
+}
+
+.confetti--active .confetti__item:nth-child(3n) {
+    transition: top 8s ease;
+}
+
+.confetti--active .confetti__item:nth-child(4n) {
+    transition: top 12s ease;
+}
+
+/* Стили для анимации рыбки */
+.fish-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+    display: none;
+}
+
+.fish-animation {
+    position: absolute;
+    font-size: 4rem;
+    animation: fishFly 2s ease-in-out forwards;
+    opacity: 0;
+    z-index: 1001;
+}
+
+@keyframes fishFly {
+    0% {
+        transform: scale(1) translate(0, 0);
+        opacity: 1;
+    }
+
+    30% {
+        transform: scale(2.5) translate(0, -50px);
+        opacity: 1;
+    }
+
+    70% {
+        transform: scale(1.8) translate(calc(50vw - 100px), calc(50vh - 100px));
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) translate(calc(100vw - 150px), calc(100vh - 150px));
+        opacity: 0;
+    }
+}
+
+.basket-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: flex-end;
+    z-index: 1002;
+}
+
+.basket {
+    font-size: 3rem;
+    transform: scale(0);
+    transition: transform 0.5s ease;
+}
+
+.basket.show {
+    transform: scale(1);
+}
+
+.basket.shake {
+    animation: basketShake 0.5s ease-in-out 3;
+}
+
+@keyframes basketShake {
+    0% {
+        transform: translateX(0) scale(1);
+    }
+
+    25% {
+        transform: translateX(-5px) scale(1.1);
+    }
+
+    50% {
+        transform: translateX(5px) scale(1);
+    }
+
+    75% {
+        transform: translateX(-5px) scale(1.05);
+    }
+
+    100% {
+        transform: translateX(0) scale(1);
+    }
+}
+
+
+
+@media screen and (max-width: 500px) {
+    .scratch-win {
+        width: 350px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .scratch-win__scratcher {
+        width: 20rem;
+        height: 10rem;
+    }
+
+    .scratch-win__title {
+        font-size: 1.5rem;
+    }
+
+    .scratch-win__coin {
+        transform: scale(0.8);
+    }
+
+    .card-wrapper {
+        height: 80vh;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .scratch-win {
+        width: 550px;
+        height: 750px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .scratch-win__scratcher {
+        width: 30rem;
+        height: 20rem;
+    }
+
+    .scratch-win__coin {
+        transform: scale(0.8);
+    }
+}
+
+@media screen and (min-width: 1000px) {
+    .scratch-win {
+        width: 900px;
+        height: 850px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .scratch-win__scratcher {
+        width: 30rem;
+        height: 20rem;
+    }
+
+    .scratch-win__coin {
+        transform: scale(0.8);
+    }
+}
+
+.prize-counter {
+    position: relative;
+    margin-right: 10px;
+    margin-bottom: 15px;
+    width: 40px;
+    height: 40px;
+    background-color: var(--yellow);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--black);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    transform: scale(0);
+    transition: transform 0.3s ease;
+}
+
+.prize-counter.show {
+    transform: scale(1);
+}
+
+.prize-counter.increase {
+    animation: counterPop 0.5s ease;
+}
+
+@keyframes counterPop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.progress-info {
+    margin: 0.5rem 0;
+    color: var(--yellow-light);
+    font-size: 0.9rem;
+    opacity: 0.7;
+    text-align: center;
+}
+
+/* Анимация увеличения рыбки на карточке */
+@keyframes fishGrow {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.8);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.fish-grow {
+    animation: fishGrow 0.8s ease-in-out;
+}
+
+/* Стили для кнопки "Приступить" */
+.start-button {
+    margin-top: 1rem;
+    padding: 0.8rem 2rem;
+    background: linear-gradient(var(--yellow-light), var(--gold));
+    border: none;
+    border-radius: 2rem;
+    color: var(--black);
+    font-family: "Diodrum Cyrillic", "Archivo Black", sans-serif;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.start-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(var(--yellow), var(--gold-dark));
+}
+
+.start-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.start-button.hidden {
+    display: none;
+}
+
+.instruction {
+    margin-top: 0.5rem;
+    color: var(--yellow-light);
+    font-size: 0.9rem;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.instruction.hidden {
+    display: none;
+}
+
+.card-indicator {
+    position: fixed;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+}
+
+.indicator-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator-dot.active {
+    background-color: var(--yellow);
+    transform: scale(1.2);
+}
+
+.scroll-hint {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--yellow-light);
+    font-size: 0.8rem;
+    opacity: 0.7;
+    text-align: center;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.7;
+    }
+}
+
+#scratch-game-container {
+    position: fixed;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100svh;
+    margin: 0;
+    width: 100%;
+    background: var(--bg-color);
+    backdrop-filter: blur(60px);
+    font-family: "Diodrum Cyrillic", "Archivo Black", sans-serif;
+    overflow: hidden;
+    cursor: default;
+    z-index: 1000;
+}
+
+.back-button {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.1);
+}
+
+.game-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10001;
+}
+
+.back-button {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.1);
+}
