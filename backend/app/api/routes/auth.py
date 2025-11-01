@@ -5,10 +5,11 @@ from datetime import datetime, date
 
 from app.schemas.users_schemas import RegisterUserLoyaltySystem
 from app.schemas.auth_schemas import TokenPair, LoginUser, RegisterUser
-from app.schemas.response_schemas import json_response
+from app.schemas.response_schemas import CallID, json_response
+from app.schemas.verify_schemas import Phone
 from app.cruds.auth_cruds import check_phone_status, add_user_to_loyal_system, get_all
-from app.cruds.verify_cruds import get_verify_session_without_code
-from app.utils import sing_access_jwt_token, sing_refresh_jwt_token, convert_decimal_to_float
+from app.cruds.verify_cruds import add_verify_session, check_phone_in_discound, get_verify_session, get_verify_session_without_code
+from app.utils import get_current_user, get_current_user_with_bearer, send_message, sing_access_jwt_token, sing_refresh_jwt_token, convert_decimal_to_float
 from app.api.dependensies import get_new_tokens, get_access_token
 from app.databases.postgresdb import get_postgres_session
 from app.databases.mysql_db import get_mysql_session
@@ -21,25 +22,70 @@ async def get(session_mysql: AsyncSession = Depends(get_mysql_session),):
     data = await get_all(session_mysql=session_mysql)
     return sum(data)
 
+# @router.get("/profile")
+# async def get_profile(user_data=Depends(get_current_user_with_bearer)):
+#     phone = user_data['phone']
+#     response = await check_phone_in_discound(phone=phone.phone, session_mysql=session_mysql)
+#     print(response)
+#     scores = convert_decimal_to_float(response)
+#     if isinstance(scores, (int, float)):
+#         scores = [scores]
+#     total_score = sum(scores) if scores else 0
 
-# @router.post('/login', response_model=TokenPair)
-# async def login_user(
-#     data: LoginUser,
+#     stmt = select(DiscountCard).where(DiscountCard.phone == phone.phone[1:])
+#     result = await session_mysql.execute(stmt)
+#     user = result.scalars().first()
+#     response_data = {
+#         "status_code": 400,
+#         "message": "User is already registered",
+#         "scores": total_score,
+#     }
+#     if user:
+#         response_data.update({
+#                 "date_added": user.date_added.isoformat() if user.date_added else None,
+#                 "first": user.first,
+#                 "third": user.third,
+#         })
+#         return JSONResponse(status_code=200, content=response_data)
+
+@router.post('/login', response_model=TokenPair)
+async def login_user(
+    data: LoginUser,
+    session_mysql: AsyncSession = Depends(get_mysql_session),
+):
+    user = await check_phone_status(user_phone=data.phone, session_mysql=session_mysql)
+    if user:
+        response_verify = await get_verify_session(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
+        if response_verify:
+            access_token = sing_access_jwt_token(user_id=user.user_id, phone=user.phone)
+            refresh_token = sing_refresh_jwt_token(user_id=user.user_id, phone=user.phone)
+            response = JSONResponse(status_code=200, content={
+                "access_token": access_token,
+                "refresh_token": refresh_token
+            })
+            response.set_cookie(key="access_token", value=access_token, httponly=True)
+            response.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
+            return response
+        else:
+            raise HTTPException(status_code=404, detail="Call ID not found or incorrect code")
+    raise HTTPException(status_code=404, detail="User not found")
+
+# @router.post('/phone/send', response_model=CallID)
+# async def send_code(
+#     phone: Phone,
 #     session_mysql: AsyncSession = Depends(get_mysql_session),
 # ):
-#     user = await check_phone_status(user_phone=data.phone, session_mysql=session_mysql)
-#     if user:
-#         access_token = sing_access_jwt_token(user_id=user.user_id, phone=user.phone)
-#         refresh_token = sing_refresh_jwt_token(user_id=user.user_id, phone=user.phone)
-#         response = JSONResponse(status_code=200, content={
-#             "access_token": access_token,
-#             "refresh_token": refresh_token
-#         })
-#         response.set_cookie(key="access_token", value=access_token, httponly=True)
-#         response.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
-#         return response
+#     response = await check_phone_in_discound(phone=phone.phone, session_mysql=session_mysql)
+#     if response is not None and response is not False and (response or response == 0):
+#         response_send = await send_message(phone=phone.phone)
+#         response_data = response_send['data']
+#         print("Zvonok API response:", response_send)
+#         if response_send['status'] == 'error':
+#             raise HTTPException(status_code=500,
+#                                 detail=f"Zvonok API Error: {response_data}")
+#         await add_verify_session(call_id=response_data['call_id'], code=response_data['pincode'], phone=phone.phone[1:], session_mysql=session_mysql)
+#         return CallID(call_id=response_data['call_id'])
 #     raise HTTPException(status_code=404, detail="User not found")
-
 
 # @router.post('/register', response_model=TokenPair)
 # async def register_user(   
@@ -89,21 +135,27 @@ async def register_user(
         if age < 18:
             return json_response(status_code=422, message="User must be at least 18 years old.")
     
-    discount_cart = await add_user_to_loyal_system(data=data, session_mysql=session_mysql)
+    result = await add_user_to_loyal_system(data=data, session_mysql=session_mysql)
     
-    if discount_cart == "a":
+    if result == "a":
         return json_response(status_code=404, message="Phone by call id not found")
-    if discount_cart == "b":
+    if result == "b":
         return json_response(status_code=403, message="Phone not verified")
-    if discount_cart == "c":
-        return json_response(status_code=200, message="Successfully added.")
-
-    scores = convert_decimal_to_float(discount_cart)
+    if result == "c":
+        return json_response(status_code=400, message="Phone number already registered")
     
-    return json_response(status_code=400, message="Phone number already registered", scores=sum(scores))
-    
-
-
+    user = await check_phone_status(user_phone=result, session_mysql=session_mysql)
+    if user:
+        access_token = sing_access_jwt_token(user_id=user.user_id, phone=user.phone)
+        refresh_token = sing_refresh_jwt_token(user_id=user.user_id, phone=user.phone)
+        response = JSONResponse(status_code=200, content={
+            "access_token": access_token,
+            "refresh_token": refresh_token
+        })
+        response.set_cookie(key="access_token", value=access_token, httponly=True)
+        response.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
+        return response
+    return json_response(status_code=400, message="Phone number already registered")
 
 # @router.post('/refresh-jwt', response_model=TokenPair)
 # async def get_new_tokens_pair(

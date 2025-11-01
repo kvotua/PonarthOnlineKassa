@@ -12,11 +12,13 @@ mysql_url = str(os.getenv('MYSQL_DB_URL'))
 charset = str(os.getenv('CHARSER'))
 mysql_db_url = mysql_url + "?charset=" + charset
 
+debug_mode = int(os.getenv("DEBUG_MODE", 0))
+
 secret_key = os.getenv('SECRET_KEY')
 algorithm = os.getenv('ALGORITHM')
 example_jwt = os.getenv('EXAMPLE_JWT')
-expire_minutes = os.getenv('EXPIRE_MINUTES')
-expire_days = os.getenv('EXPIRE_DAYS')
+expire_access_days = os.getenv('EXPIRE_ACCESS_DAYS')
+expire_refresh_days = os.getenv('EXPIRE_REFRESH_DAYS')
 base_id = os.getenv('BASE_ID')
 firm_id = os.getenv('FIRM_ID')
 discount_id = os.getenv('DISCOUNT_ID')

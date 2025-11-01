@@ -1,13 +1,38 @@
+from enum import Enum
 from pydantic import BaseModel, Field, model_validator
-from typing import Annotated, Optional
+from typing import Annotated, List, Optional
 from datetime import date, datetime
 from fastapi import HTTPException
 
 from app.utils import validate_phone
 
-class AchievementSchema(BaseModel):
-    name: str
-    description: str
+
+class GiftStatus(str, Enum):
+    WAITING = "waiting"
+    GIVEN = "given"
+    ACTIVATED = "activated"
+    USED = "used"
+
+class GiftOrigin(str, Enum):
+    ORDER = "order"
+    POLL = "poll"
+
+class Gift(BaseModel):
+    id: int = Field(title="ID подарка", example=1)
+    title: str = Field(title="Название подарка", example="Подарочный сертификат")
+    description: str = Field(title="Описание подарка", example="Сертификат на 500 ₽")
+    good_id: Optional[int] = Field(title="ID товара", example=23928)
+    sect_id: Optional[int] = Field(title="ID категории товаров", example=12)
+    discount_card_id: int = Field(title="ID карты лояльности", example=1)
+    order_id: Optional[int] = Field(title="ID заказа", example=1191098)
+    poll_id: Optional[int] = Field(title="ID опроса", example=11150)
+    quantity: int = Field(title="Количество", example=1)
+    status: GiftStatus = Field(title="Статус подарка", example=GiftStatus.WAITING)
+    origin: GiftOrigin = Field(title="Происхождение купона", example=GiftOrigin.ORDER)
+    present_date: datetime = Field(title="Дата выдачи", example="2025-10-30T15:47:54")
+    date_end: datetime = Field(title="Срок действия", example="2025-12-31T23:59:59")
+    date_used: Optional[datetime] = Field(title="Дата получения", example=None)
+    date_cancelled: Optional[datetime] = Field(title="Дата аннулирования", example=None)
      
 class RegisterUserLoyaltySystem(BaseModel):
     last_name: Annotated[str, Field(title="The user's last name", examples=["Игнатьев"])]
@@ -16,6 +41,7 @@ class RegisterUserLoyaltySystem(BaseModel):
     birth_date: Annotated[date, Field(title="The user's birth date", examples=["2024-12-07"])]
     gender: Annotated[int, Field(title="1-Male, 2-Female", examples=[1], ge=1, le=2)]
     call_id: Annotated[int, Field(title='The ID received after sending the number', examples=['1191273219673078'])]
+    referal_discount_card_id: Annotated[Optional[int], Field(title="Referal Discount Card ID", examples=[3955057, 3940099])]
 
 class UserInfo(BaseModel):
     id: Annotated[int, Field(title="ID Discount_card", examples=[1])]
@@ -31,10 +57,8 @@ class UserInfo(BaseModel):
     send_telegram: Annotated[Optional[int], Field(title="ID Discount_card", examples=[1], default=None)]
     chat_id: Annotated[Optional[str], Field(title="ID Discount_card", examples=[""], default=None)]
     date_added: Annotated[datetime, Field(title="ID Discount_card", examples=["2025-05-17T20:07:00.803074"], default=None)]
-    achievements: Annotated[
-        list[AchievementSchema],
-        Field(title="User Achievements", default=[])
-    ]
+    gifts: Annotated[List[Gift], Field(title="Купоны пользователя", default_factory=list)]
+    total_score: Annotated[int, Field(title="User Points", examples=[100, 224, 150])]
 
 class InfoUserLoyaltySystem(BaseModel):
     id: Annotated[int, Field(title="ID Discount_card", examples=[1])]
@@ -69,27 +93,9 @@ class InfoUserLoyaltySystem(BaseModel):
 
 
 class ChangeUser(BaseModel):
-    phone: Annotated[Optional[str], Field(title="The user's phone number", examples=['79211234567'], default=None)]
     last_name: Annotated[Optional[str], Field(title="The user's last name", examples=["Игнатьев"], default=None)]
     first_name: Annotated[Optional[str], Field(title="The user's first name", examples=["Алексей"], default=None)]
     patronymic: Annotated[Optional[str], Field(title="The user's patronymic", examples=["Алиевич"], default=None)]
-    birth_date: Annotated[Optional[date], Field(title="The user's birth date", examples=["2024-12-07"], default=None)]
-
-    @model_validator(mode="before")
-    def check_phone(cls, values):
-        user_phone = values.get('phone')
-        if user_phone:
-            try:
-                valid_phone = validate_phone(user_phone)
-                if valid_phone is None:
-                    raise ValueError("Invalid phone number")
-                else:
-                    values["phone"] = valid_phone
-            except:
-                return ValueError("Invalid phone number")
-            
-        return values
-    
 
 # class RegisterUserDiscount(BaseModel):
 #     mag_id: Annotated[int]

@@ -3,7 +3,7 @@
 from select import select
 
 from app.databases.mysql_db import get_mysql_session
-from app.models.mysql import Section
+from app.models.mysql import Sections
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,7 +23,7 @@ async def get_all_sections(
 ):
     excluded_names = ["Хоз.нужды и расходники", "Тара для прайса!!!", "ТАРА ДЛЯ ПРАЙСА"]
 
-    stmt = select(Section).where(not_(Section.name.in_(excluded_names)))
+    stmt = select(Sections).where(not_(Sections.name.in_(excluded_names)))
     result = await db.execute(stmt)
     sections = result.scalars().all()
     return sections

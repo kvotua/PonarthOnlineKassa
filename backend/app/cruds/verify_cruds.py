@@ -70,14 +70,14 @@ async def change_verify_status(call_id: str, code: str, session_mysql: AsyncSess
 
 async def check_phone_in_discound(phone: str, session_mysql: AsyncSession) -> bool:
     stmt = select(DiscountCard).where(DiscountCard.phone ==
-                                      phone[1:], DiscountCard.base_id == base_id, DiscountCard.mag_id == firm_id)
+                                      phone, DiscountCard.base_id == base_id, DiscountCard.mag_id == firm_id)
     print(stmt)
     result: Result = await session_mysql.execute(stmt)
     check = result.scalars().first()
 
     if not check:
         print(
-            f"Карта не найдена для phone={phone[1:]}, base_id={base_id}, firm_id={firm_id}")
+            f"Карта не найдена для phone={phone}, base_id={base_id}, firm_id={firm_id}")
         return False
     print(f"Найдена карта: ID={check.id}")
     stmt_score = select(

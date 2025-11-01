@@ -1,7 +1,8 @@
 from decimal import Decimal
+import enum
 from typing import Optional
 
-from sqlalchemy import BigInteger, SmallInteger, Text, Integer, Date, DECIMAL, Time, func, VARCHAR, JSON, Column, String, \
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, Enum, Index, SmallInteger, Text, Integer, Date, DECIMAL, Time, func, VARCHAR, JSON, Column, String, \
     DateTime, Numeric, ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -9,6 +10,15 @@ from datetime import datetime, date, time
 
 from app.config import base_id, firm_id, discount_id
 
+class GiftStatus(enum.Enum):
+    WAITING = "waiting"
+    GIVEN = "given"
+    ACTIVATED = "activated"
+    USED = "used"
+
+class GiftOrigin(enum.Enum):
+    ORDER = "order"
+    POLL = "poll"
 
 Base_mysql = declarative_base()
 
@@ -44,6 +54,7 @@ class DiscountCard(Base_mysql):
     chat_id: Mapped[str] = mapped_column(Text, nullable=True)
     mode: Mapped[str] = mapped_column(Text, nullable=True)
     date_added: Mapped[datetime] = mapped_column(server_default=func.now())
+    referal_discount_card_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     data: Mapped[dict] = mapped_column(JSON,deferred=True)
 
 
@@ -69,7 +80,7 @@ class UserScore(Base_mysql):
     scores: Mapped[float] = mapped_column(DECIMAL(12, 2), nullable=False)
 
 class Good(Base_mysql):
-    __tablename__ = 'goods'
+    __tablename__ = 'good'
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     status: Mapped[int] = mapped_column(Integer, default=0, comment='1 - товар удалён')
@@ -128,8 +139,8 @@ class GoodPrice(Base_mysql):
     __table_args__ = (  PrimaryKeyConstraint('id', 'date_added'),  {'comment': 'Таблица цен товаров'},  )
 
 
-class Section(Base_mysql):
-    __tablename__ = 'section'
+class Sections(Base_mysql):
+    __tablename__ = 'sections'
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     status: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -241,15 +252,33 @@ class Users(Base_mysql):
     photo: Mapped[str] = mapped_column(String(200), nullable=True)
     referer: Mapped[str] = mapped_column(String(300), nullable=True)
 
-class Achievements(Base_mysql):
-    __tablename__ = 'achievements'
-
+class Gift(Base_mysql):
+    __tablename__ = 'gift'
+    
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(100), nullable=True)
-    description: Mapped[str] = mapped_column(String(300), nullable=True)
+    title: Mapped[str] = mapped_column(String(30), comment='Название подарка')
+    description: Mapped[str] = mapped_column(String(250), comment='Описание подарка')
+    
+    good_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('good.id'), nullable=True, comment='ID товара')
+    sect_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('sections.id'), nullable=True, comment='ID категории товаров')
+    discount_card_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('discount_cards.id'), comment='ID карты лояльности')
 
-class DiscountAchievements(Base_mysql):
-    __tablename__ = 'discount_achievements'
+    order_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('orders.id'), comment='ID заказа', nullable=True)
+    poll_id: Mapped[int] = mapped_column(BigInteger, comment='ID опроса', nullable=True)
+    
+    quantity: Mapped[int] = mapped_column(BigInteger, comment='Количество товара')
+    
+    origin: Mapped[GiftOrigin] = mapped_column(Enum(GiftOrigin), default=GiftOrigin.ORDER, comment='Происхождение купона (заказ/опрос)')
+    status: Mapped[GiftStatus] = mapped_column(Enum(GiftStatus), default=GiftStatus.WAITING, comment='Статус купона')
+    present_date: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), comment='Дата выдачи купона')
+    date_end: Mapped[datetime] = mapped_column(DateTime, comment='Срок окончания действия')
+    
+    date_used: Mapped[datetime] = mapped_column(DateTime, nullable=True, comment='Дата получения подарка')
+    date_cancelled: Mapped[datetime] = mapped_column(DateTime, nullable=True, comment='Дата аннулирования купона')
 
-    discount_card_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("discount_cards.id"))
-    achievement_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("achievements.id"))
+    __table_args__ = (
+        Index('ix_gift_discount_card_status', 'discount_card_id', 'status'),
+        Index('ix_gift_date_end_status', 'date_end', 'status'),
+        CheckConstraint('quantity > 0', name='check_positive_quantity'),
+        CheckConstraint('date_end > present_date', name='check_valid_dates'),
+    )

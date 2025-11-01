@@ -48,7 +48,10 @@ async def add_user_to_loyal_system(data: RegisterUserLoyaltySystem, session_mysq
             return "a"
         if user_phone == 0:
             return "b"
-
+        
+        user = await check_phone_status(user_phone=user_phone.phone, session_mysql=session_mysql)
+        if user:
+            return "c"
         stmt_check_phone = select(DiscountCard).where(
             DiscountCard.phone == user_phone.phone,
             DiscountCard.base_id == base_id,
@@ -73,6 +76,15 @@ async def add_user_to_loyal_system(data: RegisterUserLoyaltySystem, session_mysq
             "phone": user_phone.phone
         }
         phone_pass = random.randint(1000, 9999)
+
+        referal_user = None
+
+        if data.referal_discount_card_id:
+            result = await session_mysql.execute(
+                select(DiscountCard.id).where(DiscountCard.id == data.referal_discount_card_id)
+            )
+            referal_user = result.scalar_one_or_none()
+
         data_for_discount_card = DiscountCard(
             first=data.first_name,
             second=data.last_name,
@@ -85,15 +97,16 @@ async def add_user_to_loyal_system(data: RegisterUserLoyaltySystem, session_mysq
             card_num=user_phone.phone,
             card_old_num='',
             phone_pass=phone_pass,
-	    email='',
-	    photo='',
-	    adress='',
-	    avg_check=0,
-	    koef=0,
-	    telegram=0,
-	    send_telegram=1,
-	    chat_id=0,
-	    mode='',
+            email='',
+            photo='',
+            adress='',
+            avg_check=0,
+            koef=0,
+            telegram=0,
+            send_telegram=1,
+            chat_id=0,
+            mode='',
+            referal_discount_card_id=data.referal_discount_card_id if referal_user else None
         )
         session_mysql.add(data_for_discount_card)
         await session_mysql.commit()
@@ -111,7 +124,7 @@ async def add_user_to_loyal_system(data: RegisterUserLoyaltySystem, session_mysq
         await session_mysql.commit()
 
 
-        return "c"
+        return user_phone.phone
 
     except HTTPException as http_e:
         raise http_e

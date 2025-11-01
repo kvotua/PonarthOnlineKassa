@@ -12,6 +12,8 @@ class TokenPair(BaseModel):
 
 class LoginUser(BaseModel):
     phone: Annotated[str, Field(title="The user's phone number", examples=['79211234567'])]
+    call_id: Annotated[int, Field(title='The ID received after sending the number', examples=['1191273219673078'])]
+    code: Annotated[str, Field(title='The code sent by the call to the number', examples=['1234'], min_length=4, max_length=4)]
 
     @model_validator(mode="before")
     def check_phone(cls, values):

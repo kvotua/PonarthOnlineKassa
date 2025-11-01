@@ -2,7 +2,7 @@ from http.client import HTTPException
 from operator import and_
 
 from app.databases.mysql_db import get_mysql_session
-from app.models.mysql import Good, GoodPrice, Section
+from app.models.mysql import Good, GoodPrice, Sections
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -21,11 +21,11 @@ async def get_goods_with_prices(db: AsyncSession = Depends(get_mysql_session)):
             Good.name,
             Good.name_kassa,
             GoodPrice.price_real,
-            Section.name.label("section_name")
+            Sections.name.label("section_name")
         )
         .select_from(Good)  # Явно указываем основную таблицу
         .join(GoodPrice, Good.id == GoodPrice.good_id)  # Явное условие JOIN
-        .join(Section, Good.sect_id == Section.id)  # Явное условие JOIN
+        .join(Sections, Good.sect_id == Sections.id)  # Явное условие JOIN
         .where(
             GoodPrice.status == 1
         )
@@ -52,7 +52,7 @@ async def get_good_with_price_by_id(
         Good.name,
         Good.name_kassa,
         GoodPrice.price_real,
-        Section.name.label("section_name")
+        Sections.name.label("section_name")
 
     ).join(
         GoodPrice, Good.id == GoodPrice.good_id

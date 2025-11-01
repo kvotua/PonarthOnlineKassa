@@ -1,3 +1,4 @@
+from enum import Enum
 from pydantic import BaseModel, Field
 from typing import Annotated, Any, Optional
 from fastapi.responses import JSONResponse
@@ -13,9 +14,13 @@ class ResponseSchemaWithScores(BaseModel):
     message: Annotated[Any, Field(title="Response message", examples=["OK"])]
     scores: Annotated[Optional[Any], Field(title="Count scores", examples=[2.53], default=None)]
 
+class CallType(str, Enum):
+    AUTH = 'auth'
+    REGISTER = 'register'
 
 class CallID(BaseModel):
     call_id: Annotated[int, Field(title='The ID received after getting the call', examples=['1191273219673078'])]
+    call_type: Annotated[CallType, Field(title="Type of verification call", examples=["register", "auth"])]
 
 def json_response(status_code: int, message: any, scores: any = None) -> JSONResponse:
     if scores:

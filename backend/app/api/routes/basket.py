@@ -2,7 +2,7 @@ from http.client import HTTPException
 from operator import and_
 
 from app.databases.mysql_db import get_mysql_session
-from app.models.mysql import Good, GoodPrice, Section, Basket, DiscountCard, Orders
+from app.models.mysql import Good, GoodPrice, Sections, Basket, DiscountCard, Orders
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -10,15 +10,17 @@ from typing import Any, List
 from app.cruds import basket_cruds
 
 from app.schemas.good_schemas import GoodPriceResponse
+from app.utils import get_current_user_with_bearer
 
 router = APIRouter(prefix="/basket", tags=['basket'])
 
 @router.get("/all", response_model=Any)
 async def get_all_baskets(
-    card_num: str,
-    db: AsyncSession = Depends(get_mysql_session),
+    user_data=Depends(get_current_user_with_bearer),
+    db: AsyncSession = Depends(get_mysql_session)
 ):
-    info = await basket_cruds.get_all_baskets_by_card(db=db, card_num=card_num)
+    phone = user_data['phone']
+    info = await basket_cruds.get_all_baskets_by_card(db=db, card_num=phone)
     return info
     
 
@@ -32,7 +34,7 @@ async def get_good_with_price_by_id(
         Good.name,
         Good.name_kassa,
         GoodPrice.price_real,
-        Section.name.label("section_name")
+        Sections.name.label("section_name")
 
     ).join(
         GoodPrice, Good.id == GoodPrice.good_id
