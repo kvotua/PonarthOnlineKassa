@@ -2,7 +2,7 @@ from decimal import Decimal
 import enum
 from typing import Optional
 
-from sqlalchemy import BigInteger, Boolean, CheckConstraint, Enum, Index, SmallInteger, Text, Integer, Date, DECIMAL, Time, func, VARCHAR, JSON, Column, String, \
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, Enum, Float, Index, SmallInteger, Text, Integer, Date, DECIMAL, Time, func, VARCHAR, JSON, Column, String, \
     DateTime, Numeric, ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -191,6 +191,7 @@ class Orders(Base_mysql):
     fpd: Mapped[str] = mapped_column(String(300), nullable=True)
     qr_line: Mapped[str] = mapped_column(String(300), nullable=True)
     online_not_print: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    gift_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
 
 class Basket(Base_mysql):
     __tablename__ = 'basket'
@@ -267,11 +268,11 @@ class Gift(Base_mysql):
     order_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('orders.id'), comment='ID заказа', nullable=True)
     poll_id: Mapped[int] = mapped_column(BigInteger, comment='ID опроса', nullable=True)
     
-    quantity: Mapped[int] = mapped_column(BigInteger, comment='Количество товара')
+    quantity: Mapped[float] = mapped_column(Float, comment='Количество товара')
     
     origin: Mapped[GiftOrigin] = mapped_column(Enum(GiftOrigin), default=GiftOrigin.ORDER, comment='Происхождение купона (заказ/опрос)')
     status: Mapped[GiftStatus] = mapped_column(Enum(GiftStatus), default=GiftStatus.WAITING, comment='Статус купона')
-    present_date: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), comment='Дата выдачи купона')
+    present_date: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), comment='Дата выдачи купона', nullable=True)
     date_end: Mapped[datetime] = mapped_column(DateTime, comment='Срок окончания действия')
     
     date_used: Mapped[datetime] = mapped_column(DateTime, nullable=True, comment='Дата получения подарка')
