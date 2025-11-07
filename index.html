@@ -6,31 +6,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Здравствуйте!</title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/button.css">
+    <link rel="stylesheet" href="/css/panel.css">
+    <link rel="stylesheet" href="/css/paneltitle.css">
 </head>
 
 <body>
-    <div class="choice-container">
-        <div class="euler-top-left"></div>
-        <div class="euler-bottom-right"></div>
-        <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
-        <h1>Здравствуйте!</h1>
-        <label>На вашем бонусном счету <span>200 монет.</span></label>
 
+<div class="button-section">
+    <span class="button-title">Кнопки</span>
+    <div class="buttons">
+        <button class="button active">Активная</button>
+        <button class="button">Неактивная</button>
+    </div>
+</div>
 
-        <div class="button-container">
-            <button class="radio-btn selected">Классика</button>
-            <button class="radio-btn">Крафт</button>
-            <button class="radio-btn">Закуска</button>
+<div class="section-title">
+    <span class="title">Список</span>
+    <div class="panel">
+        <p class="title">Список пив</p>
+        <div class="list">
+            <div class="list-item">
+                <p class="item-text">Ponarth Classic</p>
+                <p class="item-badge">5.2%</p>
+            </div>
+            <div class="list-item">
+                <p class="item-text">Ponarth Craft</p>
+                <p class="item-badge">6.8%</p>
+            </div>
+            <div class="list-item">
+                <p class="item-text">Ponarth Snack</p>
+                <p class="item-badge">4.5%</p>
+            </div>
         </div>
+    </div>
+</div>
 
-        <script src="/js/script.js"></script>
+<div class="section">
+    <div class="title-2">Панели</div>
 
-        <img src="/img/photo_ponarth.jpg" class="photo-ponarth">
+    <div class="panel">
+        <div>Обычная панель с контентом</div>
+    </div>
 
-        <div class="beer-selection">
-            <div class="beer-1"></div>
-            <div class="beer-2"></div>
-        </div>
+    <div class="panel">
+        <div class="title">Панель с заголовком</div>
+        <div>Содержимое панели с заголовком</div>
+    </div>
+</div>
+
 </body>
 
 </html>

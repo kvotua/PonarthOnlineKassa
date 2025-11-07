@@ -1,0 +1,72 @@
+.section-title {
+    background: rgba(33, 33, 33, 0.8);
+    border: 1px solid rgba(105, 105, 105, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;}
+
+.title {
+    font-family: 'Montserrat', sans-serif;
+    color: #FCF9F2;
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.panel {
+    background: #212121;
+    border: 1px solid rgba(105, 105, 105, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+
+
+.panel .title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #FCF9F2;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(105, 105, 105, 0.3);
+}
+
+.panel .list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.list-item {
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+
+.list-item .item-text {
+    color: #FCF9F2;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.list-item .item-badge {
+    background: rgba(249, 208, 63, 0.2);
+    color: #F9D03F;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 40px;
+    text-align: center;
+}
