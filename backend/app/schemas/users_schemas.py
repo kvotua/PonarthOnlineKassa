@@ -14,6 +14,7 @@ class GiftStatus(str, Enum):
     USED = "used"
 
 class GiftOrigin(str, Enum):
+    NONE = "NONE"
     ORDER = "order"
     POLL = "poll"
 
@@ -26,7 +27,7 @@ class Gift(BaseModel):
     discount_card_id: int = Field(title="ID карты лояльности", example=1)
     order_id: Optional[int] = Field(title="ID заказа", example=1191098)
     poll_id: Optional[int] = Field(title="ID опроса", example=11150)
-    quantity: float = Field(title="Количество", example=1.0)
+    quantity: Optional[float] = Field(title="Количество", example=1.0)
     status: GiftStatus = Field(title="Статус подарка", example=GiftStatus.WAITING)
     origin: GiftOrigin = Field(title="Происхождение купона", example=GiftOrigin.ORDER)
     present_date: Optional[datetime] = Field(title="Дата выдачи", example="2025-10-30T15:47:54")
