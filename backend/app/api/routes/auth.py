@@ -53,6 +53,10 @@ async def login_user(
     data: LoginUser,
     session_mysql: AsyncSession = Depends(get_mysql_session),
 ):
+    print('data:')
+    print(f'- phone: {data.phone}')
+    print(f'- call_id: {data.call_id}')
+    print(f'- code: {data.code}')
     user = await check_phone_status(user_phone=data.phone, session_mysql=session_mysql)
     print(f'user: {str(user)}')
     if user:
