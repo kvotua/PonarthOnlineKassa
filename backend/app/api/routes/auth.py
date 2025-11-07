@@ -54,9 +54,13 @@ async def login_user(
     session_mysql: AsyncSession = Depends(get_mysql_session),
 ):
     user = await check_phone_status(user_phone=data.phone, session_mysql=session_mysql)
+    print(f'user: {str(user)}')
     if user:
+        print(f'user phone (db): {str(user.phone)}')
+        print(f'user phone (request): {str(data.phone)}')
         response_verify = await get_verify_session(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
         if response_verify:
+            print(f'response_verify code: {response_verify.code}')
             access_token = sing_access_jwt_token(user_id=user.user_id, phone=user.phone)
             refresh_token = sing_refresh_jwt_token(user_id=user.user_id, phone=user.phone)
             response = JSONResponse(status_code=200, content={

@@ -14,7 +14,7 @@ async def lifespan(app: FastAPI):
     # Инициализация подключений и клиентов при старте
     await startup_event()
     # await create_tables_postgres()
-    await create_tables_mysql()
+    # await create_tables_mysql()
     
     yield
     await shutdown_event()

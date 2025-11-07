@@ -17,6 +17,7 @@ class GiftStatus(enum.Enum):
     USED = "used"
 
 class GiftOrigin(enum.Enum):
+    NONE = "none"
     ORDER = "order"
     POLL = "poll"
 
@@ -253,7 +254,7 @@ class Users(Base_mysql):
     referer: Mapped[str] = mapped_column(String(300), nullable=True)
 
 class Gift(Base_mysql):
-    __tablename__ = 'gift'
+    __tablename__ = 'gifts'
     
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(30), comment='Название подарка')
