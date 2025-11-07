@@ -59,7 +59,7 @@ class UserInfo(BaseModel):
     chat_id: Annotated[Optional[str], Field(title="ID Discount_card", examples=[""], default=None)]
     date_added: Annotated[datetime, Field(title="ID Discount_card", examples=["2025-05-17T20:07:00.803074"], default=None)]
     gifts: Annotated[List[Gift], Field(title="Купоны пользователя", default_factory=list)]
-    total_score: Annotated[int, Field(title="User Points", examples=[100, 224, 150])]
+    total_score: Annotated[float, Field(title="User Points", examples=[100, 224, 150])]
 
 class InfoUserLoyaltySystem(BaseModel):
     id: Annotated[int, Field(title="ID Discount_card", examples=[1])]
