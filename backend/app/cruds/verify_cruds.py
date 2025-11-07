@@ -82,7 +82,7 @@ async def check_phone_in_discound(phone: str, session_mysql: AsyncSession) -> bo
     print(f"Найдена карта: ID={check.id}")
     stmt_score = select(
         UserScore.scores).where(
-        UserScore.card_id == check.id,
+        UserScore.card_id == check.id, UserScore.base_id == base_id,
         UserScore.status == 1)
     result_score: Result = await session_mysql.execute(stmt_score)
     scores = result_score.scalars().all()

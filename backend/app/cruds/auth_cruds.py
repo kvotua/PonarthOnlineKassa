@@ -12,11 +12,10 @@ from datetime import datetime, date, timedelta
 async def check_phone_status(user_phone: str, session_mysql: AsyncSession) -> DiscountCard:
     try:
         stmt_user = select(DiscountCard).where(
-            DiscountCard.phone == user_phone)
+            DiscountCard.phone == user_phone, DiscountCard.base_id == base_id, DiscountCard.mag_id == firm_id)
         result_user: Result = await session_mysql.execute(stmt_user)
-        user = result_user.scalar_one_or_none()
-        if user:
-            return user
+        user = result_user.scalars().first()
+        return user
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -61,7 +60,7 @@ async def add_user_to_loyal_system(data: RegisterUserLoyaltySystem, session_mysq
         if check_phone:
             stmt_scores = select(
                 UserScore.scores).where(
-                UserScore.card_id == check_phone.id,
+                UserScore.card_id == check_phone.id, UserScore.base_id == base_id,
                 UserScore.status == 1)
             result_scores: Result = await session_mysql.execute(stmt_scores)
             scores = result_scores.scalars().all()

@@ -9,6 +9,7 @@ from sqlalchemy import select
 from typing import List
 
 from app.schemas.good_schemas import GoodPriceResponse
+from app.config import base_id, firm_id
 
 
 router = APIRouter()
@@ -27,7 +28,7 @@ async def get_goods_with_prices(db: AsyncSession = Depends(get_mysql_session)):
         .join(GoodPrice, Good.id == GoodPrice.good_id)  # Явное условие JOIN
         .join(Sections, Good.sect_id == Sections.id)  # Явное условие JOIN
         .where(
-            GoodPrice.status == 1
+            GoodPrice.status == 1, Good.base_id == base_id, Good.firm_id == firm_id
         )
     )
 
@@ -57,10 +58,10 @@ async def get_good_with_price_by_id(
     ).join(
         GoodPrice, Good.id == GoodPrice.good_id
     ).where(
-        and_(
-            GoodPrice.status == 1,
-            Good.id == good_id
-        )
+        Good.base_id == base_id, 
+        Good.firm_id == firm_id,
+        GoodPrice.status == 1,
+        Good.id == good_id
     )
 
     result = await db.execute(stmt)

@@ -9,6 +9,8 @@ from sqlalchemy import select
 from typing import Any, List
 from app.cruds import basket_cruds
 
+from app.config import base_id, firm_id
+
 from app.schemas.good_schemas import GoodPriceResponse
 from app.utils import get_current_user_with_bearer
 
@@ -41,7 +43,7 @@ async def get_good_with_price_by_id(
     ).where(
         and_(
             GoodPrice.status == 1,
-            Good.id == good_id
+            Good.id == good_id, Good.base_id == base_id, Good.firm_id == firm_id
         )
     )
 

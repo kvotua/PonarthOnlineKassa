@@ -3,6 +3,7 @@ from sqlalchemy import desc, func, select
 from app.models.mysql import Good, GoodPrice, Basket, DiscountCard, Orders, UserScore, Users
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
+from app.config import base_id, firm_id
 
 async def get_basket_by_order_id(db: AsyncSession, order_id: int):
     stmt = (
@@ -16,7 +17,9 @@ async def get_basket_by_order_id(db: AsyncSession, order_id: int):
         )
         .select_from(Basket)
         .join(Good, Good.id == Basket.good_id, isouter=True)
-        .where(Basket.order_id == order_id)
+        .where(Basket.order_id == order_id,
+        Good.base_id == base_id, 
+        Good.firm_id == firm_id)
     )
     result = await db.execute(stmt)
     return result.mappings().all()
@@ -36,7 +39,7 @@ async def get_order_by_id(db: AsyncSession, order_id: int):
             Users.smena_fio.label("short_fio")
         )
         .join(Users, Users.id == Orders.user_id, isouter=True)
-        .where(Orders.id == order_id)
+        .where(Orders.id == order_id, Orders.firm_id == firm_id)
     )
 
     order_result = await db.execute(order_stmt)
@@ -59,7 +62,7 @@ async def get_order_by_id(db: AsyncSession, order_id: int):
         .where(
             DiscountCard.card_num == order["card_num"],
             UserScore.status == 1,
-            UserScore.order_id < order_id
+            UserScore.order_id < order_id, UserScore.base_id == base_id
         )
         .group_by(DiscountCard.first, DiscountCard.second)
     )
@@ -121,7 +124,8 @@ async def get_all_baskets_by_card(db: AsyncSession, card_num: str):
         .join(DiscountCard, Orders.card_num == DiscountCard.card_num)
         .where(
             Orders.card_num == card_num,
-            Orders.date_closed >= six_months_ago
+            Orders.date_closed >= six_months_ago,
+            Orders.firm_id == firm_id
         )
         .order_by(desc(Orders.id))
     )
@@ -152,7 +156,7 @@ async def get_all_baskets_by_card(db: AsyncSession, card_num: str):
             .where(
                 DiscountCard.card_num == card_num,
                 UserScore.status == 1,
-                UserScore.order_id < order_id
+                UserScore.order_id < order_id, UserScore.base_id == base_id
             )
         )
         score_result = await db.execute(score_stmt)
