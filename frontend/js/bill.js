@@ -1,5 +1,5 @@
-const urlParams = new URLSearchParams(window.location.search);
-const orderId = urlParams.get('order_id');
+const urlParamsBill = new URLSearchParams(window.location.search);
+const orderId = urlParamsBill.get('order_id');
 
 const billContainer = document.getElementById('billContainer');
 const billDate = document.getElementById('billDate');

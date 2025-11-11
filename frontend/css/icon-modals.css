@@ -12,21 +12,37 @@
     --green: #80c0a1;
 }
 
-.icons-button-container {
+.bottom-wrapper {
     position: fixed;
     bottom: 20px;
-    z-index: 100;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 20px;
+    z-index: 999;
+    pointer-events: none; /* чтобы клики не блокировались */
 }
 
-.left-icon-button {
-    left: 20px;
+.left-icon-button,
+.right-icon-button {
+    pointer-events: auto; /* возвращаем кликабельность */
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
+.left-icon-button {
+    left: 20px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
 .right-icon-button {
-    right: 20px;
+    right: 20px !important;
 }
 
 .coin-button {
@@ -538,14 +554,9 @@
     background: rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 15px;
-    animation: fadeIn 0.5s ease;
+    /* animation: fadeIn 0.5s ease; */
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: transform 0.3s ease;
-}
-
-.operation-card:hover {
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.1);
 }
 
 .operation-header {

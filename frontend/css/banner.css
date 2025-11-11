@@ -14,18 +14,16 @@
 }
 
 /* iOS Widget Container */
-.ios-widget {
-    height: var(--widget-height);
+.widget {
+    width: 100%;
     background: rgba(23, 22, 22, 0.4);
     backdrop-filter: blur(20px);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow:
-        0 25px 50px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
     overflow: hidden;
     position: relative;
-    margin-bottom: 30px;
+    margin-bottom: var(--indent-between);
 }
 
 /* Widget Header */
@@ -52,7 +50,6 @@
 
 /* Widget Content */
 .widget-content {
-    height: calc(var(--widget-height) - 60px);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -212,8 +209,8 @@
 }
 
 .stats-section {
-    margin-top: 25px;
-    padding-top: 25px;
+    margin-top: var(--indent-between);
+    padding-top: var(--indent-between);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 

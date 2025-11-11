@@ -371,7 +371,7 @@ function loadOperations(operationsFiltered) {
                         <div class="points-total">${operation.previous_scores} → ${parseFloat(operation.previous_scores) + parseFloat(operation.score_added)}</div>
                     </div>
                     <div class="operation-footer">
-                        <div class="prize-icon">${operation.order_id ? '🎁' : ''}</div>
+                        <div class="prize-icon">${operation.gift_emoji ? operation.gift_emoji : ''}</div>
                         <button class="share-button">Поделиться</button>
                     </div>
                 `;
@@ -816,6 +816,38 @@ document.querySelectorAll('.modal-content').forEach(modal => {
     modal.addEventListener('touchstart', onPointerDown, { passive: false });
 });
 
+async function fetchReferals() {
+    let phone_number = localStorage.getItem("phone");
+    const token = localStorage.getItem("access_token");
+    await fetch(`${host}/api/v1/referal`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                return null;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                const refReferalsValue = document.getElementById('refReferalsValue');
+                const refLastMonthValue = document.getElementById('refLastMonthValue');
+                const refCurrentMonthValue = document.getElementById('refCurrentMonthValue');
+                const refTotalValue = document.getElementById('refTotalValue');
+
+                refReferalsValue.innerText = `${data.referals} чел.`;
+                refLastMonthValue.innerText = `${data.last_month} ₽`;
+                refCurrentMonthValue.innerText = `${data.current_month} ₽`;
+                refTotalValue.innerText = `${data.total} ₽`;
+            }
+        });
+}
+
 async function fetchProfile() {
     let phone_number = localStorage.getItem("phone");
     const token = localStorage.getItem("access_token");
@@ -866,6 +898,21 @@ async function fetchProfile() {
                 gift.status === 'used'
             );
 
+            if (data.gifts.length === 0) {
+                const profileTabs = document.getElementById('profileTabs');
+                const title = document.getElementById('profileModalTitle');
+
+                const rewardsInput = profileTabs.querySelector('#emoji-glass-rewards');
+                const rewardsLabel = profileTabs.querySelector('#emoji-glass-tab-label');
+                const glider = profileTabs.querySelector('.glass-glider');
+
+                if (title) title.innerText = 'Профиль';
+
+                if (rewardsInput) rewardsInput.remove();
+                if (rewardsLabel) rewardsLabel.remove();
+                if (glider) glider.style.width = '100%';
+            }
+
             emojiNotification.textContent = unusedCouponsData.length;
             if (unusedCouponsData.length === 0) {
                 emojiNotification.style.display = 'none';
@@ -898,14 +945,33 @@ async function fetchProfile() {
         });
 }
 
-
 document.addEventListener('DOMContentLoaded', async function () {
+
+    const iframe = document.getElementById('banner-widget');
+    const originalWidth = 1097;
+    const originalHeight = 626;
+
+    function resizeIframe() {
+        const currentWidth = iframe.offsetWidth;
+        if (!currentWidth) {
+            requestAnimationFrame(resizeIframe);
+            return;
+        }
+        const newHeight = currentWidth * (originalHeight / originalWidth);
+        iframe.style.height = newHeight + 'px';
+    }
+
+    resizeIframe();
+
+    window.addEventListener('resize', resizeIframe);
+
     let phone_number = localStorage.getItem("phone");
 
     const token = localStorage.getItem("access_token");
 
     try {
         await fetchProfile();
+        await fetchReferals();
 
         operationsData = await fetch(`${host}/api/v1/basket/all`, {
             method: 'GET',

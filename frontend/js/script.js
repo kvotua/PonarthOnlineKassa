@@ -124,7 +124,7 @@ function confirmPhoneCode(phone, callId, code, callType) {
                     localStorage.setItem('access_token', data.access_token);
                     localStorage.setItem('refresh_token', data.refresh_token);
 
-                    window.location.href = './Product selection.html';
+                    window.location.href = './profile.html';
                     return data;
                 }
 
@@ -191,7 +191,7 @@ function registerDiscount(callId) {
             localStorage.setItem('refresh_token', data.refresh_token);
 
 
-            window.location.href = './Product selection.html';
+            window.location.href = './profile.html';
 
             return data;
         });
