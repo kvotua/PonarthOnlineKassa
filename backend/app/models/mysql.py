@@ -272,11 +272,17 @@ class Gift(Base_mysql):
     
     origin: Mapped[GiftOrigin] = mapped_column(Enum(GiftOrigin), default=GiftOrigin.ORDER, comment='Происхождение купона (заказ/опрос)')
     status: Mapped[GiftStatus] = mapped_column(Enum(GiftStatus), default=GiftStatus.WAITING, comment='Статус купона')
-    present_date: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), comment='Дата выдачи купона', nullable=True)
-    date_end: Mapped[datetime] = mapped_column(DateTime, comment='Срок окончания действия')
+    present_date: Mapped[datetime] = mapped_column(DateTime, comment='Дата выдачи купона', nullable=True)
+    date_end: Mapped[datetime] = mapped_column(DateTime, comment='Срок окончания действия', nullable=True)
     
     date_used: Mapped[datetime] = mapped_column(DateTime, nullable=True, comment='Дата получения подарка')
     date_cancelled: Mapped[datetime] = mapped_column(DateTime, nullable=True, comment='Дата аннулирования купона')
+
+    score: Mapped[int] = mapped_column(Integer, nullable=True, comment='Количество баллов которые будут начислены после получения награды')
+    cashback: Mapped[float] = mapped_column(Float, nullable=True, comment='Множитель кэшбека для покупки')
+
+    date_added: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=True)
+    emoji: Mapped[str] = mapped_column(String(100), nullable=True)
 
     __table_args__ = (
         Index('ix_gift_discount_card_status', 'discount_card_id', 'status'),

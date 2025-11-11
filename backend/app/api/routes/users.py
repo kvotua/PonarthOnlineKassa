@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from app.schemas.users_schemas import ChangeUser, InfoUserLoyaltySystem, UserInfo
+from app.schemas.users_schemas import ChangeUser, ReferalInfo, TransferScoreRequest, UserInfo
 from app.api.dependensies import get_access_token
 from app.cruds import users_cruds
 from app.databases.postgresdb import get_postgres_session
@@ -24,6 +24,23 @@ async def get_profile(
     phone = user_data['phone']
     userData = await users_cruds.get_user_loyalty_by_id(card_num=phone, db=db)
     return userData
+
+@router.post('/transfer', response_model=ResponseSchema)
+async def transfer_scores(
+    data: TransferScoreRequest,
+    user_data = Depends(get_current_user_with_bearer),
+    db: AsyncSession = Depends(get_mysql_session)
+):
+    return ResponseSchema(status_code=200, message="Scores successfully sended")
+
+@router.get('/referal', response_model=ReferalInfo)
+async def get_referal_info(
+    user_data = Depends(get_current_user_with_bearer),
+    db: AsyncSession = Depends(get_mysql_session)
+):
+    phone = user_data['phone']
+    referalData = await users_cruds.get_referal_info(card_num=phone, db=db)
+    return referalData
 
 @router.patch('/gift/open', response_model=Any)
 async def open_gift(

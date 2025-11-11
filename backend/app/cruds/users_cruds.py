@@ -1,14 +1,16 @@
 
-from datetime import datetime, timezone
-from sqlalchemy import select, Result, update
+from datetime import datetime, date, timedelta, timezone
+from sqlalchemy import func, select, Result, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 
-from app.models.mysql import DiscountCard, Gift, GiftStatus
-from app.schemas.users_schemas import ChangeUser, InfoUserLoyaltySystem, UserInfo
+from app.models.mysql import DiscountCard, Gift, GiftStatus, Orders, UserScore
+from app.schemas.users_schemas import ChangeUser, ReferalInfo, UserInfo
 from app.schemas.users_schemas import Gift as GiftSchema
 from app.cruds.verify_cruds import check_phone_in_discound
 from app.utils import convert_decimal_to_float
+
+from app.config import base_id
 
 async def get_user_discount_id_by_card(card_num: str, db: AsyncSession) -> int | None:
     stmt_user = select(DiscountCard.id).where(DiscountCard.card_num == card_num)
@@ -74,6 +76,64 @@ async def activate_gift(gift_id: int, db: AsyncSession) -> None:
     await db.execute(stmt)
     await db.commit()
 
+async def get_referal_info(card_num: str, db: AsyncSession) -> ReferalInfo:
+    # Получаем ID карты
+    result = await db.execute(
+        select(DiscountCard.id).where(DiscountCard.card_num == card_num)
+    )
+    card_id = result.scalar_one_or_none()
+
+    referals = 0
+    last_month = 0
+    current_month = 0
+    total = 0
+
+    if card_id:
+        result = await db.execute(
+            select(func.count()).where(DiscountCard.referal_discount_card_id == card_id)
+        )
+        referals = result.scalar() or 0
+
+        today = date.today()
+        current_month_start = today.replace(day=1)
+        last_month_end = current_month_start - timedelta(days=1)
+        last_month_start = last_month_end.replace(day=1)
+
+        base_query = (
+            select(func.coalesce(func.sum(UserScore.scores), 0))
+            .join(Orders, Orders.id == UserScore.order_id)
+            .where(
+                UserScore.card_id == card_id,
+                UserScore.base_id == base_id,
+                Orders.card_id != card_id
+            )
+        )
+
+        total = (await db.execute(base_query)).scalar() or 0
+
+        result = await db.execute(
+            base_query.where(
+                Orders.date_closed >= last_month_start,
+                Orders.date_closed <= last_month_end
+            )
+        )
+        last_month = result.scalar() or 0
+
+        result = await db.execute(
+            base_query.where(
+                Orders.date_closed >= current_month_start,
+                Orders.date_closed <= today
+            )
+        )
+        current_month = result.scalar() or 0
+
+    return ReferalInfo(
+        referals=referals,
+        last_month=float(last_month),
+        current_month=float(current_month),
+        total=float(total)
+    )
+
 async def get_user_loyalty_by_id(card_num: str, db: AsyncSession) -> UserInfo:
     stmt_user = select(
         DiscountCard.id,
@@ -114,7 +174,11 @@ async def get_user_loyalty_by_id(card_num: str, db: AsyncSession) -> UserInfo:
         Gift.present_date,
         Gift.date_end,
         Gift.date_used,
-        Gift.date_cancelled
+        Gift.date_cancelled,
+        Gift.score,
+        Gift.cashback,
+        Gift.date_added,
+        Gift.emoji
     ).where(Gift.discount_card_id == discount_card_id)
 
     result_gifts = await db.execute(stmt_gifts)

@@ -144,14 +144,14 @@ def get_new_tokens_pair(refresh_token: str) -> dict:
             key=secret_key,
             algorithms=[algorithm])
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Invalid token.")
+        raise HTTPException(status_code=401, detail="Invalid or expired token.")
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token.")
+        raise HTTPException(status_code=401, detail="Invalid or expired token.")
 
     now_ts = int(datetime.now(timezone.utc).timestamp())
 
     if decoded.get("exp") is None or decoded.get("exp") <= now_ts:
-        raise HTTPException(status_code=401, detail="Expired token.")
+        raise HTTPException(status_code=401, detail="Invalid or expired token.")
 
     if decoded.get("type") != "refresh":
         raise HTTPException(status_code=401, detail="Invalid token type.")

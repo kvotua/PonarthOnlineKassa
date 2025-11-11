@@ -1,6 +1,6 @@
 
 from sqlalchemy import desc, func, select
-from app.models.mysql import Good, GoodPrice, Basket, DiscountCard, Orders, UserScore, Users
+from app.models.mysql import Gift, GiftStatus, Good, GoodPrice, Basket, DiscountCard, Orders, UserScore, Users
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
 from app.config import base_id, firm_id
@@ -36,9 +36,12 @@ async def get_order_by_id(db: AsyncSession, order_id: int):
             Orders.scores,
             Orders.card_num,
             Users.fio.label("full_fio"),
-            Users.smena_fio.label("short_fio")
+            Users.smena_fio.label("short_fio"),
+            Gift.title.label("gift_title"),
+            Gift.emoji.label("gift_emoji"),
         )
         .join(Users, Users.id == Orders.user_id, isouter=True)
+        .join(Gift, Gift.id == Orders.gift_id, isouter=True)
         .where(Orders.id == order_id, Orders.firm_id == firm_id)
     )
 
@@ -92,6 +95,9 @@ async def get_order_by_id(db: AsyncSession, order_id: int):
         for row in basket_rows
     ]
 
+    gift_title = order["gift_title"]
+    gift_emoji = order["gift_emoji"]
+
     return {
         "order_id": order_id,
         "user": user,
@@ -102,6 +108,10 @@ async def get_order_by_id(db: AsyncSession, order_id: int):
         "score_added": order["price_save"],
         "score_subtracted": order["scores"],
         "previous_scores": previous_scores,
+        "gift": {
+            "title": gift_title,
+            "emoji": gift_emoji
+        },
         "goods": goods_list,
     }
 
@@ -117,8 +127,9 @@ async def get_all_baskets_by_card(db: AsyncSession, card_num: str):
             Orders.price_save,
             Orders.price_real,
             Orders.scores,
+            Orders.gift_id,
             Users.fio.label("full_fio"),
-            Users.smena_fio.label("short_fio")
+            Users.smena_fio.label("short_fio"),
         )
         .join(Users, Users.id == Orders.user_id, isouter=True)
         .join(DiscountCard, Orders.card_num == DiscountCard.card_num)
@@ -179,6 +190,23 @@ async def get_all_baskets_by_card(db: AsyncSession, card_num: str):
             for row in basket_rows
         ]
 
+        gift_emoji = None
+
+        print(order['gift_id'])
+
+        if order["gift_id"]:
+            gift_stmt = select(Gift.emoji, Gift.status).where(Gift.id == order["gift_id"])
+            gift_result = await db.execute(gift_stmt)
+            gift_row = gift_result.mappings().first()
+            if gift_row:
+                status = gift_row["status"]
+                if status in (GiftStatus.ACTIVATED, GiftStatus.USED):
+                    gift_emoji = gift_row["emoji"]
+                elif status == GiftStatus.GIVEN:
+                    gift_emoji = "🎁"
+                else:
+                    gift_emoji = None
+
         all_orders.append({
             "order_id": order_id,
             "user": user,
@@ -189,6 +217,7 @@ async def get_all_baskets_by_card(db: AsyncSession, card_num: str):
             "score_added": score_added,
             "score_subtracted": score_subtracted,
             "previous_scores": float(previous_scores),
+            "gift_emoji": gift_emoji,
             "goods": goods_list,
         })
 
