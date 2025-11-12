@@ -24,6 +24,8 @@ const searchInput = document.querySelector('.search-input');
 const operationsList = document.getElementById('operationsList');
 
 const phoneInput = document.getElementById('phoneInput');
+const scoresInput = document.getElementById('scoresInput');
+
 const recipientInfo = document.getElementById('recipientInfo');
 const recipientName = document.getElementById('recipientName');
 const recipientPhone = document.getElementById('recipientPhone');
@@ -68,49 +70,50 @@ let operationsData = [];
 let rewardsData = [];
 let unusedCouponsData = [];
 let prizesHistoryData = [];
+let transferHistoryData = [];
 
-const transferHistoryData = [
-    {
-        id: 1,
-        name: "Иван Иванов",
-        date: "15 мая 2023",
-        amount: -2500,
-        type: "Перевод",
-        receiptNumber: null
-    },
-    {
-        id: 2,
-        name: "Мария Петрова",
-        date: "10 мая 2023",
-        amount: 1500,
-        type: "Поступление",
-        receiptNumber: null
-    },
-    {
-        id: 3,
-        name: "Супермаркет 'Продукты'",
-        date: "8 мая 2023",
-        amount: 45,
-        type: "Начисление баллов",
-        receiptNumber: "Чек №458792"
-    },
-    {
-        id: 4,
-        name: "Кофейня 'Aroma'",
-        date: "5 мая 2023",
-        amount: -30,
-        type: "Списание баллов",
-        receiptNumber: "Чек №321567"
-    },
-    {
-        id: 5,
-        name: "Алексей Смирнов",
-        date: "1 мая 2023",
-        amount: -10000,
-        type: "Перевод",
-        receiptNumber: null
-    }
-];
+// const transferHistoryData = [
+//     {
+//         id: 1,
+//         name: "Иван Иванов",
+//         date: "15 мая 2023",
+//         amount: -2500,
+//         type: "Перевод",
+//         receiptNumber: null
+//     },
+//     {
+//         id: 2,
+//         name: "Мария Петрова",
+//         date: "10 мая 2023",
+//         amount: 1500,
+//         type: "Поступление",
+//         receiptNumber: null
+//     },
+//     {
+//         id: 3,
+//         name: "Супермаркет 'Продукты'",
+//         date: "8 мая 2023",
+//         amount: -45,
+//         type: "Начисление баллов",
+//         receiptNumber: 5678
+//     },
+//     {
+//         id: 4,
+//         name: "Кофейня 'Aroma'",
+//         date: "5 мая 2023",
+//         amount: -30,
+//         type: "Списание баллов",
+//         receiptNumber: 1234
+//     },
+//     {
+//         id: 5,
+//         name: "Алексей Смирнов",
+//         date: "1 мая 2023",
+//         amount: -10000,
+//         type: "Перевод",
+//         receiptNumber: null
+//     }
+// ];
 
 const usersDatabase = [
     { phone: "+79161234567", name: "Иван Иванов" },
@@ -182,13 +185,25 @@ function openEmojiModal() {
     modal.style.transition = 'none';
     modal.style.transform = `translateY(${window.innerHeight}px)`;
 
+    const modalHeight = modal.offsetHeight;
+    const viewportHeight = window.innerHeight;
+    let minTranslateY = viewportHeight - modalHeight;
+
+    let initialBefore = window.innerHeight * 0.3;
+    let initial = window.innerHeight * 0.4;
+
+    if (initial >= modalHeight) {
+        initial = minTranslateY;
+        initialBefore = minTranslateY;
+    }
+
     requestAnimationFrame(() => {
         modal.style.transition = 'transform 0.36s cubic-bezier(0.25, 1, 0.5, 1)';
-        modal.style.transform = `translateY(${window.innerHeight * 0.3}px)`;
+        modal.style.transform = `translateY(${initialBefore}px)`;
 
         setTimeout(() => {
             modal.style.transition = 'transform 0.36s ease';
-            modal.style.transform = `translateY(${window.innerHeight * 0.4}px)`;
+            modal.style.transform = `translateY(${initial}px)`;
 
             setTimeout(() => {
                 isOpening = false;
@@ -204,9 +219,21 @@ function openEmojiModal() {
 }
 
 function closeModal() {
+
     document.querySelectorAll('.modal-content').forEach(content => {
+        const modalHeight = content.offsetHeight;
+        const viewportHeight = window.innerHeight;
+        let minTranslateY = viewportHeight - modalHeight;
+
+        let initialBefore = window.innerHeight * 0.3;
+        let initial = window.innerHeight * 0.4;
+
+        if (initial >= modalHeight) {
+            initial = minTranslateY + 10;
+            initialBefore = minTranslateY;
+        }
         content.style.transition = 'transform 0.1s ease';
-        content.style.transform = 'translateY(100%)';
+        content.style.transform = `translateY(${viewportHeight}px)`;
     });
 
     setTimeout(() => {
@@ -229,6 +256,20 @@ function switchEmojiTab(tabName) {
         content.classList.remove('active');
     });
 
+    if (tabName == 'profile') {
+        const modal = document.querySelector('#emojiModalOverlay .modal-content');
+
+        const modalHeight = modal.offsetHeight;
+        const viewportHeight = window.innerHeight;
+        let minTranslateY = viewportHeight - modalHeight;
+
+        let initialBefore = window.innerHeight * 0.3;
+        let initial = window.innerHeight * 0.4;
+
+        modal.style.transition = 'transform 0.2s ease';
+        modal.style.transform = `translateY(${initial}px)`;
+    }
+
     document.getElementById(`emoji-${tabName}-content`).classList.add('active');
 }
 
@@ -249,14 +290,14 @@ emojiModalOverlay.addEventListener('click', function (event) {
     }
 });
 
-// coinTabRadios.forEach(radio => {
-//     radio.addEventListener('change', function () {
-//         if (this.checked) {
-//             const tabName = this.id.replace('coin-glass-', '');
-//             switchCoinTab(tabName);
-//         }
-//     });
-// });
+coinTabRadios.forEach(radio => {
+    radio.addEventListener('change', function () {
+        if (this.checked) {
+            const tabName = this.id.replace('coin-glass-', '');
+            switchCoinTab(tabName);
+        }
+    });
+});
 
 emojiTabRadios.forEach(radio => {
     radio.addEventListener('change', function () {
@@ -290,6 +331,8 @@ document.querySelectorAll('#transferSortDropdown .sort-option').forEach(option =
     option.addEventListener('click', function () {
         const sortType = this.getAttribute('data-sort');
         transferSortDropdown.style.display = 'none';
+        sortTransfers(sortType);
+        loadTransferHistory();
 
         transferSortButton.querySelector('span').textContent = this.textContent;
     });
@@ -304,6 +347,25 @@ document.addEventListener('click', function (event) {
         transferSortDropdown.style.display = 'none';
     }
 });
+
+function sortTransfers(type) {
+    if (!Array.isArray(transferHistoryData)) return;
+
+    switch (type) {
+        case 'date-newest':
+            transferHistoryData.sort((a, b) => new Date(b.date) - new Date(a.date));
+            break;
+        case 'date-oldest':
+            transferHistoryData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            break;
+        case 'amount-high':
+            transferHistoryData.sort((a, b) => b.amount - a.amount);
+            break;
+        case 'amount-low':
+            transferHistoryData.sort((a, b) => a.amount - b.amount);
+            break;
+    }
+}
 
 function sortOperations(type) {
     if (!Array.isArray(operationsData)) return;
@@ -460,17 +522,25 @@ function loadTransferHistory() {
         transferItem.className = 'transfer-history-item';
 
         const receiptInfo = transfer.receiptNumber ?
-            `<div class="receipt-number">${transfer.receiptNumber}</div>` : '';
+            `<div class="receipt-number">Чек №${transfer.receiptNumber}</div>` : '';
+
+        const dateObj = new Date(transfer.date);
+
+        const formattedDate = dateObj.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
 
         transferItem.innerHTML = `
                     <div class="transfer-info">
                         <div class="transfer-name">${transfer.name}</div>
-                        <div class="transfer-date">${transfer.date}</div>
+                        <div class="transfer-date">${formattedDate}</div>
                         <div class="transfer-type">${transfer.type}</div>
                         ${receiptInfo}
                     </div>
                     <div class="transfer-amount ${transfer.amount > 0 ? 'positive' : 'negative'}">
-                        ${transfer.amount > 0 ? '+' : ''}${transfer.amount} ${transfer.type.includes('балл') ? 'баллов' : '₽'}
+                        ${transfer.amount > 0 ? '+' : ''}${transfer.amount} баллов
                     </div>
                 `;
 
@@ -552,11 +622,24 @@ function filterTransferHistory() {
         return;
     }
 
-    const filteredData = transferHistoryData.filter(transfer =>
-        transfer.name.toLowerCase().includes(searchTerm) ||
-        transfer.date.toLowerCase().includes(searchTerm) ||
-        transfer.type.toLowerCase().includes(searchTerm)
-    );
+    const filteredData = transferHistoryData.filter(transfer => {
+        const dateObj = new Date(transfer.date);
+        const formattedDate = dateObj.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+
+        const term = searchTerm.toLowerCase();
+
+        return (
+            transfer.name.toLowerCase().includes(term) ||
+            transfer.date.toLowerCase().includes(term) ||
+            formattedDate.toLowerCase().includes(term) ||
+            transfer.amount.toString().toLowerCase().includes(term) ||
+            transfer.type.toLowerCase().includes(term)
+        );
+    });
 
     transferHistoryList.innerHTML = '';
 
@@ -565,17 +648,25 @@ function filterTransferHistory() {
         transferItem.className = 'transfer-history-item';
 
         const receiptInfo = transfer.receiptNumber ?
-            `<div class="receipt-number">${transfer.receiptNumber}</div>` : '';
+            `<div class="receipt-number">Чек №${transfer.receiptNumber}</div>` : '';
+
+        const dateObj = new Date(transfer.date);
+
+        const formattedDate = dateObj.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
 
         transferItem.innerHTML = `
                     <div class="transfer-info">
                         <div class="transfer-name">${transfer.name}</div>
-                        <div class="transfer-date">${transfer.date}</div>
+                        <div class="transfer-date">${formattedDate}</div>
                         <div class="transfer-type">${transfer.type}</div>
                         ${receiptInfo}
                     </div>
                     <div class="transfer-amount ${transfer.amount > 0 ? 'positive' : 'negative'}">
-                        ${transfer.amount > 0 ? '+' : ''}${transfer.amount} ${transfer.type.includes('балл') ? 'баллов' : '₽'}
+                        ${transfer.amount > 0 ? '+' : ''}${transfer.amount} баллов
                     </div>
                 `;
 
@@ -642,35 +733,44 @@ searchInput.addEventListener('input', searchOperations);
 
 transferSearchInput.addEventListener('input', filterTransferHistory);
 
-phoneInput.addEventListener('input', function () {
-    const phone = this.value;
+IMask(phoneInput, {
+    mask: '+{7} (000) 000-00-00',
+});
 
-    recipientInfo.style.display = 'none';
-    sendButton.disabled = true;
+async function updateSendButton() {
+    const phone = phoneInput.value.replace(/\D/g, '');
+    const scores = parseFloat(scoresInput.value);
 
-    if (phone.replace(/\D/g, '').length >= 11) {
-        const user = checkPhoneNumber(phone);
-
-        if (user) {
-            recipientName.textContent = user.name;
-            recipientPhone.textContent = user.phone;
+    if (phone.length >= 11 && scores > 0) {
+        const userInfo = await parseUser(phone);
+        if (userInfo) {
             recipientInfo.style.display = 'block';
+            recipientName.innerText = userInfo;
+            recipientPhone.innerText = phoneInput.value;
             sendButton.disabled = false;
         } else {
-            showNotification('Номер телефона не найден в системе');
+            recipientInfo.style.display = 'none';
+            sendButton.disabled = true;
         }
+    } else {
+        recipientInfo.style.display = 'none';
+        sendButton.disabled = true;
+    }
+}
+
+phoneInput.addEventListener('input', updateSendButton);
+
+scoresInput.addEventListener('input', updateSendButton);
+
+sendButton.addEventListener('click', async function () {
+    const phoneNumber = phoneInput.value.replace(/\D/g, '');
+    const scores = parseFloat(scoresInput.value);
+
+    if (phoneNumber && scores > 0) {
+        await sendTransfer(phoneNumber, scores);
     }
 });
 
-sendButton.addEventListener('click', function () {
-    showNotification('Перевод успешно отправлен');
-
-    phoneInput.value = '';
-    recipientInfo.style.display = 'none';
-    sendButton.disabled = true;
-
-    loadTransferHistory();
-});
 
 editNameButton.addEventListener('click', editName);
 
@@ -691,8 +791,17 @@ document.querySelectorAll('.modal-content').forEach(modal => {
     let lastTime = 0;
 
     if (!modal.dataset.initialized) {
+        const modalHeight = modal.offsetHeight;
+        const viewportHeight = window.innerHeight;
         const initialTranslate = window.innerHeight * 0.4;
-        modal.style.transform = `translateY(${initialTranslate}px)`;
+
+        let minTranslateY = viewportHeight - modalHeight;
+
+        if (minTranslateY <= initialTranslate) {
+            minTranslateY = initialTranslate;
+        }
+
+        modal.style.transform = `translateY(${minTranslateY}px)`;
         modal.dataset.initialized = "true";
     }
 
@@ -705,7 +814,7 @@ document.querySelectorAll('.modal-content').forEach(modal => {
     const modalObserver = new ResizeObserver(() => {
         const modalHeight = modal.offsetHeight;
         const viewportHeight = window.innerHeight;
-        const minTranslateY = viewportHeight - modalHeight;
+        let minTranslateY = viewportHeight - modalHeight;
 
         const style = window.getComputedStyle(modal);
         const matrix = new WebKitCSSMatrix(style.transform);
@@ -747,7 +856,7 @@ document.querySelectorAll('.modal-content').forEach(modal => {
         const modalHeight = modal.offsetHeight;
         const viewportHeight = window.innerHeight;
 
-        const minTranslateY = viewportHeight - modalHeight;
+        let minTranslateY = viewportHeight - modalHeight;
 
         if (newTranslateY < minTranslateY) {
             newTranslateY = minTranslateY;
@@ -777,7 +886,7 @@ document.querySelectorAll('.modal-content').forEach(modal => {
 
         const minTranslateY = viewportHeight - modalHeight;
         const initialTranslate = viewportHeight * 0.4;
-        const closeThreshold = viewportHeight * 0.7;
+        let closeThreshold = viewportHeight * 0.7;
 
         if (targetTranslate < minTranslateY) {
             targetTranslate = minTranslateY;
@@ -786,9 +895,11 @@ document.querySelectorAll('.modal-content').forEach(modal => {
             targetTranslate = viewportHeight;
         }
 
+        console.log('modalHeight:', modalHeight, 'minTranslateY:', minTranslateY, 'targetTranslate:', targetTranslate, 'closeThreshold:', closeThreshold);
+
         if (currentTranslate > closeThreshold || targetTranslate > closeThreshold) {
             modal.style.transition = 'transform 0.2s ease';
-            modal.style.transform = 'translateY(100%)';
+            modal.style.transform = `translateY(${viewportHeight}px)`;
 
             setTimeout(() => {
                 body.classList.remove('modal-open');
@@ -802,6 +913,12 @@ document.querySelectorAll('.modal-content').forEach(modal => {
         } else {
             targetTranslate = initialTranslate;
         }
+
+        if (targetTranslate < minTranslateY) {
+            targetTranslate = minTranslateY;
+        }
+
+        console.log('modalHeight:', modalHeight, 'targetTranslate:', targetTranslate, 'closeThreshold:', closeThreshold);
 
         modal.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
         modal.style.transform = `translateY(${targetTranslate}px)`;
@@ -848,6 +965,84 @@ async function fetchReferals() {
         });
 }
 
+async function parseUser(phoneNumber) {
+    const token = localStorage.getItem("access_token");
+    const response = await fetch(`${host}/api/v1/user?phone=${phoneNumber}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    const data = await response.json();
+
+    if (data.status_code) {
+        return null;
+    } else {
+        return data;
+    }
+}
+
+async function sendTransfer(phoneNumber, scores) {
+    const token = localStorage.getItem("access_token");
+
+    try {
+        const response = await fetch(`${host}/api/v1/transfer`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ phone: phoneNumber, scores: scores })
+        });
+
+        const data = await response.json();
+
+        if (data.status_code === 200) {
+            phoneInput.value = '';
+            scoresInput.value = '';
+            recipientInfo.style.display = 'none';
+            sendButton.disabled = true;
+
+            await fetchOperations();
+            await fetchProfile();
+            loadTransferHistory();
+        } else {
+            showNotification(data.message);
+        }
+    } catch (err) {
+        console.error("Transfer error:", err);
+        showNotification("Произошлка ошибка, попробуйте позже");
+    }
+}
+
+async function fetchOperations() {
+    let phone_number = localStorage.getItem("phone");
+    const token = localStorage.getItem("access_token");
+    await fetch(`${host}/api/v1/transfers`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                return null;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                transferHistoryData = data;
+            }
+        });
+}
+
 async function fetchProfile() {
     let phone_number = localStorage.getItem("phone");
     const token = localStorage.getItem("access_token");
@@ -868,9 +1063,40 @@ async function fetchProfile() {
         })
         .then(data => {
             console.log(data);
-            const shareLink = document.getElementById("shareLink");
 
-            shareLink.value = `https://loyality-system.ponarth.com/?referal_id=${data.id}`;
+            document.getElementById("shareReferal").addEventListener("click", async () => {
+                const shareLink = `https://loyality-system.ponarth.com/?referal_id=${data.id}`;
+
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: "Моя реферальная ссылка",
+                            text: "Поделись ссылкой и получи бонус!",
+                            url: shareLink
+                        });
+                        console.log("Ссылка успешно отправлена");
+                    } catch (err) {
+                        console.log("Пользователь отменил", err);
+                    }
+                } else {
+                    try {
+                        await navigator.clipboard.writeText(shareLink);
+                        showNotification("Ссылка скопирована в буфер обмена!");
+                    } catch (err) {
+                        console.error("Ошибка копирования:", err);
+                        const tempInput = document.createElement("input");
+                        tempInput.value = shareLink;
+                        tempInput.style.display = 'none';
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand("copy");
+                        document.body.removeChild(tempInput);
+                        showNotification("Ссылка скопирована!");
+                    }
+                }
+            });
+
+            // shareLink.value = `https://loyality-system.ponarth.com/?referal_id=${data.id}`;
 
             const fioElement = document.getElementById("userFio");
             const userBday = document.getElementById("userBday");
@@ -929,7 +1155,7 @@ async function fetchProfile() {
             profilePoints.textContent = score ? `${parseInt(score)}` : "0";
             profileRewards.textContent = rewardsData ? `${parseInt(rewardsData.length)}` : "0";
 
-            telegramToggle.checked = data.send_telegram;
+            telegramToggle.checked = data.send_telegram && data.chat_id > 0;
             if (telegramToggle.checked) {
                 telegramInputContainer.style.display = 'block';
             } else {
@@ -972,6 +1198,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     try {
         await fetchProfile();
         await fetchReferals();
+        await fetchOperations();
 
         operationsData = await fetch(`${host}/api/v1/basket/all`, {
             method: 'GET',

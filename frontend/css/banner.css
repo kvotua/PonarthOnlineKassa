@@ -118,7 +118,7 @@
     max-width: 540px;
     background: rgba(23, 22, 22, 0.4);
     border-radius: 20px;
-    padding: 32px;
+    padding: var(--indent-inner);
     border: 1px solid rgba(255, 255, 255, 0.15);
     position: relative;
     z-index: 10;
@@ -133,13 +133,14 @@
 }
 
 .cookie-avatar {
-    width: 88px;
-    height: 88px;
+    width: 100%;
+    height: 66px;
     background: linear-gradient(180deg, #ffd86b, #ffb703);
     border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
     font-size: 40px;
     box-shadow: 0 6px 18px rgba(255, 184, 3, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.2);
@@ -154,7 +155,7 @@
 }
 
 .cookie-lead {
-    margin: 6px 0 18px;
+    margin: 6px 0 var(--indent-between);
     color: rgba(255, 255, 255, 0.85);
     font-size: 16px;
 }
@@ -195,6 +196,7 @@
     color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
     height: 48px;
+    width: 100%;
     /* Высота равна высоте инпута */
 }
 
@@ -218,7 +220,7 @@
     font-size: 18px;
     font-weight: 700;
     color: white;
-    margin-bottom: 16px;
+    margin-bottom: var(--indent-between);
     text-align: left;
 }
 
@@ -226,11 +228,11 @@
     display: flex;
     justify-content: space-between;
     gap: 10px;
-    margin-left: -32px;
-    margin-right: -32px;
+    margin-left: calc(var(--indent-inner) * -1);
+    margin-right: calc(var(--indent-inner) * -1);
 
-    padding-left: 32px;
-    padding-right: 32px;
+    padding-left: var(--indent-inner);
+    padding-right: var(--indent-inner);
 
     overflow-x: auto;
     padding-bottom: 10px;
@@ -252,6 +254,9 @@
 }
 
 .invite-stat-item {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     padding: 16px;
@@ -294,13 +299,12 @@
     }
 
     .cookie-avatar {
-        width: 72px;
-        height: 72px;
+        height: 66px;
         font-size: 34px;
     }
 
     .cookie-card {
-        padding: 20px;
+        padding: var(--indent-inner);
     }
 
     .copy-section {

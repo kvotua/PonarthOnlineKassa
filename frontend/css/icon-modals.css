@@ -22,12 +22,14 @@
     align-items: flex-end;
     padding: 0 20px;
     z-index: 999;
-    pointer-events: none; /* чтобы клики не блокировались */
+    pointer-events: none;
+    /* чтобы клики не блокировались */
 }
 
 .left-icon-button,
 .right-icon-button {
-    pointer-events: auto; /* возвращаем кликабельность */
+    pointer-events: auto;
+    /* возвращаем кликабельность */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -84,6 +86,7 @@
     from {
         transform: rotateY(0deg);
     }
+
     to {
         transform: rotateY(360deg);
     }
@@ -225,7 +228,7 @@
     border-top-right-radius: 20px;
     box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.3);
     color: white;
-    padding: 30px 20px;
+    padding: calc(var(--indent-inner) + calc(var(--indent-inner) / 2)) var(--indent-inner);
     /* min-height: 100%; */
     /* max-height: 80vh; */
     transform: translateY(100%);
@@ -263,7 +266,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 20px;
+    margin-bottom: var(--indent-between);
 }
 
 .modal-title {
@@ -323,7 +326,7 @@
         0 8px 32px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     width: 100%;
-    margin: 25px 0;
+    margin: var(--indent-between) 0;
 }
 
 .glass-radio-group input {
@@ -401,7 +404,6 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
-    margin-bottom: 25px;
 }
 
 .rewards-grid> :last-child:nth-child(odd):nth-last-child(1) {
@@ -462,19 +464,19 @@
 }
 
 .operations-history {
-    margin-top: 20px;
+    margin-top: var(--indent-between);
 }
 
 .operations-title {
     font-size: 1.3rem;
     font-weight: 600;
-    margin-bottom: 15px;
+    margin-bottom: var(--indent-between);
 }
 
 .operations-controls {
     display: flex;
     gap: 10px;
-    margin-bottom: 15px;
+    margin-bottom: var(--indent-between);
 }
 
 .sort-button {
@@ -520,6 +522,10 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
+.sort-right {
+    right: var(--indent-inner);
+}
+
 .sort-dropdown {
     position: absolute;
     background: rgba(40, 40, 40, 0.95);
@@ -547,13 +553,13 @@
 .operations-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: var(--indent-between);
 }
 
 .operation-card {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 12px;
-    padding: 15px;
+    padding: var(--indent-inner);
     /* animation: fadeIn 0.5s ease; */
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: transform 0.3s ease;
@@ -563,7 +569,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: calc(var(--indent-between) / 2);
 }
 
 .operation-date {
@@ -624,8 +630,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 14px;
-    margin-bottom: 10px;
-    padding-top: 10px;
+    padding-top: calc(var(--indent-between) / 2);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -640,7 +645,7 @@
 .operation-footer {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: end;
 }
 
 .prize-icon {
@@ -667,7 +672,17 @@
 }
 
 .phone-input-container {
-    margin-bottom: 15px;
+    gap: calc(var(--indent-between) / 2);
+    display: flex;
+    margin-bottom: var(--indent-between);
+}
+
+.phone-input-container > :first-child {
+    flex: 3;
+}
+
+.phone-input-container > :last-child {
+    flex: 1;
 }
 
 .phone-input {
@@ -722,7 +737,6 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-bottom: 20px;
 }
 
 .send-button:enabled {
@@ -770,19 +784,19 @@
 }
 
 .transfer-history {
-    margin-top: 20px;
+    margin-top: var(--indent-between);
 }
 
 .transfer-history-title {
     font-size: 1.3rem;
     font-weight: 600;
-    margin-bottom: 15px;
+    margin-bottom: var(--indent-between);
 }
 
 .transfer-history-controls {
     display: flex;
     gap: 10px;
-    margin-bottom: 15px;
+    margin-bottom: var(--indent-between);
 }
 
 .transfer-search-input {
@@ -803,13 +817,13 @@
 .transfer-history-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--indent-between);
 }
 
 .transfer-history-item {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 10px;
-    padding: 12px 15px;
+    padding: var(--indent-inner);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -863,14 +877,14 @@
 }
 
 .profile-section {
-    margin-top: 20px;
+    margin-top: var(--indent-between);
 }
 
 .profile-info {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: var(--indent-inner);
+    margin-bottom: var(--indent-between);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -974,8 +988,8 @@
 }
 
 .telegram-toggle {
-    margin-top: 20px;
-    padding: 15px;
+    margin-top: var(--indent-between);
+    padding: var(--indent-inner);
     background: rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1038,7 +1052,7 @@ input:checked+.slider:before {
 }
 
 .telegram-input-container {
-    margin-top: 10px;
+    margin-top: var(--indent-between);
     display: none;
 }
 
@@ -1106,7 +1120,7 @@ input:checked+.slider:before {
 .unused-coupons-title {
     font-size: 1.3rem;
     font-weight: 600;
-    margin-bottom: 15px;
+    margin-bottom: var(--indent-between);
 }
 
 .unused-coupons-list {

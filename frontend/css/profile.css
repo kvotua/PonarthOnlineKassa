@@ -8,7 +8,7 @@
   --border-color: rgba(105, 105, 105, 1);
   --card-bg: #212121;
 
-  --indent-between: 30px;
+  --indent-between: 25px;
   --indent-outer: 20px;
   --indent-inner: 20px;
 }
@@ -71,7 +71,7 @@ body::before {
   width: 100%;
   max-width: 400px;
   min-height: 100svh;
-  padding: 30px;
+  padding: var(--indent-outer);
   background: var(--bg-color);
   border: 1px solid var(--border-color);
   border-radius: 15px;

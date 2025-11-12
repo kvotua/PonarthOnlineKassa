@@ -14,6 +14,7 @@
     <link rel="icon" href="img/Tag_Ponart.svg" type="image/svg+xml">
     <link rel="shortcut icon" href="img/Tag_Ponart.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="img/Tag_Ponart.svg">
+    <script src="https://unpkg.com/imask"></script>
 </head>
 
 <body>
@@ -39,7 +40,8 @@
             <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
             <h1>Ваша карта добавлена!</h1>
             <p id="new_user_score">Вы вступили в клуб Понарт. На вашем счету 50 приветственых балла</p>
-            <iframe src="./widget/banner-widget.html" style="height:211px; border:none;" class="widget" id="banner-widget"></iframe>
+            <iframe src="./widget/banner-widget.html" style="height:211px; border:none;" class="widget"
+                id="banner-widget"></iframe>
             <div class="cookie-card">
                 <div class="cookie-header">
                     <div>
@@ -48,13 +50,24 @@
                     </div>
                 </div>
 
-                <p class="copy-label">Скопируйте ссылку:</p>
+                <button class="copy-btn" id="shareReferal">Поделиться</button>
+
+                <!-- <div id="shareReferal" class="cookie-avatar" aria-hidden>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                        <polyline points="16 6 12 2 8 6"></polyline>
+                        <line x1="12" y1="2" x2="12" y2="15"></line>
+                    </svg>
+                </div> -->
+
+                <!-- <p class="copy-label">Скопируйте ссылку:</p>
 
                 <div class="copy-section">
-                    <input type="text" class="form-input" value="https://example.com/loyalty/invite/12345"
+                    <input type="text" class="form-input" value="https://loyality-system.ponarth.com/?referal_id=1234567890"
                         id="shareLink" readonly>
                     <button class="copy-btn" id="copyLinkBtn">Копировать</button>
-                </div>
+                </div> -->
 
                 <div class="stats-section">
                     <h3 class="stats-title">Ваша статистика</h3>
@@ -99,7 +112,7 @@
                     <input type="radio" name="coin-tab-type" id="coin-glass-account" checked />
                     <label for="coin-glass-account">Счет</label>
 
-                    <input type="radio" name="coin-tab-type" id="coin-glass-transfers" disabled />
+                    <input type="radio" name="coin-tab-type" id="coin-glass-transfers" />
                     <label for="coin-glass-transfers">Переводы</label>
 
                     <div class="glass-glider"></div>
@@ -133,34 +146,32 @@
                     <div class="transfer-section">
                         <div class="phone-input-container">
                             <input type="tel" class="phone-input" id="phoneInput" placeholder="Введите номер телефона">
+                            <input type="number" class="phone-input" id="scoresInput" placeholder="Баллы">
                         </div>
 
                         <div class="recipient-info" id="recipientInfo">
-                            <div class="recipient-name" id="recipientName"></div>
-                            <div class="recipient-phone" id="recipientPhone"></div>
+                            <div class="recipient-name" id="recipientName">Иванов Иван Иванович</div>
+                            <div class="recipient-phone" id="recipientPhone">+7 (900) 999-99-99</div>
                         </div>
 
                         <button class="send-button" id="sendButton" disabled>Отправить</button>
 
                         <div class="transfer-history">
+                            <h3 class="transfer-history-title">История переводов</h3>
                             <div class="transfer-history-controls">
-                                <h3 class="transfer-history-title">История переводов</h3>
                                 <div class="sort-button" id="transferSortButton">
                                     <span>Сортировка</span>
                                     <i>▼</i>
                                 </div>
-                            </div>
-
-                            <div class="transfer-history-controls">
                                 <input type="text" class="transfer-search-input" id="transferSearchInput"
                                     placeholder="Поиск по дате или ФИО...">
                             </div>
 
                             <div class="sort-dropdown" id="transferSortDropdown">
-                                <div class="sort-option" data-sort="date-newest">По дате (сначала новые)</div>
-                                <div class="sort-option" data-sort="date-oldest">По дате (сначала старые)</div>
-                                <div class="sort-option" data-sort="amount-high">По сумме (больше)</div>
-                                <div class="sort-option" data-sort="amount-low">По сумме (меньше)</div>
+                            <div class="sort-option" data-sort="date-newest">По дате (новые)</div>
+                            <div class="sort-option" data-sort="date-oldest">По дате (старые)</div>
+                            <div class="sort-option" data-sort="amount-high">По сумме (больше)</div>
+                            <div class="sort-option" data-sort="amount-low">По сумме (меньше)</div>
                             </div>
 
                             <div class="transfer-history-list" id="transferHistoryList">
