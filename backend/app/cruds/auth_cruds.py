@@ -113,11 +113,11 @@ async def add_user_to_loyal_system(data: RegisterUserLoyaltySystem, session_mysq
         new_id = data_for_discount_card.id
         new_score = UserScore(
             card_id=new_id,
-            date_added=datetime.now() - timedelta(days=1),
-            status=1,
+            date_added=datetime.now(),
+            status=0,
             base_id=base_id,
             order_id=0,
-            scores=150.00
+            scores=50.00
         )
         session_mysql.add(new_score)
         await session_mysql.commit()

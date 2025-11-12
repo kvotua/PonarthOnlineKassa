@@ -162,16 +162,21 @@ async def get_all_baskets_by_card(db: AsyncSession, card_num: str):
             continue
 
         score_stmt = (
-            select(func.coalesce(func.sum(UserScore.scores), 0))
+            select(func.coalesce(func.sum(UserScore.scores), 0).label('total_scores'),
+                DiscountCard.first,
+                DiscountCard.second)
             .join(DiscountCard, UserScore.card_id == DiscountCard.id)
             .where(
                 DiscountCard.card_num == card_num,
                 UserScore.status == 1,
                 UserScore.order_id < order_id, UserScore.base_id == base_id
             )
+            .group_by(DiscountCard.first, DiscountCard.second)
         )
         score_result = await db.execute(score_stmt)
-        previous_scores = score_result.scalar()
+        result = score_result.first()
+
+        previous_scores = float(result.total_scores or 0)
 
         order_total = order['price']
         price_real = order['price_real']
@@ -207,10 +212,13 @@ async def get_all_baskets_by_card(db: AsyncSession, card_num: str):
                 else:
                     gift_emoji = None
 
+        first = result.first
+        second = result.second
+
         all_orders.append({
             "order_id": order_id,
             "user": user,
-            "buyer": "123",
+            "buyer": f"{first} {second}",
             "date": order['date'],
             "price_total": order_total,
             "price_real": price_real,

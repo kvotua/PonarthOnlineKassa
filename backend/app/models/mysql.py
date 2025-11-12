@@ -79,6 +79,8 @@ class UserScore(Base_mysql):
     order_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     card_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     scores: Mapped[float] = mapped_column(DECIMAL(12, 2), nullable=False)
+    transfer_from: Mapped[int] = mapped_column(BigInteger, nullable=True, comment='ID карты от кого был перевод')
+    transfer_to: Mapped[int] = mapped_column(BigInteger, nullable=True, comment='ID карты кому был перевод')
 
 class Good(Base_mysql):
     __tablename__ = 'good'
