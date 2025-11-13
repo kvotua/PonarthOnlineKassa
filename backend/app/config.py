@@ -1,3 +1,4 @@
+import hashlib
 from pathlib import Path
 from dotenv import load_dotenv
 import os
@@ -11,6 +12,9 @@ postgres_db_url = str(os.getenv('POSTGRES_DB_URL'))
 mysql_url = str(os.getenv('MYSQL_DB_URL'))
 charset = str(os.getenv('CHARSER'))
 mysql_db_url = mysql_url + "?charset=" + charset
+
+bot_token = os.getenv("BOT_TOKEN")
+bot_token_hash = hashlib.sha256(bot_token.encode())
 
 debug_mode = int(os.getenv("DEBUG_MODE", 0))
 

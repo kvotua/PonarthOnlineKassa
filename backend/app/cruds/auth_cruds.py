@@ -19,6 +19,17 @@ async def check_phone_status(user_phone: str, session_mysql: AsyncSession) -> Di
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+async def get_user_by_telegram_user_id(user_id: int, session_mysql: AsyncSession) -> DiscountCard:
+    try:
+        stmt_user = select(DiscountCard).where(
+            DiscountCard.chat_id == user_id, DiscountCard.base_id == base_id, DiscountCard.mag_id == firm_id)
+        result_user: Result = await session_mysql.execute(stmt_user)
+        user = result_user.scalars().first()
+        return user
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # async def add_user(phone: str, session_postgres: AsyncSession) -> Users:
 #     try:

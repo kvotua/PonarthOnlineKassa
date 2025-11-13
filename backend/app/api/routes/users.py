@@ -1,17 +1,20 @@
 from http.client import HTTPException
 from typing import Any
 from fastapi import APIRouter, Body, Depends, Query
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
 from app.schemas.users_schemas import ChangeUser, ReferalInfo, TransferScoreRequest, UserInfo
 from app.api.dependensies import get_access_token
-from app.cruds import users_cruds
+from app.cruds import users_cruds, verify_cruds
 from app.databases.postgresdb import get_postgres_session
 from app.databases.mysql_db import get_mysql_session
 from app.cruds.verify_cruds import check_phone_in_discound
-from app.utils import convert_decimal_to_float, get_current_user_with_bearer
+from app.utils import convert_decimal_to_float, get_current_user_with_bearer, sing_access_jwt_token, sing_refresh_jwt_token
 from app.schemas.response_schemas import ResponseSchema
+from app.schemas.verify_schemas import CheckPhoneCode
+from app.cruds.auth_cruds import check_phone_status
 
 
 router = APIRouter(tags=["Users"])
@@ -24,6 +27,15 @@ async def get_profile(
     phone = user_data['phone']
     userData = await users_cruds.get_user_loyalty_by_id(card_num=phone, db=db)
     return userData
+
+@router.get('/last_operations', response_model=Any)
+async def get_last_operations(
+    user_data = Depends(get_current_user_with_bearer),
+    db: AsyncSession = Depends(get_mysql_session)
+):
+    phone = user_data['phone']
+    last_operations = await users_cruds.get_last_operations(card_num=phone, db=db)
+    return last_operations
 
 @router.get('/user', response_model=Any)
 async def get_user(
@@ -124,6 +136,29 @@ async def change_user(
     db: AsyncSession = Depends(get_mysql_session)
 ):
     phone = user_data['phone']
+
+@router.post('/phone/change', response_model=ResponseSchema)
+async def change_phone(
+    data: CheckPhoneCode,
+    user_data = Depends(get_current_user_with_bearer),
+    session_mysql: AsyncSession = Depends(get_mysql_session),
+):
+    response = await verify_cruds.get_verify_session(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
+    if response:
+        await verify_cruds.change_verify_status(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
+        changed = await users_cruds.change_phone(phone=user_data['phone'], new_phone=data.phone, db=session_mysql)
+        print(changed)
+        if changed:
+            user = await check_phone_status(user_phone=data.phone[1:], session_mysql=session_mysql)
+
+            access_token = sing_access_jwt_token(user_id=user.id, phone=user.phone)
+            refresh_token = sing_refresh_jwt_token(user_id=user.id, phone=user.phone)
+            response = JSONResponse(status_code=200, content={
+                "access_token": access_token,
+                "refresh_token": refresh_token
+            })
+            return response
+    return ResponseSchema(status_code=400, message="Error")
 
 @router.patch('/telegram', response_model=Any)
 async def change_telegram(

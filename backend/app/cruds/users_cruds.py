@@ -1,8 +1,10 @@
 
 from datetime import datetime, date, timedelta, timezone, time
-from sqlalchemy import and_, func, or_, select, Result, update
+import json
+from sqlalchemy import and_, case, desc, func, or_, select, Result, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.dialects import mysql
+from sqlalchemy.orm import selectinload
 from fastapi import HTTPException
 
 from app.models.mysql import DiscountCard, Gift, GiftStatus, Orders, UserScore
@@ -109,6 +111,71 @@ async def activate_gift(gift_id: int, db: AsyncSession) -> None:
     )
     await db.execute(stmt)
     await db.commit()
+
+async def change_phone(phone: str, new_phone: str, db: AsyncSession) -> bool:
+    # Убираем всё, кроме цифр
+    phone = ''.join(filter(str.isdigit, phone))
+    new_phone = ''.join(filter(str.isdigit, new_phone))
+
+    print('phone: ', phone)
+    print('new_phone: ', new_phone)
+
+    # Если телефон начинается с 7 или 8 — убираем
+    if new_phone.startswith(('7', '8')) and len(new_phone) == 11:
+        new_phone = new_phone[1:]
+
+    if phone.startswith(('7', '8')) and len(phone) == 11:
+        phone = phone[1:]
+
+    print('phone: ', phone)
+    print('new_phone: ', new_phone)
+
+    # Проверяем формат
+    if not (len(phone) == 10 and phone.startswith('9')):
+        return False
+
+    if not (len(new_phone) == 10 and new_phone.startswith('9')):
+        return False
+
+    # Ищем запись по старому номеру
+    query = select(
+        DiscountCard.id,
+        DiscountCard.phone,
+        DiscountCard.card_num,
+        DiscountCard.data
+    ).where(DiscountCard.phone == phone)
+
+    result = await db.execute(query)
+    row = result.first()
+
+    print('row:', row)
+
+    if not row:
+        return False
+
+    card_id, old_phone, old_card_num, data_str = row
+
+    # Обновляем JSON data, если есть
+    update_values = {
+        "phone": new_phone,
+        "card_num": new_phone
+    }
+
+    if data_str:
+        try:
+            data_json = json.loads(data_str)
+            if isinstance(data_json, dict) and "phone" in data_json:
+                data_json["phone"] = new_phone
+                update_values["data"] = json.dumps(data_json, ensure_ascii=False)
+        except json.JSONDecodeError:
+            pass
+
+    # Обновляем запись
+    stmt = update(DiscountCard).where(DiscountCard.id == card_id).values(**update_values)
+    await db.execute(stmt)
+    await db.commit()
+
+    return True
 
 async def get_referal_info(card_num: str, db: AsyncSession) -> ReferalInfo:
     # Получаем ID карты
@@ -283,6 +350,38 @@ async def get_user_by_card_num(card_num: str, db: AsyncSession):
         raise HTTPException(status_code=404, detail="Discount Card not found")
     
     return user_row
+
+async def get_last_operations(card_num: str, db: AsyncSession):
+    discount_card_id = await get_user_discount_id_by_card(card_num=card_num, db=db)
+
+    stmt_operations = (
+        select(
+            UserScore.scores,
+            UserScore.date_added,
+            case(
+                (
+                    UserScore.order_id > 0,
+                    select(Orders.price)
+                    .where(Orders.id == UserScore.order_id)
+                    .scalar_subquery()
+                ),
+                (
+                    (UserScore.transfer_from.is_not(None) & UserScore.transfer_to.is_not(None)),
+                    "Перевод"
+                ),
+                else_=""
+            ).label("title"),
+        )
+        .where(
+            UserScore.card_id == discount_card_id,
+            UserScore.base_id == base_id
+        )
+        .order_by(desc(UserScore.date_added))
+    )
+
+    result_operations = await db.execute(stmt_operations)
+    operations_row = result_operations.mappings().all()
+    return [dict(row) for row in operations_row]
 
 async def get_user_loyalty_by_id(card_num: str, db: AsyncSession) -> UserInfo:
     stmt_user = select(

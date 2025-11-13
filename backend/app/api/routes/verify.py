@@ -15,7 +15,6 @@ from app.databases.mysql_db import get_mysql_session
 
 router = APIRouter(prefix='/verify', tags=["Verify"])
 
-
 @router.post('/phone/send', response_model=CallID)
 async def send_code(
     phone: Phone,
@@ -23,6 +22,7 @@ async def send_code(
 ):
     response = await check_phone_in_discound(phone=phone.phone[1:], session_mysql=session_mysql)
     print(response)
+    # if not response:
         # scores = convert_decimal_to_float(response)
         # if isinstance(scores, (int, float)):
         #     scores = [scores]
@@ -53,6 +53,8 @@ async def send_code(
     if response is not None and response is not False and (response or response == 0):
         return CallID(call_id=response_data['call_id'], call_type='auth')
     return CallID(call_id=response_data['call_id'], call_type='register')
+    # raise HTTPException(status_code=400,
+    #                     detail=f"Phone already registered")
 
 
 @router.post('/phone/check', response_model=ResponseSchema)
@@ -61,5 +63,7 @@ async def check_code(
     session_mysql: AsyncSession = Depends(get_mysql_session),
 ):
     response = await get_verify_session(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
-    await change_verify_status(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
-    return ResponseSchema(status_code=200, message="OK")
+    if response:
+        await change_verify_status(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
+        return ResponseSchema(status_code=200, message="OK")
+    return ResponseSchema(status_code=400, message="Error")
