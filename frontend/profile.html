@@ -168,10 +168,10 @@
                             </div>
 
                             <div class="sort-dropdown" id="transferSortDropdown">
-                            <div class="sort-option" data-sort="date-newest">По дате (новые)</div>
-                            <div class="sort-option" data-sort="date-oldest">По дате (старые)</div>
-                            <div class="sort-option" data-sort="amount-high">По сумме (больше)</div>
-                            <div class="sort-option" data-sort="amount-low">По сумме (меньше)</div>
+                                <div class="sort-option" data-sort="date-newest">По дате (новые)</div>
+                                <div class="sort-option" data-sort="date-oldest">По дате (старые)</div>
+                                <div class="sort-option" data-sort="amount-high">По сумме (больше)</div>
+                                <div class="sort-option" data-sort="amount-low">По сумме (меньше)</div>
                             </div>
 
                             <div class="transfer-history-list" id="transferHistoryList">
@@ -207,19 +207,36 @@
                                 <div class="profile-details">
                                     <div class="profile-name-container">
                                         <div class="profile-name" id="userFio">Иван Иванов</div>
-                                        <div class="edit-icon" id="editNameButton">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                                stroke="currentColor" stroke-width="2">
-                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7">
-                                                </path>
-                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z">
-                                                </path>
-                                            </svg>
-                                        </div>
+                                        <div class="edit-icon" onclick="enableEditing('userFio')">✏️</div>
+                                        <div class="edit-icon save-icon" id="saveName"
+                                            onclick="saveEditing('userFio', 'saveName')">✓</div>
                                     </div>
                                     <div class="profile-birthdate" id="userBday">15 марта 1990</div>
                                     <div class="profile-phone-container">
                                         <div class="profile-phone" id="userPhone">+7 912 345-67-89</div>
+                                        <div class="edit-icon" onclick="enableEditing('userPhone')">✏️</div>
+                                        <div class="edit-icon save-icon" id="savePhone" onclick="savePhoneEditing()">✓
+                                        </div>
+                                    </div>
+
+                                    <div class="verification-block" id="verificationBlock">
+                                        <div class="verification-label">Код подтверждения</div>
+                                        <input type="text" class="verification-input" id="verificationCode"
+                                            placeholder="Введите код" maxlength="4">
+                                        <div class="verification-timer" id="verificationTimer">Отправить код повторно
+                                            через 0:30</div>
+                                        <button class="verification-resend" id="verificationResend"
+                                            onclick="resendVerificationCode()">Отправить повторно</button>
+
+                                        <div class="flip-container" id="flipContainer">
+                                            <div class="flipper">
+                                                <div class="front"></div>
+                                                <div class="back">
+                                                    <div class="success-icon">🎉</div>
+                                                    <div>Номер изменен!</div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -410,10 +427,13 @@
         </div>
     </div>
 
+    <canvas id="confetti-canvas"></canvas>
 
+    <script src="js/profile.js"></script>
     <script src="js/script.js"></script>
     <script src="js/modal.js"></script>
     <script src="js/scratch.js"></script>
+
     <script>
         if (isTokenExpired()) {
             window.location.href = './greet.html';

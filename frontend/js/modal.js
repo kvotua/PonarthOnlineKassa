@@ -37,7 +37,6 @@ const transferHistoryList = document.getElementById('transferHistoryList');
 const transferSearchInput = document.getElementById('transferSearchInput');
 
 const profileOperationsList = document.getElementById('profileOperationsList');
-const editNameButton = document.getElementById('editNameButton');
 const telegramToggle = document.getElementById('telegramToggle');
 const telegramInputContainer = document.getElementById('telegramInputContainer');
 const telegramInput = document.getElementById('telegramInput');
@@ -71,6 +70,8 @@ let rewardsData = [];
 let unusedCouponsData = [];
 let prizesHistoryData = [];
 let transferHistoryData = [];
+
+let lastOperations = [];
 
 // const transferHistoryData = [
 //     {
@@ -471,13 +472,13 @@ function loadOperations(operationsFiltered) {
 function loadProfileOperations() {
     profileOperationsList.innerHTML = '';
 
-    const recentOperations = operationsData.slice(0, 2);
+    const recentOperations = lastOperations.slice(0, 5);
 
     recentOperations.forEach(operation => {
         const operationCard = document.createElement('div');
         operationCard.className = 'operation-card';
 
-        const dateObj = new Date(operation.date);
+        const dateObj = new Date(operation.date_added);
 
         const formattedDate = dateObj.toLocaleDateString('ru-RU', {
             day: 'numeric',
@@ -485,15 +486,19 @@ function loadProfileOperations() {
             year: 'numeric'
         });
 
+        const score = parseFloat(operation.scores);
+        const pointsClass = score > 0 ? "points-earned" : "points-spent";
+        const pointsText = score > 0 ? `+${score} баллов` : `${score} баллов`;
+
         operationCard.innerHTML = `
-                    <div class="operation-header">
-                        <div class="operation-date">${formattedDate}</div>
-                        <div class="operation-total-amount">${operation.price_total} ₽</div>
-                    </div>
-                    <div class="operation-points">
-                        <div class="points-earned">+${parseFloat(operation.score_added)} баллов</div>
-                    </div>
-                `;
+            <div class="operation-header">
+                <div class="operation-date">${formattedDate}</div>
+                <div class="operation-total-amount">${operation.title == 'Перевод' ? operation.title : operation.title + " ₽"}</div>
+            </div>
+            <div class="operation-points">
+                <div class="${pointsClass}">${pointsText}</div>
+            </div>
+            `;
 
         profileOperationsList.appendChild(operationCard);
     });
@@ -674,16 +679,6 @@ function filterTransferHistory() {
     });
 }
 
-function editName() {
-    const currentName = document.querySelector('.profile-name').textContent;
-    const newName = prompt('Введите новое имя и фамилию:', currentName);
-
-    if (newName && newName.trim() !== '') {
-        document.querySelector('.profile-name').textContent = newName.trim();
-        showNotification('Имя успешно изменено');
-    }
-}
-
 function openScratchCard(couponId) {
     showNotification(`Открывается экран царапания для купона ${couponId}`);
 }
@@ -770,9 +765,6 @@ sendButton.addEventListener('click', async function () {
         await sendTransfer(phoneNumber, scores);
     }
 });
-
-
-editNameButton.addEventListener('click', editName);
 
 telegramToggle.addEventListener('change', handleTelegramToggle);
 
@@ -1043,6 +1035,32 @@ async function fetchOperations() {
         });
 }
 
+async function fetchLastOperations() {
+    const token = localStorage.getItem("access_token");
+    await fetch(`${host}/api/v1/last_operations`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                return null;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                const profileOperations = document.getElementById('profileOperations')
+
+                profileOperations.textContent = data ? `${parseInt(data.length)}` : "0";
+                lastOperations = data;
+            }
+        });
+}
+
 async function fetchProfile() {
     let phone_number = localStorage.getItem("phone");
     const token = localStorage.getItem("access_token");
@@ -1110,9 +1128,10 @@ async function fetchProfile() {
                 year: 'numeric'
             });
 
-            fioElement.textContent = `${data.first} ${data.second}`
-            userBday.textContent = `${formattedDate}`
-            userPhone.textContent = `${phone_number}`
+            fioElement.textContent = `${data.second} ${data.first} ${data.third}`;
+            userBday.textContent = `${formattedDate}`;
+            userPhone.textContent = `${phone_number}`;
+            originalPhone = phone_number.replace(/\D/g, '');
 
             rewardsData = data.gifts.filter(gift =>
                 gift.status === 'activated'
@@ -1199,6 +1218,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         await fetchProfile();
         await fetchReferals();
         await fetchOperations();
+        await fetchLastOperations();
 
         operationsData = await fetch(`${host}/api/v1/basket/all`, {
             method: 'GET',
@@ -1215,9 +1235,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 return response.json();
             })
             .then(data => {
-                const profileOperations = document.getElementById('profileOperations')
-
-                profileOperations.textContent = data ? `${parseInt(data.length)}` : "0";
                 return data;
             });
     } finally {
