@@ -930,12 +930,19 @@
     border-radius: 8px;
     transition: all 0.3s ease;
     outline: none;
+    min-height: 20px;
 }
 
 .profile-name.editing {
     border: 2px dashed #FFD700;
     padding: 0 4px;
     background: rgba(255, 215, 0, 0.1);
+}
+
+.profile-name.editing:empty::before {
+    content: attr(data-placeholder);
+    color: #aaa;
+    pointer-events: none;
 }
 
 .edit-icon {

@@ -70,6 +70,15 @@ function saveEditing(elementId, saveButtonId) {
     // Скрываем кнопку сохранения
     saveButton.classList.remove('visible');
 
+    if (elementId == 'userFio') {
+        const changedFio = changeFio(element.innerText);
+        if (changedFio) {
+            showNotification('ФИО успешно изменено!');
+        } else {
+            showNotification('Ошибка при смене ФИО, попробуйте позже.');
+        }
+    }
+
     // Сохраняем данные
     console.log(`Сохранено имя: ${element.textContent}`);
 }
@@ -156,12 +165,56 @@ function resendVerificationCode() {
     startCountdown();
 }
 
+async function changeFio(fio) {
+    const token = localStorage.getItem("access_token");
+
+    const parts = fio.trim().split(/\s+/);
+    const last_name = parts[0] || null;
+    const first_name = parts[1] || null;
+    const patronymic = parts[2] || null;
+
+    try {
+        const response = await fetch(`${host}/api/v1/user/change`, {
+            method: 'PATCH',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                last_name,
+                first_name,
+                patronymic
+            })
+        });
+
+        if (!response.ok) {
+            return false;
+        }
+
+        const data = await response.json();
+        if (data) {
+            if (data.status_code) {
+                return data.status_code === 200;
+            }
+        }
+        return false;
+
+    } catch (err) {
+        console.error("changeFio error:", err);
+        return false;
+    }
+}
+
+
 async function sendVerify(phone) {
-    return fetch(`${host}/api/v1/verify/phone/send`, {
+    const token = localStorage.getItem("access_token");
+    return fetch(`${host}/api/v1/verify/phone/change/send`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({ phone })
     })

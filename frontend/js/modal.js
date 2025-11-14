@@ -925,6 +925,63 @@ document.querySelectorAll('.modal-content').forEach(modal => {
     modal.addEventListener('touchstart', onPointerDown, { passive: false });
 });
 
+function updateProgress(progress) {
+    const progressCircle = document.querySelector('.progress-circle');
+    const progressText = document.querySelector('.progress-text');
+
+    progressCircle.style.background = `conic-gradient(#4cd964 0%, #4cd964 ${progress}%, rgba(255, 255, 255, 0.2) ${progress}%, rgba(255, 255, 255, 0.2) 100%)`;
+    progressText.textContent = `${progress}%`;
+}
+
+function updateRank(referals) {
+    const userStatus = document.querySelector('.user-status');
+    const progressInfo = document.querySelector('.ref-progress-info');
+
+    let rank = "";
+    let nextRank = "";
+    let progress = 0;
+    let remaining = 0;
+
+    if (referals === 0) {
+        rank = "Одиночка";
+        nextRank = "Командира отряда";
+        progress = 0;
+        remaining = 1; // до 1
+
+    } else if (referals >= 1 && referals <= 11) {
+        rank = "Командир отряда";
+        nextRank = "Командира взвода";
+        const min = 1, max = 12;
+        progress = ((referals - min) / (max - min)) * 100;
+        remaining = 12 - referals;
+
+    } else if (referals >= 12 && referals <= 49) {
+        rank = "Командир взвода";
+        nextRank = "Командира роты";
+        const min = 12, max = 50;
+        progress = ((referals - min) / (max - min)) * 100;
+        remaining = 50 - referals;
+
+    } else {
+        rank = "Командир роты";
+        nextRank = null;
+        progress = 100;
+        remaining = 0;
+    }
+
+    // Обновляем круг
+    updateProgress(progress.toFixed(0));
+
+    // Обновляем текст
+    userStatus.innerText = rank;
+
+    if (nextRank) {
+        progressInfo.innerHTML = `До ${nextRank}<br>осталось <span class="highlight">${remaining}</span> друзей`;
+    } else {
+        progressInfo.innerHTML = `Вы достигли максимального звания`;
+    }
+}
+
 async function fetchReferals() {
     let phone_number = localStorage.getItem("phone");
     const token = localStorage.getItem("access_token");
@@ -945,12 +1002,14 @@ async function fetchReferals() {
         .then(data => {
             if (data) {
                 const refReferalsValue = document.getElementById('refReferalsValue');
-                const refLastMonthValue = document.getElementById('refLastMonthValue');
+                // const refLastMonthValue = document.getElementById('refLastMonthValue');
                 const refCurrentMonthValue = document.getElementById('refCurrentMonthValue');
                 const refTotalValue = document.getElementById('refTotalValue');
 
-                refReferalsValue.innerText = `${data.referals} чел.`;
-                refLastMonthValue.innerText = `${data.last_month} ₽`;
+                updateRank(data.referals);
+
+                refReferalsValue.innerText = `${data.referals}`;
+                // refLastMonthValue.innerText = `${data.last_month} ₽`;
                 refCurrentMonthValue.innerText = `${data.current_month} ₽`;
                 refTotalValue.innerText = `${data.total} ₽`;
             }

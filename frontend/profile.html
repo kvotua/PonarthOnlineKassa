@@ -42,54 +42,36 @@
             <p id="new_user_score">Вы вступили в клуб Понарт. На вашем счету 50 приветственых балла</p>
             <iframe src="./widget/banner-widget.html" style="height:211px; border:none;" class="widget"
                 id="banner-widget"></iframe>
-            <div class="cookie-card">
-                <div class="cookie-header">
-                    <div>
-                        <h1 class="cookie-title">Приглашай друзей!</h1>
-                        <p class="cookie-lead">Получай дополнительный кэшбек 1% за их покупки 🎁</p>
+            <div class="referal-widget">
+                <div class="user-status">Командир взвода</div>
+
+                <div class="progress-container">
+                    <div class="progress-circle">
+                        <div class="progress-text">68%</div>
                     </div>
                 </div>
 
-                <button class="copy-btn" id="shareReferal">Поделиться</button>
+                <div class="ref-progress-info">До командира роты<br>осталось <span class="highlight">12</span> друзей</div>
 
-                <!-- <div id="shareReferal" class="cookie-avatar" aria-hidden>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                        <polyline points="16 6 12 2 8 6"></polyline>
-                        <line x1="12" y1="2" x2="12" y2="15"></line>
-                    </svg>
-                </div> -->
-
-                <!-- <p class="copy-label">Скопируйте ссылку:</p>
-
-                <div class="copy-section">
-                    <input type="text" class="form-input" value="https://loyality-system.ponarth.com/?referal_id=1234567890"
-                        id="shareLink" readonly>
-                    <button class="copy-btn" id="copyLinkBtn">Копировать</button>
-                </div> -->
-
-                <div class="stats-section">
-                    <h3 class="stats-title">Ваша статистика</h3>
-                    <div class="stats-row">
-                        <div class="invite-stat-item">
-                            <div class="invite-stat-label">Ваши рефералы</div>
-                            <div class="invite-stat-value" id="refReferalsValue">12 чел.</div>
-                        </div>
-                        <div class="invite-stat-item">
-                            <div class="invite-stat-label">прошлый месяц</div>
-                            <div class="invite-stat-value" id="refLastMonthValue">1 250 ₽</div>
-                        </div>
-                        <div class="invite-stat-item">
-                            <div class="invite-stat-label">текущий месяц</div>
-                            <div class="invite-stat-value" id="refCurrentMonthValue">850 ₽</div>
-                        </div>
-                        <div class="invite-stat-item">
-                            <div class="invite-stat-label">Всего накоплено</div>
-                            <div class="invite-stat-value total" id="refTotalValue">5 430 ₽</div>
-                        </div>
+                <div class="ref-stats-container">
+                    <div class="ref-stat-item">
+                        <div class="ref-stat-value" id="refTotalValue">1,250₽</div>
+                        <div class="ref-stat-label">Накоплено всего</div>
+                    </div>
+                    <div class="ref-stat-item">
+                        <div class="ref-stat-value" id="refReferalsValue">38</div>
+                        <div class="ref-stat-label">Лучших друзей</div>
+                    </div>
+                    <div class="ref-stat-item">
+                        <div class="ref-stat-value" id="refCurrentMonthValue">350₽</div>
+                        <div class="ref-stat-label">В этом месяце</div>
                     </div>
                 </div>
+
+                <button class="invite-button" id="shareReferal">
+                    <span class="share-icon">↗</span>
+                    Пригласить друзей
+                </button>
             </div>
             <div class="beer-selection">
                 <div class="userinfo">
@@ -206,7 +188,7 @@
                                 <div class="profile-avatar">😊</div>
                                 <div class="profile-details">
                                     <div class="profile-name-container">
-                                        <div class="profile-name" id="userFio">Иван Иванов</div>
+                                        <div class="profile-name" id="userFio" data-placeholder="Иванов Иван Иванович">Иванов Иван Иванович</div>
                                         <div class="edit-icon" onclick="enableEditing('userFio')">✏️</div>
                                         <div class="edit-icon save-icon" id="saveName"
                                             onclick="saveEditing('userFio', 'saveName')">✓</div>
