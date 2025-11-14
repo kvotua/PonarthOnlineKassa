@@ -129,13 +129,19 @@ async def open_gift(
 
     return ResponseSchema(status_code=200, message="OK")
 
-@router.patch('/change', response_model=Any)
+@router.patch('/user/change', response_model=ResponseSchema)
 async def change_user(
     data: ChangeUser,
     user_data = Depends(get_current_user_with_bearer),
     db: AsyncSession = Depends(get_mysql_session)
 ):
     phone = user_data['phone']
+    changed = await users_cruds.change_user(card_num=phone, data=data, db=db)
+    if changed:
+        return ResponseSchema(status_code=200, message="FIO successfully changed")
+    return ResponseSchema(status_code=500, message="Error when changing FIO")
+    
+
 
 @router.post('/phone/change', response_model=ResponseSchema)
 async def change_phone(
@@ -143,21 +149,21 @@ async def change_phone(
     user_data = Depends(get_current_user_with_bearer),
     session_mysql: AsyncSession = Depends(get_mysql_session),
 ):
-    response = await verify_cruds.get_verify_session(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
+    response = await verify_cruds.get_verify_phone_change_session(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
     if response:
-        await verify_cruds.change_verify_status(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
+        await verify_cruds.change_verify_phone_change_status(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
         changed = await users_cruds.change_phone(phone=user_data['phone'], new_phone=data.phone, db=session_mysql)
         print(changed)
         if changed:
             user = await check_phone_status(user_phone=data.phone[1:], session_mysql=session_mysql)
-
-            access_token = sing_access_jwt_token(user_id=user.id, phone=user.phone)
-            refresh_token = sing_refresh_jwt_token(user_id=user.id, phone=user.phone)
-            response = JSONResponse(status_code=200, content={
-                "access_token": access_token,
-                "refresh_token": refresh_token
-            })
-            return response
+            if user:
+                access_token = sing_access_jwt_token(user_id=user.id, phone=user.phone)
+                refresh_token = sing_refresh_jwt_token(user_id=user.id, phone=user.phone)
+                response = JSONResponse(status_code=200, content={
+                    "access_token": access_token,
+                    "refresh_token": refresh_token
+                })
+                return response
     return ResponseSchema(status_code=400, message="Error")
 
 @router.patch('/telegram', response_model=Any)

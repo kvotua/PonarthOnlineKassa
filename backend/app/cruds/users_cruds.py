@@ -30,17 +30,44 @@ async def get_gift_by_id(gift_id: int, db: AsyncSession) -> Gift | None:
     gift_row = result.scalar_one_or_none()
     return gift_row
 
-async def change_user(data: ChangeUser, db: AsyncSession) -> bool:
+async def change_user(card_num: str, data: ChangeUser, db: AsyncSession) -> bool:
     try:
-        stmt = (
-            update(DiscountCard)
-            .where(DiscountCard.card_num == data.card_num)
-            .values(
-                first=data.last_name,
-                second=data.first_name,
-                third=data.patronymic
-            )
-        )
+        query = select(
+            DiscountCard.id,
+            DiscountCard.first,
+            DiscountCard.second,
+            DiscountCard.third,
+            DiscountCard.data
+        ).where(DiscountCard.card_num == card_num)
+
+        result = await db.execute(query)
+        row = result.first()
+
+        print('row:', row)
+
+        if not row:
+            return False
+
+        card_id, first, second, third, data_str = row
+
+        update_values = {
+            "first": data.first_name,
+            "second": data.last_name,
+            "third": data.patronymic,
+        }
+
+        if data_str:
+            try:
+                data_json = json.loads(data_str)
+                if isinstance(data_json, dict) and "first" in data_json:
+                    data_json["first"] = data.first_name
+                    data_json["second"] = data.last_name
+                    data_json["third"] = data.patronymic
+                    update_values["data"] = json.dumps(data_json, ensure_ascii=False)
+            except json.JSONDecodeError:
+                pass
+
+        stmt = update(DiscountCard).where(DiscountCard.id == card_id).values(**update_values)
         await db.execute(stmt)
         await db.commit()
         return True

@@ -2,7 +2,7 @@ from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 
-from app.models.mysql import Verification, DiscountCard, UserScore
+from app.models.mysql import ChangeNumberVerification, Verification, DiscountCard, UserScore
 from app.config import base_id, firm_id, discount_id
 
 
@@ -16,11 +16,38 @@ async def add_verify_session(call_id: str, code: str, phone: str, session_mysql:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+async def add_verify_change_phone_session(call_id: str, code: str, new_phone: str, old_phone: str, session_mysql: AsyncSession) -> ChangeNumberVerification:
+    try:
+        data = ChangeNumberVerification(call_id=call_id, code=code, new_phone=new_phone, old_phone=old_phone)
+        session_mysql.add(data)
+        await session_mysql.commit()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 async def get_verify_session(call_id: str, code: str, session_mysql: AsyncSession) -> Verification:
     try:
         stmt = select(Verification).where(
             Verification.call_id == call_id,
             Verification.code == code)
+        result: Result = await session_mysql.execute(stmt)
+        verif_session = result.scalar_one_or_none()
+        if not verif_session:
+            raise HTTPException(status_code=401, detail="Invalid ID or code")
+
+        return verif_session
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+async def get_verify_phone_change_session(call_id: str, code: str, session_mysql: AsyncSession) -> ChangeNumberVerification:
+    try:
+        stmt = select(ChangeNumberVerification).where(
+            ChangeNumberVerification.call_id == call_id,
+            ChangeNumberVerification.code == code)
         result: Result = await session_mysql.execute(stmt)
         verif_session = result.scalar_one_or_none()
         if not verif_session:
@@ -55,6 +82,24 @@ async def change_verify_status(call_id: str, code: str, session_mysql: AsyncSess
         stmt = select(Verification).where(
             Verification.call_id == call_id,
             Verification.code == code)
+        result: Result = await session_mysql.execute(stmt)
+        verif_session = result.scalar_one_or_none()
+        if not verif_session:
+            raise HTTPException(status_code=401, detail="Invalid ID or code")
+        verif_session.verified = True
+        await session_mysql.commit()
+        await session_mysql.refresh(verif_session)
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+async def change_verify_phone_change_status(call_id: str, code: str, session_mysql: AsyncSession):
+    try:
+        stmt = select(ChangeNumberVerification).where(
+            ChangeNumberVerification.call_id == call_id,
+            ChangeNumberVerification.code == code)
         result: Result = await session_mysql.execute(stmt)
         verif_session = result.scalar_one_or_none()
         if not verif_session:

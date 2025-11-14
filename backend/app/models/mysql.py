@@ -58,13 +58,22 @@ class DiscountCard(Base_mysql):
     referal_discount_card_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     data: Mapped[dict] = mapped_column(JSON,deferred=True)
 
-
 class Verification(Base_mysql):
     __tablename__ = 'verification'
 
     call_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
     code: Mapped[str] = mapped_column(VARCHAR(4))
     phone: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    verified: Mapped[int] = mapped_column(SmallInteger, default=0)
+
+class ChangeNumberVerification(Base_mysql):
+    __tablename__ = 'change_number_verification'
+
+    call_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    code: Mapped[str] = mapped_column(VARCHAR(4))
+    new_phone: Mapped[str] = mapped_column(Text)
+    old_phone: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     verified: Mapped[int] = mapped_column(SmallInteger, default=0)
 
