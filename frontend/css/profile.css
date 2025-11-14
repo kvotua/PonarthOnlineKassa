@@ -2,7 +2,7 @@
 
 /* Base Reset & Variables */
 :root {
-  --primary-color: #F9D03F;
+  --primary-color: #FFCC00;
   --bg-color: #171616;
   --text-color: #FCF9F2;
   --border-color: rgba(105, 105, 105, 1);
@@ -536,12 +536,13 @@ h1 {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(#4cd964 0%, #4cd964 68%, rgba(255, 255, 255, 0.2) 68%, rgba(255, 255, 255, 0.2) 100%);
+  background: conic-gradient(var(--primary-color) 0%, var(--primary-color) 0%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.2) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: background 1.5s ease-in-out;
 }
 
 .progress-circle::before {

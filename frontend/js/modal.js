@@ -735,14 +735,19 @@ IMask(phoneInput, {
 async function updateSendButton() {
     const phone = phoneInput.value.replace(/\D/g, '');
     const scores = parseFloat(scoresInput.value);
+    let userInfo = null;
 
-    if (phone.length >= 11 && scores > 0) {
-        const userInfo = await parseUser(phone);
+    if (phone.length >= 11) {
+        userInfo = await parseUser(phone);
         if (userInfo) {
             recipientInfo.style.display = 'block';
             recipientName.innerText = userInfo;
             recipientPhone.innerText = phoneInput.value;
-            sendButton.disabled = false;
+            if (scores > 0) {
+                sendButton.disabled = false;
+            } else {
+                sendButton.disabled = true;
+            }
         } else {
             recipientInfo.style.display = 'none';
             sendButton.disabled = true;
@@ -925,12 +930,34 @@ document.querySelectorAll('.modal-content').forEach(modal => {
     modal.addEventListener('touchstart', onPointerDown, { passive: false });
 });
 
-function updateProgress(progress) {
-    const progressCircle = document.querySelector('.progress-circle');
-    const progressText = document.querySelector('.progress-text');
+function animateProgress(targetProgress, duration) {
+    const progressCircle = document.getElementById('progressCircle');
+    const progressText = document.getElementById('progressText');
 
-    progressCircle.style.background = `conic-gradient(#4cd964 0%, #4cd964 ${progress}%, rgba(255, 255, 255, 0.2) ${progress}%, rgba(255, 255, 255, 0.2) 100%)`;
-    progressText.textContent = `${progress}%`;
+    let start = 0;
+    const startTime = performance.now();
+
+    function updateProgress(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Плавное изменение с easing
+        const easedProgress = easeOutCubic(progress);
+        const currentProgress = Math.floor(easedProgress * targetProgress);
+
+        // Обновляем круг
+        progressCircle.style.background =
+            `conic-gradient(var(--primary-color) 0%, var(--primary-color) ${currentProgress}%, rgba(255, 255, 255, 0.2) ${currentProgress}%, rgba(255, 255, 255, 0.2) 100%)`;
+
+        // Обновляем текст
+        progressText.textContent = `${currentProgress}%`;
+
+        if (progress < 1) {
+            requestAnimationFrame(updateProgress);
+        }
+    }
+
+    requestAnimationFrame(updateProgress);
 }
 
 function updateRank(referals) {
@@ -970,16 +997,20 @@ function updateRank(referals) {
     }
 
     // Обновляем круг
-    updateProgress(progress.toFixed(0));
+    animateProgress(progress.toFixed(0), 2500);
 
     // Обновляем текст
     userStatus.innerText = rank;
 
     if (nextRank) {
-        progressInfo.innerHTML = `До ${nextRank}<br>осталось <span class="highlight">${remaining}</span> друзей`;
+        progressInfo.innerHTML = `До ${nextRank}<br>осталось <span class="highlight">${remaining}</span> рефералов`;
     } else {
         progressInfo.innerHTML = `Вы достигли максимального звания`;
     }
+}
+
+function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
 }
 
 async function fetchReferals() {
@@ -1006,6 +1037,8 @@ async function fetchReferals() {
                 const refCurrentMonthValue = document.getElementById('refCurrentMonthValue');
                 const refTotalValue = document.getElementById('refTotalValue');
 
+                data.referals = 44;
+
                 updateRank(data.referals);
 
                 refReferalsValue.innerText = `${data.referals}`;
@@ -1026,6 +1059,10 @@ async function parseUser(phoneNumber) {
             'Authorization': `Bearer ${token}`
         }
     });
+
+    if (!response.ok) {
+        return null;
+    }
 
     const data = await response.json();
 
