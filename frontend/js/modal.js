@@ -151,13 +151,27 @@ function openCoinModal() {
     modal.style.transition = 'none';
     modal.style.transform = `translateY(${window.innerHeight}px)`;
 
+    const modalHeight = modal.offsetHeight;
+    const viewportHeight = window.innerHeight;
+    let minTranslateY = viewportHeight - modalHeight;
+
+    let initialBefore = window.innerHeight * 0.3;
+    let initial = window.innerHeight * 0.4;
+
+    console.log(`initial: ${initial}, modalHeight: ${modalHeight}`);
+
+    // if (initial >= minTranslateY) {
+    //     initial = minTranslateY;
+    //     initialBefore = minTranslateY;
+    // }
+
     requestAnimationFrame(() => {
         modal.style.transition = 'transform 0.36s cubic-bezier(0.25, 1, 0.5, 1)';
-        modal.style.transform = `translateY(${window.innerHeight * 0.3}px)`;
+        modal.style.transform = `translateY(${initialBefore}px)`;
 
         setTimeout(() => {
             modal.style.transition = 'transform 0.4s ease';
-            modal.style.transform = `translateY(${window.innerHeight * 0.4}px)`;
+            modal.style.transform = `translateY(${initial}px)`;
 
             setTimeout(() => {
                 isOpening = false;
@@ -248,6 +262,24 @@ function switchCoinTab(tabName) {
     coinTabContents.forEach(content => {
         content.classList.remove('active');
     });
+
+    // if (tabName == 'transfers') {
+    //     const modal = document.querySelector('#coinModalOverlay .modal-content');
+
+    //     const modalHeight = modal.offsetHeight;
+    //     const viewportHeight = window.innerHeight;
+    //     let minTranslateY = viewportHeight - modalHeight;
+
+    //     let initialBefore = window.innerHeight * 0.5;
+    //     let initial = window.innerHeight * 0.4;
+
+    //     if (initial <= minTranslateY) {
+    //         initial = minTranslateY;
+    //     }
+
+    //     modal.style.transition = 'transform 0.2s ease';
+    //     modal.style.transform = `translateY(${initial}px)`;
+    // }
 
     document.getElementById(`coin-${tabName}-content`).classList.add('active');
 }
@@ -397,52 +429,71 @@ function loadOperations(operationsFiltered) {
         operationCard.className = 'operation-card';
 
         let itemsHTML = '';
+
         operation.goods.forEach(item => {
+            const types = {
+                1: 'л.',
+                2: 'кг.',
+                3: 'шт.'
+            };
+
             itemsHTML += `
-                        <div class="operation-item">
-                            <span class="operation-item-name">${item.good_name}</span>
-                            <span class="operation-item-dots"></span>
-                            <span class="operation-item-price">${item.price} ₽</span>
-                        </div>
-                    `;
+                <div class="receipt-item">
+                    <div class="receipt-item-name">
+                        ${item.good_name}
+                        <span class="receipt-item-quantity">${item.count} ${types[item.type]}</span>
+                    </div>
+                    <div class="receipt-item-price">${item.price} ₽</div>
+                </div>
+            `;
         });
 
         const dateObj = new Date(operation.date);
 
         const formattedDate = dateObj.toLocaleDateString('ru-RU', {
             day: 'numeric',
-            month: 'long',
+            month: 'short',
             year: 'numeric'
         });
 
-        operationCard.innerHTML = `
-                    <div class="operation-header">
-                        <div class="operation-date">${formattedDate}</div>
-                        <div class="operation-prices">
-                            ${operation.price_total !== operation.price_real
-                ? `<div class="operation-amount">${operation.price_real}</div>
-                                                <div class="operation-total-amount">${operation.price_total} ₽</div>`
-                : `<div class="operation-total-amount">${operation.price_total} ₽</div>`
-            }
+        operationCard.innerHTML = `                    
+                    <div class="receipt-header">
+                        <div class="receipt-info">
+                            <div class="receipt-title">Сумма чека <span class="receipt-number">#${operation.order_id}</span><br>от ${formattedDate}</div>
                         </div>
+                        <div class="receipt-total-amount">${operation.price_total} ₽</div>
                     </div>
-                    <div class="operation-items">
+                    <div class="receipt-items">
                         ${itemsHTML}
                     </div>
-                    <div class="operation-points">
-                        <div class="points-earned">+${parseFloat(operation.score_added)} баллов</div>
-                        <div class="points-total">${operation.previous_scores} → ${parseFloat(operation.previous_scores) + parseFloat(operation.score_added)}</div>
+        
+                    <div class="receipt-points-info">
+                        <div class="receipt-points-label">Накоплено баллов</div>
+                        <div class="receipt-points-change">
+                            <div class="receipt-points-before">${operation.previous_scores}</div>
+                            <div class="receipt-points-arrow">→</div>
+                            <div class="receipt-points-after">${(parseFloat(operation.previous_scores) + parseFloat(operation.score_added)).toFixed(1)}</div>
+                        </div>
                     </div>
-                    <div class="operation-footer">
-                        <div class="prize-icon">${operation.gift_emoji ? operation.gift_emoji : ''}</div>
-                        <button class="share-button">Поделиться</button>
+                    ${operation.gift_emoji ?
+                        `
+                        <div class="receipt-gifts-info">
+                            <div class="receipt-gifts-label">Подарки в чеке</div>
+                            <span class="receipt-gift-icon">${operation.gift_emoji}</span>
+                        </div>
+                        ` : ''
+                    }
+        
+                    <div class="receipt-footer">
+                        <div class="receipt-served-by">Обслуживал: ${operation.user.short_fio}</div>
+                        <button class="receipt-share-button">Поделиться</button>
                     </div>
                 `;
 
         operationsList.appendChild(operationCard);
 
         operationsList.addEventListener('click', (e) => {
-            const shareBtn = e.target.closest('.share-button');
+            const shareBtn = e.target.closest('.receipt-share-button');
             if (!shareBtn) return;
 
             const operationCard = shareBtn.closest('.operation-card');
@@ -472,31 +523,37 @@ function loadOperations(operationsFiltered) {
 function loadProfileOperations() {
     profileOperationsList.innerHTML = '';
 
-    const recentOperations = lastOperations.slice(0, 5);
+    const recentOperations = lastOperations.slice(0, 10);
 
     recentOperations.forEach(operation => {
         const operationCard = document.createElement('div');
-        operationCard.className = 'operation-card';
+        operationCard.className = 'operation-item';
 
         const dateObj = new Date(operation.date_added);
 
-        const formattedDate = dateObj.toLocaleDateString('ru-RU', {
+        const formattedDateTime = dateObj.toLocaleString('ru-RU', {
             day: 'numeric',
             month: 'long',
-            year: 'numeric'
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
         });
 
         const score = parseFloat(operation.scores);
-        const pointsClass = score > 0 ? "points-earned" : "points-spent";
+        const scoresBefore = parseFloat(operation.before_scores);
+        const pointsClass = score > 0 ? "amount-positive" : "amount-negative";
         const pointsText = score > 0 ? `+${score} баллов` : `${score} баллов`;
 
         operationCard.innerHTML = `
-            <div class="operation-header">
-                <div class="operation-date">${formattedDate}</div>
-                <div class="operation-total-amount">${operation.title == 'Перевод' ? operation.title : operation.title + " ₽"}</div>
+            <div class="operation-info">
+                <div class="operation-date">${formattedDateTime}</div>
+                <div class="operation-type">${operation.title}</div>
             </div>
-            <div class="operation-points">
-                <div class="${pointsClass}">${pointsText}</div>
+            <div class="operation-balance">
+                <div class="balance-was">${scoresBefore} баллов</div>
+                <div class="balance-change ${pointsClass}">${pointsText}</div>
+                <div class="balance-now">${(scoresBefore + score).toFixed(1)} баллов</div>
             </div>
             `;
 
@@ -536,6 +593,11 @@ function loadTransferHistory() {
             month: 'long',
             year: 'numeric'
         });
+        const score = parseFloat(transfer.amount);
+        const scoresBefore = parseFloat(transfer.previous_scores);
+        const scoresAfter = parseFloat(transfer.new_scores);
+        const pointsClass = score > 0 ? "positive" : "negative";
+        const pointsText = score > 0 ? `+${score} баллов` : `${score} баллов`;
 
         transferItem.innerHTML = `
                     <div class="transfer-info">
@@ -544,8 +606,10 @@ function loadTransferHistory() {
                         <div class="transfer-type">${transfer.type}</div>
                         ${receiptInfo}
                     </div>
-                    <div class="transfer-amount ${transfer.amount > 0 ? 'positive' : 'negative'}">
-                        ${transfer.amount > 0 ? '+' : ''}${transfer.amount} баллов
+                    <div class="transfer-balance">
+                        <div class="transfer-was">${scoresBefore} баллов</div>
+                        <div class="transfer-change ${pointsClass}">${pointsText}</div>
+                        <div class="transfer-now">${scoresAfter} баллов</div>
                     </div>
                 `;
 
@@ -1037,8 +1101,6 @@ async function fetchReferals() {
                 const refCurrentMonthValue = document.getElementById('refCurrentMonthValue');
                 const refTotalValue = document.getElementById('refTotalValue');
 
-                data.referals = 44;
-
                 updateRank(data.referals);
 
                 refReferalsValue.innerText = `${data.referals}`;
@@ -1224,7 +1286,7 @@ async function fetchProfile() {
                 year: 'numeric'
             });
 
-            fioElement.textContent = `${data.second} ${data.first} ${data.third}`;
+            fioElement.textContent = `${data.second} ${data.first}${data.third ? ' ' + data.third : ''}`;
             userBday.textContent = `${formattedDate}`;
             userPhone.textContent = `${phone_number}`;
             originalPhone = phone_number.replace(/\D/g, '');
@@ -1259,6 +1321,33 @@ async function fetchProfile() {
                 emojiNotification.style.display = 'none';
             }
 
+            const regDateStr = data.date_added;
+            if (regDateStr) {
+                const regDateObj = new Date(regDateStr);
+                const today = new Date();
+
+                today.setHours(0, 0, 0, 0);
+                regDateObj.setHours(0, 0, 0, 0);
+
+                const day = String(regDateObj.getDate()).padStart(2, '0');
+                const month = String(regDateObj.getMonth() + 1).padStart(2, '0');
+                const year = regDateObj.getFullYear();
+
+                const diffMs = today - regDateObj;
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+                let message = "";
+
+                if (diffDays === 0) {
+                    message = `Вы сегодня зарегистрировали карту!<br>Дата оформления карты: ${day}.${month}.${year}`;
+                } else {
+                    message = `Вы с нами уже ${diffDays} ${pluralDays(diffDays)}!<br>Дата оформления карты: <span>${day}.${month}.${year}</span>`;
+                }
+
+                const time_Passed = document.getElementById("timePassed");
+                time_Passed.innerHTML = message;
+            }
+
             const scoreCoinElement = document.getElementById('scoreCoinAmount');
             const scoreModal = document.getElementById('balanceAmount')
             const profilePoints = document.getElementById('profilePoints')
@@ -1284,6 +1373,15 @@ async function fetchProfile() {
                 }
             }
         });
+}
+
+function pluralDays(n) {
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+
+    if (mod10 === 1 && mod100 !== 11) return "день";
+    if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) return "дня";
+    return "дней";
 }
 
 document.addEventListener('DOMContentLoaded', async function () {

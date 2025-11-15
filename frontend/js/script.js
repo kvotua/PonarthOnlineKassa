@@ -13,8 +13,30 @@ if (referalId) {
     localStorage.setItem("referal_id", referalId);
 }
 
+const mainTabRadios = document.querySelectorAll('input[name="main-tab-type"]');
+
+if (mainTabRadios) {
+    mainTabRadios.forEach(radio => {
+        radio.addEventListener("change", () => {
+            radio.checked = true;
+        });
+    });
+
+    function getCurrentTab() {
+        const active = document.querySelector('input[name="main-tab-type"]:checked');
+        if (!active) return null;
+
+        return active.id.replace("main-glass-", "");
+    }
+}
+
+
 function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
     let retryCount = 0;
+    const call_type = getCurrentTab();
+    const callInfo = document.getElementById('call-info');
+    const noCallInfo = document.getElementById('nocall-info');
+    const smsCode = document.getElementById('sms-code')
 
     const executeRequest = () => {
         return fetch(`${host}/api/v1/verify/phone/send`, {
@@ -23,17 +45,32 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ phone })
+            body: JSON.stringify({ phone, call_type: call_type })
         })
             .then(async response => {
                 const data = await response.json();
                 console.log("Ответ сервера:", data);
                 if (data.call_id) {
+                    if (call_type == 'telegram') {
+                        callInfo.innerText = 'Введите 4-х значный код отправленный';
+                        noCallInfo.innerText = 'Если сообщение не пришло';
+                        smsCode.placeholder = 'Введите 4-х значный код';
+                    } else {
+                        callInfo.innerText = 'Введите последние 4 цифры входящего звонка';
+                        noCallInfo.innerText = 'Если звонок не поступил';
+                        smsCode.placeholder = 'Введите последние 4 цифры';
+                    }
                     return data;
                 }
                 else if (data.status_code === 422) {
                     document.getElementById('phone').value = '';
                     throw new Error("Невалидный номер");
+                }
+                else if (data.detail.error) {
+                    return {
+                        error: true,
+                        message: data.detail.message
+                    }
                 }
                 else {
                     throw new Error("Неизвестная ошибка сервера");
@@ -157,9 +194,7 @@ function registerDiscount(callId) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            'last_name': localStorage.getItem('last_name'),
-            'first_name': localStorage.getItem('first_name'),
-            'patronymic': localStorage.getItem('patronymic'),
+            'full_name': localStorage.getItem('fio'),
             'birth_date': formattedDate,
             'gender': localStorage.getItem('gender'),
             'call_id': callId,

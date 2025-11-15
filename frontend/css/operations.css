@@ -1,0 +1,74 @@
+.operations-header {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: var(--indent-between);
+    text-align: center;
+}
+
+.operations-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--indent-one-logic-between);
+}
+
+.operation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--indent-inner);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.operation-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.operation-info {
+    flex: 1;
+}
+
+.operation-date {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.operation-type {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.operation-balance {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.balance-was {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+}
+
+.balance-change {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.balance-now {
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.amount-positive {
+    color: #4cd964;
+}
+
+.amount-negative {
+    color: #ff3b30;
+}

@@ -378,7 +378,7 @@
 
 #coin-glass-transfers:checked~.glass-glider {
     transform: translateX(100%);
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 204, 0, 1));
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-color));
     box-shadow:
         0 4px 20px rgba(255, 215, 0, 0.4),
         inset 0 1px 2px rgba(255, 255, 200, 0.6);
@@ -470,7 +470,7 @@
 .operations-title {
     font-size: 1.3rem;
     font-weight: 600;
-    margin-bottom: var(--indent-between);
+    margin-bottom: var(--indent-one-logic-between);
 }
 
 .operations-controls {
@@ -602,7 +602,6 @@
     display: flex;
     align-items: end;
     font-size: 14px;
-    margin-bottom: 5px;
     padding-left: 10px;
 }
 
@@ -795,7 +794,7 @@
 .transfer-history-title {
     font-size: 1.3rem;
     font-weight: 600;
-    margin-bottom: var(--indent-between);
+    margin-bottom: var(--indent-one-logic-between);
 }
 
 .transfer-history-controls {
@@ -822,7 +821,7 @@
 .transfer-history-list {
     display: flex;
     flex-direction: column;
-    gap: var(--indent-between);
+    gap: var(--indent-one-logic-between);
 }
 
 .transfer-history-item {
@@ -856,16 +855,34 @@
     color: rgba(255, 255, 255, 0.7);
 }
 
-.transfer-amount {
-    font-weight: 600;
-    font-size: 16px;
+.transfer-balance {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
 }
 
-.transfer-amount.positive {
+.transfer-was {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+}
+
+.transfer-change {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.transfer-now {
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.transfer-change.positive {
     color: #4CD964;
 }
 
-.transfer-amount.negative {
+.transfer-change.negative {
     color: #FF3B30;
 }
 

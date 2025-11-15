@@ -17,21 +17,31 @@
         <div class="euler-top-left"></div>
         <div class="euler-bottom-right"></div>
         <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
+
+        <div class="glass-radio-group">
+            <input type="radio" name="main-tab-type" id="main-glass-call" checked />
+            <label for="main-glass-call">Звонок</label>
+
+            <input type="radio" name="main-tab-type" id="main-glass-telegram" />
+            <label for="main-glass-telegram">Телеграм</label>
+
+            <div class="glass-glider"></div>
+        </div>
         <h1>Здравствуйте!</h1>
-        <label class="labeltext">Введите номер телефона для регистрации карты</label>
+        <label class="labeltext">Введите номер телефона для входа в систему лояльности</label>
         <form id="verification-form">
             <div class="phone-container">
                 <input type="tel" id="phone" name="phone" placeholder="+7 (952) 999-15-18" required
                     class="input-autofill">
-                <button type="button" class="send-sms" id="send-code">Подтвердить</button>
+                <button type="button" class="send-sms" id="send-code" disabled>Подтвердить</button>
             </div>
             <div class="sms-container">
                 <label class="labelSMS confirmation-label">
-                    Введите последние 4 цифры входящего звонка</br> на номер <span id="phone-number"></span>
+                    <span id="call-info">Введите последние 4 цифры входящего звонка</span></br> на номер <span id="phone-number"></span>
                 </label>
                 <input type="text" id="sms-code" name="smsCode" placeholder="Введите последние 4 цифры">
                 <div class="resend-text" style="display: none;">
-                    Если звонок не поступил, проверьте правильность вашего телефонного номера или нажмите кнопку
+                    <span id="nocall-info">Если звонок не поступил</span>, проверьте правильность вашего телефонного номера или нажмите кнопку
                     <span class="resend-link timer-text disabled">
                         Подтвердить повторно ( <span class="timer">30</span> сек )
                     </span>
@@ -63,6 +73,15 @@
                 mask: '+{7} (000) 000-00-00',
             });
 
+            phoneInput.addEventListener('input', function () {
+                const phoneValue = this.value.replace(/\D/g, '');
+                if (phoneValue.length === 11) {
+                    sendBtn.disabled = false;
+                } else {
+                    sendBtn.disabled = true;
+                }
+            })
+
             smsCodeInput.addEventListener('input', function () {
                 const isValid = this.value.length === 4;
 
@@ -86,7 +105,7 @@
                 const phoneInput = document.getElementById('phone');
                 const phone = phoneInput.value;
 
-                if (phone) {
+                if (phone && !sendBtn.disabled) {
                     sendPhoneVerification(phone)
                         .then(response => {
                             console.log(response);
@@ -96,7 +115,7 @@
                                 localStorage.setItem('call_id', response.call_id);
                                 localStorage.setItem('call_type', response.call_type);
                                 document.querySelector('.phone-container').classList.add('disabled');
-                                sendBtn.classList.add('disabled');
+                                sendBtn.disabled = true;
                                 sendBtn.textContent = 'Подтвердить';
 
                                 phoneInput.readOnly = true;
@@ -132,7 +151,7 @@
 
                     if (remaining <= 0) {
                         clearInterval(timer);
-                        sendBtn.classList.remove('disabled');
+                        sendBtn.disabled = false;
                         timerWrapper.classList.remove('disabled');
                         timerWrapper.textContent = 'Подтвердить';
 

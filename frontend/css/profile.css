@@ -9,6 +9,8 @@
   --card-bg: #212121;
 
   --indent-between: 25px;
+  --indent-one-logic-between: calc(var(--indent-between) / 2);
+
   --indent-outer: 20px;
   --indent-inner: 20px;
 }
@@ -18,6 +20,7 @@
   padding: 0;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  font-family: 'Montserrat', sans-serif;
 }
 
 input::-ms-clear {
@@ -130,8 +133,12 @@ h1 {
   line-height: 1.5;
 }
 
+.cashback-hint2 span {
+  color: var(--primary-color);
+}
+
 #new_user_score {
-  margin-top: 15px;
+  margin-bottom: var(--indent-between);
   color: var(--text-color);
 }
 
@@ -564,6 +571,12 @@ h1 {
   z-index: 1;
 }
 
+
+
+.beer-selection {
+  margin-bottom: var(--indent-between);
+}
+
 /* Информация о прогрессе */
 .ref-progress-info {
   color: rgba(255, 255, 255, 0.9);
@@ -576,7 +589,7 @@ h1 {
 
 .highlight {
   font-weight: 700;
-  color: #FFD700;
+  color: var(--primary-color);
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
 }
 
@@ -586,7 +599,7 @@ h1 {
   justify-content: space-between;
   width: 100%;
   margin-bottom: var(--indent-between);
-  gap: var(--indent-between);
+  gap: var(--indent-one-logic-between);
 }
 
 .ref-stat-item {
@@ -604,14 +617,14 @@ h1 {
 
 .ref-stat-value {
   color: white;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 700;
   margin-bottom: 4px;
 }
 
 .ref-stat-label {
   color: rgba(255, 255, 255, 0.8);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
 }
 

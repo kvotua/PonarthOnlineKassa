@@ -33,43 +33,66 @@ function renderBill(bill) {
     year: 'numeric'
   });
 
-  billDate.innerText = `Чек от ${date}`
-  billStaff.innerText = `Обслуживал: ${bill.user.short_fio}`
-  billBuyer.innerText = `Покупатель: ${bill.buyer}`
-
   const types = {
-    1: 'литр',
-    2: 'кг',
-    3: 'шт'
+    1: 'л.',
+    2: 'кг.',
+    3: 'шт.'
   }
 
   const goodsHTML = bill.goods.map(good => `
-  <div class="bill-item">
-    <span class="bill-item-name">${good.count < 1 ? good.good_name : `${good.good_name} × ${good.count} ${types[good.type]}`}</span>
-    <span class="bill-item-dots"></span>
-    <span class="bill-item-price">${good.price.toFixed(2)} ₽</span>
-  </div>
+    <div class="receipt-item">
+        <div class="receipt-item-name">
+            ${good.good_name}
+            <span class="receipt-item-quantity">${good.count} ${types[good.type]}</span>
+        </div>
+        <div class="receipt-item-price">${good.price} ₽</div>
+    </div>
 `).join('');
 
-  const totalHTML = bill.price_total !== bill.price_real
-    ? `<div class="bill-total">
-        Итого: 
-        <span style="text-decoration: line-through; opacity:0.6; margin-left: 4px;">${bill.price_real}₽</span>
-        <span style="margin-left:4px;">${bill.price_total}₽</span><br>
-        Баллы начислены: +${bill.score_added}
-     </div>`
-    : `<div class="bill-total">
-        Итого: ${bill.price_total}₽<br>
-        Баллы начислены: +${bill.score_added}
-     </div>`;
+
+  const dateObj = new Date(bill.date);
+
+  const formattedDate = dateObj.toLocaleDateString('ru-RU', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+  });
 
   const billHTML = `
   <div class="bill">
-    <div class="bill-header">
-      <span>Чек №${bill.order_id}</span>
+    <div class="receipt-header">
+        <div class="receipt-info">
+            <div class="receipt-title">Сумма чека <span class="receipt-number">#${bill.order_id}</span><br>от ${formattedDate}</div>
+        </div>
+        <div class="receipt-total-amount">${bill.price_total} ₽</div>
     </div>
-    <div class="bill-items">${goodsHTML}</div>
-    ${totalHTML}
+    <div class="receipt-items">
+        ${goodsHTML}
+    </div>
+
+    <div class="receipt-points-info">
+        <div class="receipt-points-label">Накоплено баллов</div>
+        <div class="receipt-points-change">
+            <div class="receipt-points-before">${bill.previous_scores}</div>
+            <div class="receipt-points-arrow">→</div>
+            <div class="receipt-points-after">${parseFloat(bill.previous_scores) + parseFloat(bill.score_added)}</div>
+        </div>
+    </div>
+    ${bill.gift.emoji ?
+        `
+        <div class="receipt-gifts-info">
+            <div class="receipt-gifts-label">Подарки в чеке</div>
+            <div class="receipt-gifts-icons">
+                <div class="receipt-gift-icon">${bill.gift.emoji}</div>
+            </div>
+        </div>
+        ` : ''
+    }
+
+    <div class="receipt-footer" style="flex-direction: column; align-items: start;">
+        <div class="receipt-served-by">Обслуживал: ${bill.user.short_fio}</div>
+        <div class="receipt-served-by">Покупатель: ${bill.buyer}</div>
+    </div>
   </div>
 `;
 

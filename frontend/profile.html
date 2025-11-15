@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="css/banner.css">
     <link rel="stylesheet" href="css/scratch.css">
     <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/operations.css">
+    <link rel="stylesheet" href="css/bills.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <link rel="icon" href="img/Tag_Ponart.svg" type="image/svg+xml">
@@ -39,9 +41,14 @@
             <div class="euler-bottom-right"></div>
             <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
             <h1>Ваша карта добавлена!</h1>
-            <p id="new_user_score">Вы вступили в клуб Понарт. На вашем счету 50 приветственых балла</p>
             <iframe src="./widget/banner-widget.html" style="height:211px; border:none;" class="widget"
                 id="banner-widget"></iframe>
+            <p id="new_user_score">Вы вступили в клуб Понарт. На вашем счету 50 приветственых баллов</p>
+            <div class="beer-selection">
+                <div class="userinfo">
+                    <p id="timePassed" class="cashback-hint2"></p>
+                </div>
+            </div>
             <div class="referal-widget">
                 <div class="user-status">Командир взвода</div>
 
@@ -64,7 +71,7 @@
                     </div>
                     <div class="ref-stat-item">
                         <div class="ref-stat-value" id="refCurrentMonthValue">0</div>
-                        <div class="ref-stat-label">Накоплено этом месяце</div>
+                        <div class="ref-stat-label">Накоплено в этом месяце</div>
                     </div>
                 </div>
 
@@ -72,11 +79,6 @@
                     <span class="share-icon">↗</span>
                     Пригласить друзей
                 </button>
-            </div>
-            <div class="beer-selection">
-                <div class="userinfo">
-                    <p id="timePassed" class="cashback-hint2"></p>
-                </div>
             </div>
         </div>
 
@@ -429,9 +431,6 @@
             if (!new_user) {
                 new_user_score.style.display = 'none';
             }
-
-            const time_Passed = document.getElementById("timePassed");
-            time_Passed.innerHTML = localStorage.getItem("timePassed");
         });
     </script>
 

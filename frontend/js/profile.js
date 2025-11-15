@@ -1,5 +1,6 @@
 let originalPhone;
 let new_phone = '';
+let originalFio = '';
 const phoneProfileInput = document.getElementById('userPhone');
 
 function formatPhone(phone) {
@@ -33,7 +34,6 @@ async function enableEditing(elementId) {
         input.value = element.textContent.trim();
         input.className = 'phone-temp-input';
         element.replaceWith(input);
-        input.focus();
 
         // Применяем IMask
         phoneMaskInstance = IMask(input, {
@@ -41,25 +41,26 @@ async function enableEditing(elementId) {
         });
 
         // При нажатии Enter — сохраняем
-        input.addEventListener('keydown', (e) => {
+        input.addEventListener('keydown', async (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                savePhoneEditing();
+                await savePhoneEditing();
             }
         });
     } else {
+        originalFio = element.innerText;
         // Для имени — обработка Enter
-        element.addEventListener('keydown', function (e) {
+        element.addEventListener('keydown', async function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                saveEditing(elementId, saveButtonId);
+                await saveEditing(elementId, saveButtonId);
             }
         });
     }
 }
 
 // Функция для сохранения изменений имени
-function saveEditing(elementId, saveButtonId) {
+async function saveEditing(elementId, saveButtonId) {
     const element = document.getElementById(elementId);
     const saveButton = document.getElementById(saveButtonId);
 
@@ -71,11 +72,14 @@ function saveEditing(elementId, saveButtonId) {
     saveButton.classList.remove('visible');
 
     if (elementId == 'userFio') {
-        const changedFio = changeFio(element.innerText);
-        if (changedFio) {
-            showNotification('ФИО успешно изменено!');
-        } else {
-            showNotification('Ошибка при смене ФИО, попробуйте позже.');
+        if (originalFio !== element.innerText) {
+            const changedFio = await changeFio(element.innerText);
+            if (changedFio) {
+                showNotification('ФИО успешно изменено!');
+            } else {
+                showNotification('Ошибка при смене ФИО, попробуйте позже.');
+                element.innerText = originalFio;
+            }
         }
     }
 
@@ -132,7 +136,7 @@ async function savePhoneEditing() {
             nonSaveEditing('userPhone', 'savePhone');
         }
     } else {
-        saveEditing('userPhone', 'savePhone');
+        await saveEditing('userPhone', 'savePhone');
     }
 }
 

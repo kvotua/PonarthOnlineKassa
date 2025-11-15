@@ -20,9 +20,7 @@
         <form class="registration" method="POST" id="my_form">
             <label id="cbday">Введите ваше ФИО*:</label>
             <div class="FIO">
-                <input type="text" id="first" name="first" placeholder="Фамилия*" required><br>
-                <input type="text" id="second" name="second" placeholder="Имя*" required><br>
-                <input type="text" id="third" name="third" placeholder="Отчество"><br>
+                <input type="text" id="fio" name="fio" placeholder="Фамилия* Имя* Отчество" required><br>
             </div>
             <label id="cbday">Введите дату рождения*:</label>
             <div class="FIO">
@@ -58,6 +56,23 @@
         const agreeCheckbox = document.getElementById('agree');
         const buttonsBlock = document.querySelector('.buttons');
 
+        const fioInput = document.getElementById("fio");
+
+        fioInput.addEventListener("input", () => {
+            let words = fioInput.value.split(/\s+/);
+
+            if (words.length > 3) {
+                words = words.slice(0, 3);
+            }
+
+            words = words.map(word => {
+                if (!word) return "";
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            });
+
+            fioInput.value = words.join(" ");
+        });
+
         agreeCheckbox.addEventListener('change', function () {
             if (this.checked) {
                 buttonsBlock.style.display = 'flex';
@@ -80,8 +95,7 @@
             document.getElementById("my_form").addEventListener('submit', function (e) {
                 e.preventDefault();
 
-                if (!document.getElementById("first").value ||
-                    !document.getElementById("second").value ||
+                if (!document.getElementById("fio").value ||
                     !document.getElementById("bday").value ||
                     !document.querySelector('input[name="gender"]:checked') ||
                     !document.getElementById("agree").checked) {
@@ -101,18 +115,28 @@
                     alert("Для регистрации вам должно быть не менее 18 лет");
                     return;
                 }
-                const last_name = document.getElementById("first").value;
-                const first_name = document.getElementById("second").value;
-                const patronymic = document.getElementById("third").value;
+                const fio = document.getElementById("fio").value;
                 const birth_date = document.getElementById("bday").value;
                 const gender = document.querySelector('input[name="gender"]:checked').value;
 
-                localStorage.setItem("last_name", last_name);
-                localStorage.setItem("first_name", first_name);
-                localStorage.setItem("patronymic", patronymic);
+                const fioParts = fio.split(/\s+/);
+
+                if (fioParts.length < 2 || fioParts.length > 3) {
+                    alert("Введите ФИО: минимум 2 слова (Фамилия Имя), максимум 3 (Фамилия Имя Отчество)");
+                    return;
+                }
+
+                for (const part of fioParts) {
+                    if (!/^[А-Яа-яЁё]{2,}$/.test(part)) {
+                        alert("Каждое слово в ФИО должно содержать минимум 2 русские буквы");
+                        return;
+                    }
+                }
+
+                localStorage.setItem("fio", fio);
                 localStorage.setItem("birth_date", birth_date);
                 localStorage.setItem("gender", gender);
-                localStorage.setItem('h1Element', ` ${last_name} ${first_name}, ваша карта добавлена!`)
+                localStorage.setItem('h1Element', ` ${fio}, ваша карта добавлена!`)
                 localStorage.setItem('registrationdate', `Дата оформления карты: ${day}.${month}.${year}`);
 
 
