@@ -517,8 +517,21 @@ async def get_user_loyalty_by_id(card_num: str, db: AsyncSession) -> UserInfo:
         scores = [scores]
     total_score = sum(scores) if scores else 0
 
+    stmt_score = (
+        select(UserScore.scores)
+        .where(
+            UserScore.card_id == discount_card_id,
+            UserScore.base_id == base_id,
+            UserScore.status == 0
+        )
+    )
+    result_score: Result = await db.execute(stmt_score)
+    wait_scores_list = result_score.scalars().all()
+    wait_scores = sum(wait_scores_list) if wait_scores_list else 0
+
     return UserInfo(
         **user_row,
         total_score=total_score,
+        wait_score=wait_scores,
         gifts=gifts_list
     )

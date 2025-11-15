@@ -70,14 +70,16 @@ async def send_code(
         #     return JSONResponse(status_code=200, content=response_data)
     if phone.call_type:
         if phone.call_type == 'telegram':
+            response_send = generate_info_for_telegram()
             if response is None or response is False:
+                response_data = response_send['data']
+                await add_verify_session(call_id=response_data['call_id'], code=response_data['pincode'], phone=phone.phone[1:], session_mysql=session_mysql)
                 raise HTTPException(
                     status_code=422,
-                    detail={"error": "no_account_for_telegram", "message": "Пользователь не имеет аккаунт для подтверждения входа через Telegram"}
+                    detail={"call_id": response_data['call_id'], "error": "no_account_for_telegram", "message": "Пользователь не имеет аккаунт для подтверждения входа через Telegram"}
                 )
             tg_chat_id = await users_cruds.get_user_telegram(card_num=phone.phone[1:], db=session_mysql)
             if int(tg_chat_id) > 0:
-                response_send = generate_info_for_telegram()
                 response_tg = await send_telegram_message(chat_id=tg_chat_id, text=f'Код для входа в систему лояльности: <code>{response_send["data"]["pincode"]}</code>\n\nЕсли вы не запрашивали код для входа, проигнорируйте это сообщение.')
                 # if not response_tg:
                 print(response_tg)

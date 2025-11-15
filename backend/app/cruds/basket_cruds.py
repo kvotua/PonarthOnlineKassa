@@ -185,7 +185,10 @@ async def get_all_baskets_by_card(db: AsyncSession, card_num: str):
         score_result = await db.execute(score_stmt)
         result = score_result.first()
 
-        previous_scores = float(result.total_scores or 0)
+        previous_scores = 0
+
+        if result:
+            previous_scores= float(result.total_scores)
         first = result.first if result else ""
         second = result.second if result else ""
 

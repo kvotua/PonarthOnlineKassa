@@ -66,6 +66,7 @@ class Verification(Base_mysql):
     phone: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     verified: Mapped[int] = mapped_column(SmallInteger, default=0)
+    chat_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
 
 class ChangeNumberVerification(Base_mysql):
     __tablename__ = 'change_number_verification'

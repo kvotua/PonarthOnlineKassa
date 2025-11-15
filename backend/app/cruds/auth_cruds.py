@@ -95,6 +95,10 @@ async def add_user_to_loyal_system(data: RegisterUserLoyaltySystem, session_mysq
             )
             referal_user = result.scalar_one_or_none()
 
+        chat_id = 0
+        if user_phone.chat_id:
+            chat_id = user_phone.chat_id
+
         data_for_discount_card = DiscountCard(
             first=data.first_name,
             second=data.last_name,
@@ -112,9 +116,9 @@ async def add_user_to_loyal_system(data: RegisterUserLoyaltySystem, session_mysq
             adress='',
             avg_check=0,
             koef=0,
-            telegram=0,
+            telegram=1,
             send_telegram=1,
-            chat_id=0,
+            chat_id=chat_id,
             mode='',
             referal_discount_card_id=data.referal_discount_card_id if referal_user else None
         )
