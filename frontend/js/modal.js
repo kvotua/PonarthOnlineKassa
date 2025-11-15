@@ -477,13 +477,13 @@ function loadOperations(operationsFiltered) {
                         </div>
                     </div>
                     ${operation.gift_emoji ?
-                        `
+                `
                         <div class="receipt-gifts-info">
                             <div class="receipt-gifts-label">Подарки в чеке</div>
                             <span class="receipt-gift-icon">${operation.gift_emoji}</span>
                         </div>
                         ` : ''
-                    }
+            }
         
                     <div class="receipt-footer">
                         <div class="receipt-served-by">Обслуживал: ${operation.user.short_fio}</div>
@@ -1340,7 +1340,13 @@ async function fetchProfile() {
                 let message = "";
 
                 if (diffDays === 0) {
-                    message = `Вы сегодня зарегистрировали карту!<br>Дата оформления карты: ${day}.${month}.${year}`;
+
+                    const user_info = document.querySelector('h1');
+                    user_info.textContent = "Добро пожаловать!";
+
+                    const new_user_score = document.getElementById('new_user_score');
+                    new_user_score.style.display = 'flex';
+                    message = `Вы сегодня зарегистрировали карту!<br>Дата оформления карты: <span>${day}.${month}.${year}</span>`;
                 } else {
                     message = `Вы с нами уже ${diffDays} ${pluralDays(diffDays)}!<br>Дата оформления карты: <span>${day}.${month}.${year}</span>`;
                 }
@@ -1352,12 +1358,20 @@ async function fetchProfile() {
             const scoreCoinElement = document.getElementById('scoreCoinAmount');
             const scoreModal = document.getElementById('balanceAmount')
             const profilePoints = document.getElementById('profilePoints')
+            const profileWaitPoints = document.getElementById('profileWaitPoints')
             const profileRewards = document.getElementById('profileRewards')
 
-            const score = data.total_score
+            const score = data.total_score;
+            const wait_score = data.wait_score;
             scoreCoinElement.textContent = score ? `${parseInt(score)} баллов` : "0 баллов";
             scoreModal.textContent = score ? `${parseInt(score)} баллов` : "0 баллов";
             profilePoints.textContent = score ? `${parseInt(score)}` : "0";
+            if (wait_score && wait_score != 0) {
+                profileWaitPoints.parentElement.style.display = 'flex';
+                profileWaitPoints.textContent = `+${parseInt(wait_score)}` ;
+            } else {
+                profileWaitPoints.parentElement.style.display = 'none';
+            }
             profileRewards.textContent = rewardsData ? `${parseInt(rewardsData.length)}` : "0";
 
             telegramToggle.checked = data.send_telegram && data.chat_id > 0;
