@@ -2,16 +2,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
 * {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  outline: none !important;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: none !important;
 }
 
-input, textarea, [contenteditable] {
-  user-select: text; /* Разрешаем выделение в полях ввода */
+input,
+textarea,
+[contenteditable] {
+    user-select: text;
+    /* Разрешаем выделение в полях ввода */
 }
 
 * {
@@ -21,8 +24,8 @@ input, textarea, [contenteditable] {
 }
 
 html {
-    height: 100%; 
-    scroll-behavior: smooth; 
+    height: 100%;
+    scroll-behavior: smooth;
 }
 
 body {
@@ -32,7 +35,7 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    min-height: 100vh; 
+    min-height: 100vh;
     margin: 0;
     backdrop-filter: blur(60px);
     position: relative;
@@ -40,7 +43,8 @@ body {
     overscroll-behavior-y: contain;
 }
 
-.euler-top-left, .euler-bottom-right {
+.euler-top-left,
+.euler-bottom-right {
     position: absolute;
     width: 0px;
     height: 0px;
@@ -80,7 +84,14 @@ body {
     .registration-container {
         border: none;
         box-shadow: none;
-        position: static;
+        overflow-x: hidden;
+    }
+}
+
+@media (max-width: 767px) {
+    .registration-container {
+        max-width: none;
+        border-radius: 0;
     }
 }
 
@@ -110,7 +121,7 @@ form {
     margin-top: 20px;
 }
 
-.FIO input[type="text"]{
+.FIO input[type="text"] {
     text-align: center;
     width: 100%;
     padding: 10px;
@@ -131,7 +142,7 @@ form {
 }
 
 .FIO input[type="text"]:hover::placeholder {
-    color: rgba(249, 208, 63, 1); 
+    color: rgba(249, 208, 63, 1);
 }
 
 .FIO input[type="text"]:focus {
@@ -141,12 +152,12 @@ form {
 }
 
 .FIO input[type="text"]:focus::placeholder {
-    color: rgba(249, 208, 63, 1); 
+    color: rgba(249, 208, 63, 1);
 }
 
-input:-webkit-autofill{
-    -webkit-box-shadow: 0 0 0 1000px #171616 inset; 
-    -webkit-text-fill-color: rgba(249, 208, 63, 1) !important; 
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #171616 inset;
+    -webkit-text-fill-color: rgba(249, 208, 63, 1) !important;
 }
 
 label {
@@ -185,7 +196,7 @@ label {
 .registration-container input[type="date"]:hover {
     border-color: rgba(249, 208, 63, 1);
     outline: none;
-    
+
 }
 
 .registration-container input[type="date"]:focus {
@@ -241,13 +252,13 @@ button[type="button"] {
     position: absolute;
     top: 50%;
     right: 12px;
-    width: 20px;  
+    width: 20px;
     height: 20px;
     background-image: url('./img/calendar-svgrepo-com.svg');
-    background-size: contain; 
+    background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    transform: translateY(-50%); 
+    transform: translateY(-50%);
     pointer-events: none;
     filter: brightness(0) saturate(100%) invert(33%) sepia(5%) saturate(875%) hue-rotate(168deg) brightness(92%) contrast(89%);
     transition: filter 0.3s ease;
@@ -290,12 +301,12 @@ button[type="button"] {
     transition: background-color 0.3s ease;
 }
 
-.custom-checkbox input[type="checkbox"]:checked + span {
+.custom-checkbox input[type="checkbox"]:checked+span {
     border-color: rgba(249, 208, 63, 1);
     background-color: rgba(249, 208, 63, 1);
 }
 
-.custom-checkbox input[type="checkbox"]:checked + span::before {
+.custom-checkbox input[type="checkbox"]:checked+span::before {
     background-color: rgba(249, 208, 63, 1);
 }
 
@@ -338,18 +349,18 @@ button[type="button"] {
 .gender-selection span span {
     width: 40px;
     height: 40px;
-    border-radius: 100%; 
-    background-color: transparent; 
-    transition: background-color 0.3s ease; 
+    border-radius: 100%;
+    background-color: transparent;
+    transition: background-color 0.3s ease;
 }
 
-.gender-selection input[type="radio"]:checked + span {
+.gender-selection input[type="radio"]:checked+span {
     background-color: rgba(249, 208, 63, 1);
     border-color: rgba(249, 208, 63, 1);
     color: #000;
 }
 
-.gender-selection input[type="radio"]:checked + span span {
+.gender-selection input[type="radio"]:checked+span span {
     background-color: rgba(249, 208, 63, 1);
     border-color: rgba(105, 105, 105, 1);
     color: #000;
@@ -366,14 +377,14 @@ button[type="button"] {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
-    pointer-events: auto; 
+    pointer-events: auto;
 }
 
 
 .euler-top-left {
     top: 25px;
     left: 55px;
-    animation: 
+    animation:
         floatVerticalDown 60s ease-in-out infinite,
         glowPulse 8s ease-in-out infinite alternate;
 }
@@ -381,16 +392,19 @@ button[type="button"] {
 .euler-bottom-right {
     bottom: 75px;
     right: -50px;
-    animation: 
+    animation:
         floatVerticalUp 70s ease-in-out infinite,
         glowPulse 10s ease-in-out infinite alternate 1s;
 }
 
 /* Первый шарик: вниз → вверх */
 @keyframes floatVerticalDown {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translate(30px, calc(100vh - 100px));
     }
@@ -398,9 +412,12 @@ button[type="button"] {
 
 /* Второй шарик: вверх → вниз */
 @keyframes floatVerticalUp {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translate(-80px, calc(-100vh + 100px));
     }
@@ -408,19 +425,26 @@ button[type="button"] {
 
 /* Мерцание для обоих */
 @keyframes glowPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         box-shadow: 0 0 180px 80px rgba(249, 230, 63, 0.3);
     }
+
     50% {
         box-shadow: 0 0 220px 100px rgba(245, 205, 45, 0.45);
     }
 }
-.euler-top-left, .euler-bottom-right {
+
+.euler-top-left,
+.euler-bottom-right {
     will-change: transform;
     /* Лёгкое размытие в движении */
     z-index: -1;
     transition: filter 0.5s ease;
 }
-.euler-top-left:hover, .euler-bottom-right:hover {
+
+.euler-top-left:hover,
+.euler-bottom-right:hover {
     filter: blur(1px);
 }
