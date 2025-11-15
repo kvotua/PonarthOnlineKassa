@@ -2,6 +2,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
+
+:root {
+    --primary-color: #FFCC00;
+
+    --indent-between: 25px;
+    --indent-one-logic-between: calc(var(--indent-between) / 2);
+
+    --indent-outer: 20px;
+    --indent-inner: 20px;
+}
+
 /* Базовые стили */
 * {
     box-sizing: border-box;
@@ -43,6 +54,7 @@ body {
 
 .labeltext {
     font-family: "Montserrat", sans-serif;
+    margin-bottom: var(--indent-between);
 }
 
 .euler-top-left {
@@ -63,8 +75,8 @@ body {
     height: 100svh;
     width: 100%;
     max-width: 400px;
-    padding: 20px;
-    gap: 24px;
+    padding: var(--indent-outer);
+    gap: 0;
     background: transparent;
     border-radius: 15px;
     border: 1px solid rgba(105, 105, 105, 1);
@@ -75,6 +87,13 @@ body {
     .greet-container {
         border: none;
         box-shadow: none;
+    }
+}
+
+@media (max-width: 767px) {
+    .greet-container {
+        max-width: none;
+        border-radius: 0;
     }
 }
 
@@ -90,6 +109,7 @@ h1 {
     font-weight: 400;
     line-height: 43.88px;
     text-align: left;
+    margin-top: var(--indent-between);
 }
 
 form {
@@ -132,7 +152,7 @@ input::placeholder {
 
 .phone-container {
     position: relative;
-    margin-bottom: 30px;
+    margin-bottom: var(--indent-between);
     width: 100%;
 }
 
@@ -196,7 +216,7 @@ input::placeholder {
     color: #FCF9F2;
     font-family: "Montserrat", sans-serif;
     font-weight: 200;
-    margin-top: 30px;
+    margin-top: var(--indent-between);
 }
 
 .resend-link {
@@ -210,7 +230,7 @@ input::placeholder {
 }
 
 .sms-container {
-    display: flex;
+    display: none;
     flex-direction: column;
     opacity: 0;
     transform: translateY(10px);
@@ -218,6 +238,7 @@ input::placeholder {
 }
 
 .sms-container.visible {
+    display: flex;
     opacity: 1;
     transform: translateY(0);
 }
@@ -232,7 +253,7 @@ input::placeholder {
     display: flex;
     justify-content: center;
     margin-top: auto;
-    margin-bottom: 10px;
+    margin-bottom: var(--indent-one-logic-between);
 }
 
 .form-footer button {
@@ -300,7 +321,7 @@ label {
 }
 
 .labelSMS {
-    margin-bottom: 30px;
+    margin-bottom: var(--indent-between);
 }
 
 span#phone-number {
@@ -489,16 +510,56 @@ input:not(:placeholder-shown) {
 
 #main-glass-call:checked~.glass-glider {
     transform: translateX(0%);
-    background: linear-gradient(135deg, rgba(76, 217, 100, 0.9), rgba(76, 217, 100, 1));
+    background: linear-gradient(135deg, rgba(192, 192, 192, 0.9), rgba(224, 224, 224, 1));
     box-shadow:
-        0 4px 20px rgba(76, 217, 100, 0.4),
+        0 4px 20px rgba(192, 192, 192, 0.4),
         inset 0 1px 2px rgba(255, 255, 255, 0.6);
 }
 
 #main-glass-telegram:checked~.glass-glider {
     transform: translateX(100%);
-    background: linear-gradient(135deg, rgba(34, 167, 255, 0.9), rgba(34, 167, 255, 1));
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-color));
     box-shadow:
-        0 4px 20px rgba(34, 167, 255, 0.4),
+        0 4px 20px var(--primary-color),
         inset 0 1px 2px rgba(255, 255, 200, 0.6);
+}
+
+.tg-warning {
+    display: none;
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    color: rgba(252, 249, 242, 0.75);
+    text-align: left;
+    margin-bottom: var(--indent-between);
+    line-height: 1.4;
+}
+
+.telegram-connect {
+    font-family: "Montserrat", sans-serif;
+    display: none;
+    align-items: center;
+    margin-bottom: var(--indent-between);
+    width: 100%;
+    padding: 12px 18px;
+
+    justify-content: center;
+
+    background: rgb(0, 136, 204);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+
+    transition: all 0.25s ease;
+}
+
+.tg-icon {
+    width: 22px;
+    height: 22px;
+    filter: invert(100%) brightness(200%);
 }

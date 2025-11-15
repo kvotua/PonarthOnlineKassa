@@ -10,6 +10,7 @@ const body = document.body;
 const emojiNotification = document.getElementById('emojiNotification');
 
 const mainContainer = document.getElementById('mainContainer');
+const bottomWrapper = document.getElementById('bottomWrapper');
 const loadingBar = document.getElementById('loading');
 
 const coinTabRadios = document.querySelectorAll('input[name="coin-tab-type"]');
@@ -1433,6 +1434,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
     } finally {
         mainContainer.style.display = 'flex';
+        bottomWrapper.style.display = 'flex';
         loadingBar.style.display = 'none';
     }
 

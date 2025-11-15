@@ -28,6 +28,15 @@ if (mainTabRadios) {
 
         return active.id.replace("main-glass-", "");
     }
+
+    function setCurrentTab(tabName) {
+        const radio = document.querySelector(`input[name="main-tab-type"][id="main-glass-${tabName}"]`);
+        if (radio) {
+            radio.checked = true;  // ставим checked
+            currentTab = tabName;  // обновляем переменную
+            radio.dispatchEvent(new Event("change")); // триггерим событие change на случай других обработчиков
+        }
+    }
 }
 
 
@@ -67,8 +76,18 @@ function sendPhoneVerification(phone, maxRetries = 2, retryDelay = 1000) {
                     throw new Error("Невалидный номер");
                 }
                 else if (data.detail.error) {
+                    if (data.detail.error == "no_account_for_telegram") {
+                        return {
+                            error: false,
+                            call_id: data.detail.call_id,
+                            call_type: 'register',
+                            error_detail: data.detail.error,
+                            message: data.detail.message
+                        }
+                    }
                     return {
                         error: true,
+                        error_detail: data.detail.error,
                         message: data.detail.message
                     }
                 }
