@@ -4,7 +4,7 @@ import phonenumbers
 from datetime import datetime, timezone, timedelta
 from fastapi import Depends, HTTPException, Request, status
 from decimal import Decimal
-from app.config import secret_key, algorithm, expire_access_days, expire_refresh_days, public_key, campaign_id, debug_mode
+from app.config import bot_token, secret_key, algorithm, expire_access_days, expire_refresh_days, public_key, campaign_id, debug_mode
 
 import aiohttp
 import random
@@ -24,6 +24,36 @@ async def shutdown_event():
     global session
     if session:
         await session.close()
+
+async def send_telegram_message(chat_id: int, text: str):
+    global session
+    if not session:
+        raise RuntimeError("ClientSession не инициализирована")
+    
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "HTML"
+    }
+
+    async with session.post(url, data=payload) as resp:
+        if resp.status == 200:
+            data = await resp.json()
+            return data
+        else:
+            text = await resp.text()
+            raise Exception(f"Telegram API error {resp.status}: {text}")
+        
+def generate_info_for_telegram():
+    pincode = f"{random.randint(0, 9999):04d}"
+    return {
+        'status': 'done',
+        'data': {
+            'pincode': pincode,
+            'call_id': random.randint(999999, 2146999999)
+        }
+    }
 
 async def send_message(phone: str):
     global session

@@ -1,11 +1,12 @@
 import hmac
+import re
 from typing import Annotated
 from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, date
 
-from app.schemas.users_schemas import RegisterUserLoyaltySystem
+from app.schemas.users_schemas import RegisterFioUserLoyaltySystem, RegisterUserLoyaltySystem
 from app.schemas.auth_schemas import TokenPair, LoginUser, RegisterUser
 from app.schemas.response_schemas import CallID, ResponseSchema, json_response
 from app.schemas.verify_schemas import Phone
@@ -163,7 +164,7 @@ async def login_user(
 
 @router.post('/register-discount')
 async def register_user(
-    data: RegisterUserLoyaltySystem,
+    data: RegisterFioUserLoyaltySystem,
     session_mysql: AsyncSession = Depends(get_mysql_session),
 ):
     user_birth_date = data.birth_date.strftime("%Y-%m-%d")
@@ -174,8 +175,41 @@ async def register_user(
         age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
         if age < 18:
             return json_response(status_code=422, message="User must be at least 18 years old.")
+        
     
-    result = await add_user_to_loyal_system(data=data, session_mysql=session_mysql)
+    fio = data.full_name.strip()
+    fio_parts = fio.split()
+
+    if len(fio_parts) < 2 or len(fio_parts) > 3:
+        return json_response(status_code=422, message="Full name must contain 2 or 3 words.")
+
+    for part in fio_parts:
+        if not re.fullmatch(r"[А-Яа-яЁё]{2,}", part):
+            return json_response(
+                status_code=422,
+                message="Each part of the full name must contain at least 2 Russian letters.",
+            )
+
+    fio_parts = [
+        part.capitalize() if part else ""
+        for part in fio_parts
+    ]
+
+    last_name = fio_parts[0]
+    first_name = fio_parts[1]
+    patronymic = fio_parts[2] if len(fio_parts) == 3 else None
+
+    prepared_user = RegisterUserLoyaltySystem(
+        last_name=last_name,
+        first_name=first_name,
+        patronymic=patronymic,
+        birth_date=data.birth_date,
+        gender=data.gender,
+        call_id=data.call_id,
+        referal_discount_card_id=data.referal_discount_card_id,
+    )
+    
+    result = await add_user_to_loyal_system(data=prepared_user, session_mysql=session_mysql)
     
     if result == "a":
         return json_response(status_code=404, message="Phone by call id not found")

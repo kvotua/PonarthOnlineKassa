@@ -41,7 +41,7 @@ class DiscountCard(Base_mysql):
     phone_verify: Mapped[SmallInteger] = mapped_column(SmallInteger, nullable=False, default=0)
     first: Mapped[str] = mapped_column(VARCHAR(100), nullable=False)
     second: Mapped[str] = mapped_column(VARCHAR(100), nullable=False)
-    third: Mapped[str] = mapped_column(VARCHAR(100), nullable=False)
+    third: Mapped[str] = mapped_column(VARCHAR(100), nullable=True)
     boss: Mapped[SmallInteger] = mapped_column(SmallInteger, nullable=False, default=0)
     bday: Mapped[date] = mapped_column(Date, nullable=False)
     gender: Mapped[SmallInteger] = mapped_column(SmallInteger, nullable=False, default=0)  # 1-м, 2-ж

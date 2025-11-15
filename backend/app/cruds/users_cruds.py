@@ -4,7 +4,7 @@ import json
 from sqlalchemy import and_, case, desc, func, or_, select, Result, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.dialects import mysql
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, aliased
 from fastapi import HTTPException
 
 from app.models.mysql import DiscountCard, Gift, GiftStatus, Orders, UserScore
@@ -22,6 +22,15 @@ async def get_user_discount_id_by_card(card_num: str, db: AsyncSession) -> int |
 
     if user_row:
         return user_row['id']
+    return None
+
+async def get_user_telegram(card_num: str, db: AsyncSession) -> int | None:
+    stmt_user = select(DiscountCard.chat_id).where(DiscountCard.card_num == card_num)
+    result_user = await db.execute(stmt_user)
+    user_row = result_user.mappings().first()
+
+    if user_row:
+        return user_row['chat_id']
     return None
 
 async def get_gift_by_id(gift_id: int, db: AsyncSession) -> Gift | None:
@@ -292,14 +301,11 @@ async def get_user_scores_by_id(discount_card_id: int, db: AsyncSession) -> int 
         scores = [scores]
     total_score = sum(scores) if scores else 0
     return total_score
-
 async def get_transfers(card_num: str, db: AsyncSession):
-    # Получаем ID карты по номеру
     discount_card_id = await get_user_discount_id_by_card(card_num=card_num, db=db)
     if not discount_card_id:
         return []
 
-    # Получаем только переводы, где карта действительно участвовала и card_id совпадает
     query = (
         select(UserScore)
         .where(
@@ -322,16 +328,25 @@ async def get_transfers(card_num: str, db: AsyncSession):
     transfer_history = []
 
     for t in transfers:
-        # Если карта отправитель → минус и имя получателя
+        prev_scores_query = (
+            select(func.sum(UserScore.scores))
+            .where(
+                UserScore.card_id == discount_card_id,
+                UserScore.date_added < t.date_added
+            )
+        )
+
+        prev_result = await db.execute(prev_scores_query)
+        previous_scores = prev_result.scalar() or 0
+        previous_scores = float(previous_scores)
+
         if t.transfer_from == discount_card_id:
             amount = float(t.scores)
             target_id = t.transfer_to
-        # Если карта получатель → плюс и имя отправителя
         else:
             amount = float(t.scores)
             target_id = t.transfer_from
 
-        # Получаем имя второй стороны перевода
         card_query = select(DiscountCard).where(DiscountCard.id == target_id)
         card_result = await db.execute(card_query)
         card_owner = card_result.scalar_one_or_none()
@@ -347,6 +362,8 @@ async def get_transfers(card_num: str, db: AsyncSession):
             "name": name,
             "date": t.date_added.strftime("%Y-%m-%d") if t.date_added else None,
             "amount": amount,
+            "previous_scores": previous_scores,
+            "new_scores": previous_scores + amount,
             "type": "Перевод",
             "receiptNumber": None
         })
@@ -379,7 +396,32 @@ async def get_user_by_card_num(card_num: str, db: AsyncSession):
     return user_row
 
 async def get_last_operations(card_num: str, db: AsyncSession):
+    # Получаем ID карты пользователя
     discount_card_id = await get_user_discount_id_by_card(card_num=card_num, db=db)
+
+    # Алиас для подзапроса подсчета before_scores
+    US_prev = aliased(UserScore)
+
+    # Подзапрос для sender/receiver FIO
+    sender_fio_subq = (
+        select(func.concat(DiscountCard.second, ' ', func.substr(DiscountCard.first, 1, 1), '.'))
+        .where(DiscountCard.id == UserScore.transfer_from)
+        .scalar_subquery()
+    )
+    receiver_fio_subq = (
+        select(func.concat(DiscountCard.second, ' ', func.substr(DiscountCard.first, 1, 1), '.'))
+        .where(DiscountCard.id == UserScore.transfer_to)
+        .scalar_subquery()
+    )
+
+    before_scores_subq = (
+        select(func.coalesce(func.sum(US_prev.scores), 0))
+        .where(
+            US_prev.card_id == discount_card_id,
+            US_prev.date_added < UserScore.date_added
+        )
+        .scalar_subquery()
+    )
 
     stmt_operations = (
         select(
@@ -387,17 +429,24 @@ async def get_last_operations(card_num: str, db: AsyncSession):
             UserScore.date_added,
             case(
                 (
-                    UserScore.order_id > 0,
-                    select(Orders.price)
-                    .where(Orders.id == UserScore.order_id)
-                    .scalar_subquery()
+                    (UserScore.transfer_from.is_(None)) & (UserScore.transfer_to.is_(None)) & (UserScore.scores > 0),
+                    "Начисление баллов"
                 ),
                 (
-                    (UserScore.transfer_from.is_not(None) & UserScore.transfer_to.is_not(None)),
-                    "Перевод"
+                    (UserScore.transfer_from.is_(None)) & (UserScore.transfer_to.is_(None)) & (UserScore.scores < 0),
+                    "Списание баллов"
+                ),
+                (
+                    (UserScore.transfer_from.is_not(None)) & (UserScore.transfer_to.is_not(None)) & (UserScore.transfer_to == discount_card_id),
+                    func.concat('Перевод от ', sender_fio_subq)
+                ),
+                (
+                    (UserScore.transfer_from.is_not(None)) & (UserScore.transfer_to.is_not(None)) & (UserScore.transfer_from == discount_card_id),
+                    func.concat('Перевод к ', receiver_fio_subq)
                 ),
                 else_=""
             ).label("title"),
+            before_scores_subq.label("before_scores")
         )
         .where(
             UserScore.card_id == discount_card_id,

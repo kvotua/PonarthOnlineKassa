@@ -6,7 +6,8 @@ from fastapi.responses import JSONResponse
 
 from app.models.mysql import DiscountCard
 from app.schemas.verify_schemas import Phone, CheckPhoneCode
-from app.utils import get_current_user_with_bearer, send_message, convert_decimal_to_float
+from app.cruds import users_cruds, verify_cruds
+from app.utils import get_current_user_with_bearer, send_message, convert_decimal_to_float, generate_info_for_telegram, send_telegram_message
 from app.cruds.verify_cruds import add_verify_session, get_verify_session, change_verify_status, check_phone_in_discound, add_verify_change_phone_session, get_verify_phone_change_session
 from app.schemas.response_schemas import CallID, ResponseSchema, json_response
 from app.databases.postgresdb import get_postgres_session
@@ -22,7 +23,7 @@ async def send_phone_change_code(
     session_mysql: AsyncSession = Depends(get_mysql_session),
 ):
     old_phone = user_data['phone']
-    response = await check_phone_in_discound(phone=phone.phone[1:], session_mysql=session_mysql)
+    response = await users_cruds.get_user_discount_id_by_card(card_num=phone.phone[1:], db=session_mysql)
     print(response)
     if not response:
         response_send = await send_message(phone=phone.phone)
@@ -67,7 +68,28 @@ async def send_code(
         #             "third": user.third,
         #     })
         #     return JSONResponse(status_code=200, content=response_data)
-    response_send = await send_message(phone=phone.phone)
+    if phone.call_type:
+        if phone.call_type == 'telegram':
+            if response is None or response is False:
+                raise HTTPException(
+                    status_code=422,
+                    detail={"error": "no_account_for_telegram", "message": "Пользователь не имеет аккаунт для подтверждения входа через Telegram"}
+                )
+            tg_chat_id = await users_cruds.get_user_telegram(card_num=phone.phone[1:], db=session_mysql)
+            if int(tg_chat_id) > 0:
+                response_send = generate_info_for_telegram()
+                response_tg = await send_telegram_message(chat_id=tg_chat_id, text=f'Код для входа в систему лояльности: <code>{response_send["data"]["pincode"]}</code>\n\nЕсли вы не запрашивали код для входа, проигнорируйте это сообщение.')
+                # if not response_tg:
+                print(response_tg)
+            else:
+                raise HTTPException(
+                    status_code=422,
+                    detail={"error": "no_telegram", "message": "Пользователь не привязал Telegram"}
+                )
+        elif phone.call_type == 'call':
+            response_send = await send_message(phone=phone.phone)
+    else:
+        response_send = await send_message(phone=phone.phone)
     response_data = response_send['data']
     print("Zvonok API response:", response_send)
     if response_send['status'] == 'error':

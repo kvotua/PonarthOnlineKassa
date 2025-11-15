@@ -41,10 +41,17 @@ class Gift(BaseModel):
     date_added: Optional[datetime] = Field(title='Дата добавления купона', example="2025-10-30T15:47:54")
     emoji: Optional[str] = Field(title='Эмодзи подарка', example='🖼')
      
+class RegisterFioUserLoyaltySystem(BaseModel):
+    full_name: Annotated[str, Field(title="The user's full name", examples=["Иванов Иван Иванович"])]
+    birth_date: Annotated[date, Field(title="The user's birth date", examples=["1984-12-07"])]
+    gender: Annotated[int, Field(title="1-Male, 2-Female", examples=[1], ge=1, le=2)]
+    call_id: Annotated[int, Field(title='The ID received after sending the number', examples=['1191273219673078'])]
+    referal_discount_card_id: Annotated[Optional[int], Field(title="Referal Discount Card ID", examples=[3955057, 3940099])]
+
 class RegisterUserLoyaltySystem(BaseModel):
     last_name: Annotated[str, Field(title="The user's last name", examples=["Игнатьев"])]
     first_name: Annotated[str, Field(title="The user's first name", examples=["Алексей"])]
-    patronymic: Annotated[str, Field(title="The user's patronymic", examples=["Алиевич"])]
+    patronymic: Annotated[Optional[str], Field(title="The user's patronymic", examples=["Алиевич"])]
     birth_date: Annotated[date, Field(title="The user's birth date", examples=["2024-12-07"])]
     gender: Annotated[int, Field(title="1-Male, 2-Female", examples=[1], ge=1, le=2)]
     call_id: Annotated[int, Field(title='The ID received after sending the number', examples=['1191273219673078'])]
@@ -62,7 +69,7 @@ class UserInfo(BaseModel):
     phone: Annotated[int, Field(title="ID Discount_card", examples=[9632928738])]
     first: Annotated[str, Field(title="ID Discount_card", examples=["Игнатьев"])]
     second: Annotated[str, Field(title="ID Discount_card", examples=["Алексей"])]
-    third: Annotated[str, Field(title="ID Discount_card", examples=["Алиевич"])]
+    third: Annotated[Optional[str], Field(title="ID Discount_card", examples=["Алиевич"])]
     bday: Annotated[date, Field(title="ID Discount_card", examples=["2004-12-07"])]
     gender: Annotated[int, Field(title="ID Discount_card", examples=[1])]
     email: Annotated[Optional[str], Field(title="ID Discount_card", examples=["example@gmail.com"], default=None)]

@@ -1,11 +1,12 @@
 from pydantic import BaseModel, Field, model_validator
-from typing import Annotated
+from typing import Annotated, Optional
 
 from app.utils import validate_phone
 
 
 class Phone(BaseModel):
     phone: Annotated[str, Field(title="Phone number", examples=['+79632928738'])]
+    call_type: Annotated[Optional[str], Field(title='Call type', examples=['call', 'telegram'])]
 
     @model_validator(mode="before")
     def validate_phone(cls, values):
