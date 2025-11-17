@@ -75,9 +75,12 @@ async def get_order_by_id(db: AsyncSession, order_id: int):
     score_result = await db.execute(score_stmt)
     result = score_result.first()
 
-    previous_scores = float(result.total_scores or 0)
-    first = result.first
-    second = result.second
+    previous_scores = 0
+
+    if result:
+        previous_scores= float(result.total_scores)
+    first = result.first if result else ""
+    second = result.second if result else ""
 
     user = {
         "id": order["user_id"],
