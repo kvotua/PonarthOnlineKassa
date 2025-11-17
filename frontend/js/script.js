@@ -153,16 +153,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function confirmPhoneCode(phone, callId, code, callType) {
-    let url = `${host}/api/v1/verify/phone/check`
-    if (callType == 'auth') {
-        url = `${host}/api/v1/login`
+    let url = `${host}/api/v1/verify/phone/check`;
+    if (callType === 'auth') {
+        url = `${host}/api/v1/login`;
     }
+
     return fetch(url, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({ phone, call_id: callId, code })
     })
         .then(response => {
@@ -173,18 +175,16 @@ function confirmPhoneCode(phone, callId, code, callType) {
         })
         .then(data => {
             if (data.status_code === 200 || data.access_token) {
+
                 localStorage.setItem('call_id', data.call_id || callId);
                 localStorage.setItem('phone', phone);
 
-                if (callType == 'auth') {
-                    localStorage.setItem('access_token', data.access_token);
-                    localStorage.setItem('refresh_token', data.refresh_token);
-
+                if (callType === 'auth') {
                     window.location.href = './profile.html';
-                    return data;
+                } else {
+                    window.location.href = './registration.html';
                 }
 
-                window.location.href = './registration.html';
                 return data;
             } else {
                 throw new Error(data.message || 'Ошибка подтверждения кода');
@@ -236,35 +236,21 @@ function registerDiscount(callId) {
             const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
             const year = currentDate.getFullYear();
 
-            localStorage.setItem('timePassed', `Вы сегодня зарегистрировали карту! <br> Дата оформления карты: ${day}.${month}.${year}`);
-
-            localStorage.setItem('scoreAmount', '150.00');
-            localStorage.setItem('h1Element', `Поздравляем!`);
-            localStorage.setItem('new_user_score', 'true');
-            localStorage.setItem('access_token', data.access_token);
-            localStorage.setItem('refresh_token', data.refresh_token);
-
-
             window.location.href = './profile.html';
 
             return data;
         });
 }
 
-function isTokenExpired() {
-    const token = localStorage.getItem("access_token");
-    if (!token || !token.includes('.')) {
-        return true;
-    }
-
+async function isTokenExpired() {
     try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (!payload.exp) return true;
-
-        const now = Math.floor(Date.now() / 1000);
-        return payload.exp <= now;
+        const res = await fetch(`${host}/api/v1/check-token`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+        return !res.ok;
     } catch (e) {
-        console.error("Ошибка при парсинге токена:", e);
+        console.error("Ошибка проверки токена:", e);
         return true;
     }
 }

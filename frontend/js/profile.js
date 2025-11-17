@@ -170,8 +170,6 @@ function resendVerificationCode() {
 }
 
 async function changeFio(fio) {
-    const token = localStorage.getItem("access_token");
-
     const parts = fio.trim().split(/\s+/);
     const last_name = parts[0] || null;
     const first_name = parts[1] || null;
@@ -182,9 +180,9 @@ async function changeFio(fio) {
             method: 'PATCH',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                "Authorization": `Bearer ${token}`
+                'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify({
                 last_name,
                 first_name,
@@ -212,14 +210,13 @@ async function changeFio(fio) {
 
 
 async function sendVerify(phone) {
-    const token = localStorage.getItem("access_token");
     return fetch(`${host}/api/v1/verify/phone/change/send`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            "Authorization": `Bearer ${token}`
+            'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({ phone })
     })
         .then(response => {
@@ -240,15 +237,14 @@ async function sendVerify(phone) {
 }
 
 async function checkVerify(phone, code) {
-    const token = localStorage.getItem("access_token");
     const call_id = localStorage.getItem("call_id");
     return fetch(`${host}/api/v1/phone/change`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            "Authorization": `Bearer ${token}`
+            'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({ phone, call_id, code })
     })
         .then(response => {
@@ -259,12 +255,9 @@ async function checkVerify(phone, code) {
         })
         .then(data => {
             if (data) {
-                if (data.access_token) {
-
+                if (data.status_code == 200) {
                     const formattedPhone = formatPhone(phone);
                     localStorage.setItem("phone", formattedPhone);
-                    localStorage.setItem('access_token', data.access_token);
-                    localStorage.setItem('refresh_token', data.refresh_token);
                     return true;
                 }
             }

@@ -42,6 +42,12 @@
     font-weight: 500;
 }
 
+.operation-address {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    margin-top: 4px;
+}
+
 .operation-balance {
     display: flex;
     flex-direction: column;

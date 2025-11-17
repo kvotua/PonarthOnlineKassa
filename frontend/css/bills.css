@@ -99,6 +99,10 @@
     font-size: 16px;
 }
 
+.receipt-negative {
+    color: #ff3b30;
+}
+
 .receipt-points-after {
     color: white;
     font-size: 16px;

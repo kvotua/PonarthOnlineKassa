@@ -1,0 +1,35 @@
+.pagination {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.pagination:not(:empty) {
+    margin-top: var(--indent-between);
+}
+
+.page-btn {
+    background: none;
+    border: none;
+    color: white;
+    padding: 6px 10px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    transition: 0.2s;
+}
+
+.page-btn:hover {
+    background: #f0f0f0;
+}
+
+.page-btn.active {
+    background: var(--primary-color);
+    font-weight: bold;
+    color: black;
+}
+
+.ellipsis {
+    padding: 6px 10px;
+}

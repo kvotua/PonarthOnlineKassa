@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/profile.css">
     <link rel="stylesheet" href="css/operations.css">
     <link rel="stylesheet" href="css/bills.css">
+    <link rel="stylesheet" href="css/pagination.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <link rel="icon" href="img/Tag_Ponart.svg" type="image/svg+xml">
@@ -40,8 +41,9 @@
             <div class="euler-top-left"></div>
             <div class="euler-bottom-right"></div>
             <img src="https://iss.ponarth.com/i/logo_white_mini.png" alt="Logo" class="logo">
-            <h1 id="new_user_title">Ваша карта добавлена!</h1>
-            <p id="new_user_score" style="display: none;">Вы вступили в клуб Понарт. Завтра будет зачислено 50 приветственых баллов</p>
+            <h1 id="new_user_title">Здравствуйте!</h1>
+            <p id="new_user_score" style="display: none;">Вы вступили в клуб Понарт. Завтра будет зачислено 50
+                приветственых баллов</p>
             <iframe src="./widget/banner-widget.html" style="height:211px; border:none;" class="widget"
                 id="banner-widget"></iframe>
             <div class="beer-selection">
@@ -58,7 +60,8 @@
                     </div>
                 </div>
 
-                <div class="ref-progress-info">До командира роты<br>осталось <span class="highlight">0</span> рефералов</div>
+                <div class="ref-progress-info">До командира роты<br>осталось <span class="highlight">0</span> рефералов
+                </div>
 
                 <div class="ref-stats-container">
                     <div class="ref-stat-item">
@@ -123,6 +126,7 @@
 
                         <div class="operations-list" id="operationsList">
                         </div>
+                            <div class="pagination" id="ordersPagination"></div>
                     </div>
                 </div>
 
@@ -160,6 +164,7 @@
 
                             <div class="transfer-history-list" id="transferHistoryList">
                             </div>
+                            <div class="pagination" id="transfersPagination"></div>
                         </div>
                     </div>
                 </div>
@@ -190,7 +195,8 @@
                                 <div class="profile-avatar">😊</div>
                                 <div class="profile-details">
                                     <div class="profile-name-container">
-                                        <div class="profile-name" id="userFio" data-placeholder="Иванов Иван Иванович">Иванов Иван Иванович</div>
+                                        <div class="profile-name" id="userFio" data-placeholder="Иванов Иван Иванович">
+                                            Иванов Иван Иванович</div>
                                         <div class="edit-icon" onclick="enableEditing('userFio')">✏️</div>
                                         <div class="edit-icon save-icon" id="saveName"
                                             onclick="saveEditing('userFio', 'saveName')">✓</div>
@@ -260,8 +266,8 @@
 
                         <div class="operations-history">
                             <h3 class="operations-title">Недавние операции</h3>
-                            <div class="operations-list" id="profileOperationsList">
-                            </div>
+                            <div class="operations-list" id="profileOperationsList"></div>
+                            <div class="pagination" id="lastOperationsPagination"></div>
                         </div>
                     </div>
                 </div>
@@ -269,8 +275,7 @@
                 <div class="tab-content" id="emoji-rewards-content">
                     <div class="unused-coupons-section" id="unusedCouponsSection">
                         <h3 class="unused-coupons-title">Неиспользованные купоны</h3>
-                        <div class="unused-coupons-list" id="unusedCouponsList">
-                        </div>
+                        <div class="unused-coupons-list" id="unusedCouponsList"></div>
                         <button class="scratch-button" id="viewAllCouponsButton">Смотреть все купоны</button>
                     </div>
 
@@ -279,8 +284,7 @@
 
                     <div class="prizes-history-section" id="prizesHistorySection">
                         <h3 class="prizes-history-title">История полученных призов</h3>
-                        <div class="prizes-history-list" id="prizesHistoryList">
-                        </div>
+                        <div class="prizes-history-list" id="prizesHistoryList"></div>
                     </div>
                 </div>
             </div>
@@ -418,14 +422,17 @@
     <canvas id="confetti-canvas"></canvas>
 
     <script src="js/profile.js"></script>
+    <script src="js/pagination.js"></script>
     <script src="js/script.js"></script>
     <script src="js/modal.js"></script>
     <script src="js/scratch.js"></script>
 
     <script>
-        if (isTokenExpired()) {
-            window.location.href = './greet.html';
-        }
+        isTokenExpired().then(expired => {
+            if (expired) {
+                window.location.href = './greet.html';
+            }
+        });
     </script>
 
 </body>

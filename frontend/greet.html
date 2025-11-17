@@ -61,9 +61,12 @@
     </div>
     <script src="./js/script.js"></script>
     <script>
-        if (!isTokenExpired()) {
-            window.location.href = './profile.html';
-        }
+        isTokenExpired().then(expired => {
+            if (!expired) {
+                window.location.href = './profile.html';
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             const sendBtn = document.getElementById('send-code');
             const phoneInput = document.getElementById('phone');

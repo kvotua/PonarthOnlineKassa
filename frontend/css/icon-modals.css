@@ -476,7 +476,6 @@
 .operations-controls {
     display: flex;
     gap: 10px;
-    margin-bottom: var(--indent-between);
 }
 
 .sort-button {
@@ -554,6 +553,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--indent-between);
+}
+
+.operations-list:not(:empty) {
+    margin-top: var(--indent-one-logic-between);
 }
 
 .operation-card {
@@ -800,7 +803,6 @@
 .transfer-history-controls {
     display: flex;
     gap: 10px;
-    margin-bottom: var(--indent-between);
 }
 
 .transfer-search-input {
@@ -822,6 +824,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--indent-one-logic-between);
+}
+
+.transfer-history-list:not(:empty) {
+    margin-top: var(--indent-between);
 }
 
 .transfer-history-item {

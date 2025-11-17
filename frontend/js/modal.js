@@ -457,6 +457,12 @@ function loadOperations(operationsFiltered) {
             year: 'numeric'
         });
 
+        const pointsText = (operation.new_scores < operation.previous_scores) 
+                        ? 'Потрачено баллов' : 'Накоплено баллов';
+
+        const arrowColor = (operation.new_scores < operation.previous_scores) 
+                        ? 'receipt-negative' : '';
+
         operationCard.innerHTML = `                    
                     <div class="receipt-header">
                         <div class="receipt-info">
@@ -469,11 +475,11 @@ function loadOperations(operationsFiltered) {
                     </div>
         
                     <div class="receipt-points-info">
-                        <div class="receipt-points-label">Накоплено баллов</div>
+                        <div class="receipt-points-label">${pointsText}</div>
                         <div class="receipt-points-change">
                             <div class="receipt-points-before">${operation.previous_scores}</div>
-                            <div class="receipt-points-arrow">→</div>
-                            <div class="receipt-points-after">${(parseFloat(operation.previous_scores) + parseFloat(operation.score_added)).toFixed(1)}</div>
+                            <div class="receipt-points-arrow ${arrowColor}">→</div>
+                            <div class="receipt-points-after">${(parseFloat(operation.new_scores)).toFixed(1)}</div>
                         </div>
                     </div>
                     ${operation.gift_emoji ?
@@ -524,7 +530,7 @@ function loadOperations(operationsFiltered) {
 function loadProfileOperations() {
     profileOperationsList.innerHTML = '';
 
-    const recentOperations = lastOperations.slice(0, 10);
+    const recentOperations = lastOperations;
 
     recentOperations.forEach(operation => {
         const operationCard = document.createElement('div');
@@ -546,10 +552,20 @@ function loadProfileOperations() {
         const pointsClass = score > 0 ? "amount-positive" : "amount-negative";
         const pointsText = score > 0 ? `+${score} баллов` : `${score} баллов`;
 
+        const addressHTML = operation.address
+            ? `<div class="operation-address">${operation.address}</div>`
+            : "";
+
+        const tomorrowPoints = operation.status == 0
+            ? `<div class="operation-address">Будут начислены завтра</div>`
+            : "";
+
         operationCard.innerHTML = `
             <div class="operation-info">
                 <div class="operation-date">${formattedDateTime}</div>
                 <div class="operation-type">${operation.title}</div>
+                ${addressHTML}
+                ${tomorrowPoints}
             </div>
             <div class="operation-balance">
                 <div class="balance-was">${scoresBefore} баллов</div>
@@ -760,14 +776,13 @@ async function handleTelegramToggle() {
 }
 
 async function saveTelegramSend(toggle) {
-    const token = localStorage.getItem("access_token");
     await fetch(`${host}/api/v1/telegram`, {
         method: 'PATCH',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            "Authorization": `Bearer ${token}`
+            'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({ send_telegram: toggle })
     })
 }
@@ -1079,15 +1094,13 @@ function easeOutCubic(t) {
 }
 
 async function fetchReferals() {
-    let phone_number = localStorage.getItem("phone");
-    const token = localStorage.getItem("access_token");
     await fetch(`${host}/api/v1/referal`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            "Authorization": `Bearer ${token}`
-        }
+        },
+        credentials: 'include',
     })
         .then(response => {
             if (!response.ok) {
@@ -1113,14 +1126,13 @@ async function fetchReferals() {
 }
 
 async function parseUser(phoneNumber) {
-    const token = localStorage.getItem("access_token");
     const response = await fetch(`${host}/api/v1/user?phone=${phoneNumber}`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
     });
 
     if (!response.ok) {
@@ -1137,16 +1149,14 @@ async function parseUser(phoneNumber) {
 }
 
 async function sendTransfer(phoneNumber, scores) {
-    const token = localStorage.getItem("access_token");
-
     try {
         const response = await fetch(`${host}/api/v1/transfer`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify({ phone: phoneNumber, scores: scores })
         });
 
@@ -1170,16 +1180,14 @@ async function sendTransfer(phoneNumber, scores) {
     }
 }
 
-async function fetchOperations() {
-    let phone_number = localStorage.getItem("phone");
-    const token = localStorage.getItem("access_token");
-    await fetch(`${host}/api/v1/transfers`, {
+async function fetchOperations({ count = 10, page = 1 } = {}) {
+    await fetch(`${host}/api/v1/transfers?count=${count}&page=${page}`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            "Authorization": `Bearer ${token}`
-        }
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
     })
         .then(response => {
             if (!response.ok) {
@@ -1189,20 +1197,26 @@ async function fetchOperations() {
         })
         .then(data => {
             if (data) {
-                transferHistoryData = data;
+                const paginationContainer = document.getElementById("transfersPagination");
+                if (data.total_pages != 0) {
+                    transferHistoryData = data.all_transfers;
+                    loadTransferHistory();
+                    renderPagination(paginationContainer, page, data.total_pages, fetchOperations);
+                } else {
+                    paginationContainer.style.display = 'none';
+                }
             }
         });
 }
 
-async function fetchLastOperations() {
-    const token = localStorage.getItem("access_token");
-    await fetch(`${host}/api/v1/last_operations`, {
+async function fetchLastOperations({ count = 10, page = 1 } = {}) {
+    await fetch(`${host}/api/v1/last_operations?count=${count}&page=${page}`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            "Authorization": `Bearer ${token}`
-        }
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
     })
         .then(response => {
             if (!response.ok) {
@@ -1212,24 +1226,27 @@ async function fetchLastOperations() {
         })
         .then(data => {
             if (data) {
-                const profileOperations = document.getElementById('profileOperations')
-
-                profileOperations.textContent = data ? `${parseInt(data.length)}` : "0";
-                lastOperations = data;
+                const paginationContainer = document.getElementById("lastOperationsPagination");
+                if (data.total_pages != 0) {
+                    lastOperations = data.last_operations;
+                    loadProfileOperations();
+                    renderPagination(paginationContainer, page, data.total_pages, fetchLastOperations);
+                } else {
+                    paginationContainer.style.display = 'none';
+                }
             }
         });
 }
 
 async function fetchProfile() {
     let phone_number = localStorage.getItem("phone");
-    const token = localStorage.getItem("access_token");
     await fetch(`${host}/api/v1/profile`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            "Authorization": `Bearer ${token}`
-        }
+        },
+        credentials: 'include',
     })
         .then(response => {
             console.log('fetch2')
@@ -1360,6 +1377,9 @@ async function fetchProfile() {
             const profilePoints = document.getElementById('profilePoints')
             const profileWaitPoints = document.getElementById('profileWaitPoints')
             const profileRewards = document.getElementById('profileRewards')
+            const profileOperations = document.getElementById('profileOperations')
+
+            profileOperations.textContent = data.total_operations;
 
             const score = data.total_score;
             const wait_score = data.wait_score;
@@ -1367,8 +1387,8 @@ async function fetchProfile() {
             scoreModal.textContent = score ? `${parseInt(score)} баллов` : "0 баллов";
             profilePoints.textContent = score ? `${parseInt(score)}` : "0";
             if (wait_score && wait_score != 0) {
-                profileWaitPoints.parentElement.style.display = 'flex';
-                profileWaitPoints.textContent = `+${parseInt(wait_score)}` ;
+                profileWaitPoints.parentElement.style.display = 'block';
+                profileWaitPoints.textContent = `+${parseInt(wait_score)}`;
             } else {
                 profileWaitPoints.parentElement.style.display = 'none';
             }
@@ -1399,6 +1419,35 @@ function pluralDays(n) {
     return "дней";
 }
 
+async function fetchBasket({ count = 10, page = 1 } = {}) {
+    await fetch(`${host}/api/v1/basket/all?count=${count}&page=${page}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+    })
+        .then(response => {
+            if (!response.ok) {
+                return [];
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                const paginationContainer = document.getElementById("ordersPagination");
+                if (data.total_pages != 0) {
+                    operationsData = data.all_orders;
+                    loadOperations();
+                    renderPagination(paginationContainer, page, data.total_pages, fetchBasket);
+                } else {
+                    paginationContainer.style.display = 'none';
+                }
+            }
+        });
+}
+
 document.addEventListener('DOMContentLoaded', async function () {
 
     const iframe = document.getElementById('banner-widget');
@@ -1419,33 +1468,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     window.addEventListener('resize', resizeIframe);
 
-    let phone_number = localStorage.getItem("phone");
-
-    const token = localStorage.getItem("access_token");
-
     try {
         await fetchProfile();
         await fetchReferals();
         await fetchOperations();
         await fetchLastOperations();
-
-        operationsData = await fetch(`${host}/api/v1/basket/all`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                "Authorization": `Bearer ${token}`
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return [];
-                }
-                return response.json();
-            })
-            .then(data => {
-                return data;
-            });
+        await fetchBasket();
     } finally {
         mainContainer.style.display = 'flex';
         bottomWrapper.style.display = 'flex';
