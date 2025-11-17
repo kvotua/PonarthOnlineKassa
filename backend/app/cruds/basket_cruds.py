@@ -21,6 +21,7 @@ async def get_basket_by_order_id(db: AsyncSession, order_id: int):
         .join(Good, Good.id == Basket.good_id, isouter=True)
         .where(Basket.order_id == order_id,
         Good.base_id == base_id, 
+        Basket.status == 2,
         Good.firm_id == firm_id)
     )
     result = await db.execute(stmt)
