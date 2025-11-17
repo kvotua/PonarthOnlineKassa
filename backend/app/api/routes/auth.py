@@ -1,7 +1,7 @@
 import hmac
 import re
 from typing import Annotated
-from fastapi import APIRouter, HTTPException, Depends, Query, Request
+from fastapi import APIRouter, HTTPException, Depends, Query, Request, Response, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, date
@@ -13,7 +13,7 @@ from app.schemas.verify_schemas import Phone
 from app.cruds import auth_cruds
 from app.cruds.auth_cruds import check_phone_status, add_user_to_loyal_system, get_all
 from app.cruds.verify_cruds import add_verify_session, check_phone_in_discound, get_verify_session, get_verify_session_without_code
-from app.utils import get_current_user, get_current_user_with_bearer, send_message, sing_access_jwt_token, sing_refresh_jwt_token, convert_decimal_to_float
+from app.utils import get_access_token_data, get_current_user, send_message, sing_access_jwt_token, sing_refresh_jwt_token, convert_decimal_to_float
 from app.api.dependensies import get_new_tokens, get_access_token
 from app.databases.postgresdb import get_postgres_session
 from app.databases.mysql_db import get_mysql_session
@@ -23,13 +23,24 @@ from app.config import bot_token_hash
 
 router = APIRouter(tags=["Auth"])
 
+@router.get("/check-token")
+async def check_token(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    try:
+        get_access_token_data(token)
+        return {"valid": True}
+    except HTTPException:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
 @router.get("/")
 async def get(session_mysql: AsyncSession = Depends(get_mysql_session),):
     data = await get_all(session_mysql=session_mysql)
     return sum(data)
 
 # @router.get("/profile")
-# async def get_profile(user_data=Depends(get_current_user_with_bearer)):
+# async def get_profile(user_data=Depends(get_current_user_from_cookie)):
 #     phone = user_data['phone']
 #     response = await check_phone_in_discound(phone=phone.phone, session_mysql=session_mysql)
 #     print(response)
@@ -55,34 +66,36 @@ async def get(session_mysql: AsyncSession = Depends(get_mysql_session),):
 #         return JSONResponse(status_code=200, content=response_data)
 
 
-@router.get('/telegram-callback')
-async def telegram_callback(
-        request: Request,
-        user_id: Annotated[int, Query(alias='id')],
-        query_hash: Annotated[str, Query(alias='hash')],
-        session_mysql: AsyncSession = Depends(get_mysql_session),
-):
-    params = request.query_params.items()
-    data_check_string = '\n'.join(sorted(f'{x}={y}' for x, y in params if x not in ('hash', 'next')))
-    computed_hash = hmac.new(bot_token_hash.digest(), data_check_string.encode(), 'sha256').hexdigest()
-    is_correct = hmac.compare_digest(computed_hash, query_hash)
-    if not is_correct:
-        return ResponseSchema(status_code=401, message='Authorization failed. Please try again')
+# @router.get('/telegram-callback')
+# async def telegram_callback(
+#         response: Response,
+#         request: Request,
+#         user_id: Annotated[int, Query(alias='id')],
+#         query_hash: Annotated[str, Query(alias='hash')],
+#         session_mysql: AsyncSession = Depends(get_mysql_session),
+# ):
+#     params = request.query_params.items()
+#     data_check_string = '\n'.join(sorted(f'{x}={y}' for x, y in params if x not in ('hash', 'next')))
+#     computed_hash = hmac.new(bot_token_hash.digest(), data_check_string.encode(), 'sha256').hexdigest()
+#     is_correct = hmac.compare_digest(computed_hash, query_hash)
+#     if not is_correct:
+#         return ResponseSchema(status_code=401, message='Authorization failed. Please try again')
     
-    user = await auth_cruds.get_user_by_telegram_user_id(user_id=user_id, session_mysql=session_mysql)
+#     user = await auth_cruds.get_user_by_telegram_user_id(user_id=user_id, session_mysql=session_mysql)
 
-    if user:
-        access_token = sing_access_jwt_token(user_id=user.id, phone=user.phone)
-        refresh_token = sing_refresh_jwt_token(user_id=user.id, phone=user.phone)
-        response = JSONResponse(status_code=200, content={
-            "access_token": access_token,
-            "refresh_token": refresh_token
-        })
-        return response
-    return ResponseSchema(status_code=404, message='User not found')
+#     if user:
+#         access_token = sing_access_jwt_token(user_id=user.id, phone=user.phone)
+#         refresh_token = sing_refresh_jwt_token(user_id=user.id, phone=user.phone)
+#         response = JSONResponse(status_code=200, content={
+#             "access_token": access_token,
+#             "refresh_token": refresh_token
+#         })
+#         return response
+#     return ResponseSchema(status_code=404, message='User not found')
 
 @router.post('/login', response_model=TokenPair)
 async def login_user(
+    response: Response,
     data: LoginUser,
     session_mysql: AsyncSession = Depends(get_mysql_session),
 ):
@@ -98,15 +111,14 @@ async def login_user(
         response_verify = await get_verify_session(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
         if response_verify:
             print(f'response_verify code: {response_verify.code}')
-            access_token = sing_access_jwt_token(user_id=user.id, phone=user.phone)
-            refresh_token = sing_refresh_jwt_token(user_id=user.id, phone=user.phone)
-            response = JSONResponse(status_code=200, content={
-                "access_token": access_token,
-                "refresh_token": refresh_token
-            })
+            access_token = sing_access_jwt_token(user_id=user.user_id, phone=user.phone)
+            refresh_token = sing_refresh_jwt_token(user_id=user.user_id, phone=user.phone)
             response.set_cookie(key="access_token", value=access_token, httponly=True)
             response.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
-            return response
+            return {
+                "access_token": access_token,
+                "refresh_token": refresh_token
+            }
         else:
             raise HTTPException(status_code=404, detail="Call ID not found or incorrect code")
     raise HTTPException(status_code=404, detail="User not found")
@@ -164,6 +176,7 @@ async def login_user(
 
 @router.post('/register-discount')
 async def register_user(
+    response: Response,
     data: RegisterFioUserLoyaltySystem,
     session_mysql: AsyncSession = Depends(get_mysql_session),
 ):
@@ -222,13 +235,12 @@ async def register_user(
     if user:
         access_token = sing_access_jwt_token(user_id=user.user_id, phone=user.phone)
         refresh_token = sing_refresh_jwt_token(user_id=user.user_id, phone=user.phone)
-        response = JSONResponse(status_code=200, content={
-            "access_token": access_token,
-            "refresh_token": refresh_token
-        })
         response.set_cookie(key="access_token", value=access_token, httponly=True)
         response.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
-        return response
+        return {
+            "access_token": access_token,
+            "refresh_token": refresh_token
+        }
     return json_response(status_code=400, message="Phone number already registered")
 
 # @router.post('/refresh-jwt', response_model=TokenPair)

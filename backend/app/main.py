@@ -27,9 +27,18 @@ app = FastAPI(
     version="1.0.0"
 )
 
+origins = [
+    "http://192.168.0.6:1000",
+    "http://localhost:1000",
+    "https://testcontur.ponarth.com",
+    "https://testcontur2.ponarth.com",
+    "https://loyality-system.ponarth.com",
+    "https://loyality-backend.ponarth.com",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

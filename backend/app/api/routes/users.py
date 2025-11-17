@@ -1,17 +1,17 @@
 from http.client import HTTPException
 from typing import Any
-from fastapi import APIRouter, Body, Depends, Query
+from fastapi import APIRouter, Body, Depends, Query, Response
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from app.schemas.users_schemas import ChangeUser, ReferalInfo, TransferScoreRequest, UserInfo
+from app.schemas.users_schemas import ChangeUser, PaginationRequest, ReferalInfo, TransferScoreRequest, UserInfo
 from app.api.dependensies import get_access_token
 from app.cruds import users_cruds, verify_cruds
 from app.databases.postgresdb import get_postgres_session
 from app.databases.mysql_db import get_mysql_session
 from app.cruds.verify_cruds import check_phone_in_discound
-from app.utils import convert_decimal_to_float, get_current_user_with_bearer, sing_access_jwt_token, sing_refresh_jwt_token
+from app.utils import convert_decimal_to_float, get_current_user_from_cookie, sing_access_jwt_token, sing_refresh_jwt_token
 from app.schemas.response_schemas import ResponseSchema
 from app.schemas.verify_schemas import CheckPhoneCode
 from app.cruds.auth_cruds import check_phone_status
@@ -21,7 +21,7 @@ router = APIRouter(tags=["Users"])
 
 @router.get('/profile', response_model=UserInfo)
 async def get_profile(
-    user_data = Depends(get_current_user_with_bearer),
+    user_data = Depends(get_current_user_from_cookie),
     db: AsyncSession = Depends(get_mysql_session)
 ):
     phone = user_data['phone']
@@ -30,17 +30,19 @@ async def get_profile(
 
 @router.get('/last_operations', response_model=Any)
 async def get_last_operations(
-    user_data = Depends(get_current_user_with_bearer),
+    count: int = Query(10, title="Items count", examples=[10, 15, 25]),
+    page: int = Query(1, title="Page", examples=[1, 2, 3, 4, 5]),
+    user_data = Depends(get_current_user_from_cookie),
     db: AsyncSession = Depends(get_mysql_session)
 ):
     phone = user_data['phone']
-    last_operations = await users_cruds.get_last_operations(card_num=phone, db=db)
+    last_operations = await users_cruds.get_last_operations(card_num=phone, db=db, count=count, page=page)
     return last_operations
 
 @router.get('/user', response_model=Any)
 async def get_user(
     phone: str | None = Query(None, description="User phone number"),
-    user_data = Depends(get_current_user_with_bearer),
+    user_data = Depends(get_current_user_from_cookie),
     db: AsyncSession = Depends(get_mysql_session)
 ):
     if phone:
@@ -53,17 +55,19 @@ async def get_user(
 
 @router.get('/transfers', response_model=Any)
 async def get_transfers(
-    user_data = Depends(get_current_user_with_bearer),
+    count: int = Query(10, title="Items count", examples=[10, 15, 25]),
+    page: int = Query(1, title="Page", examples=[1, 2, 3, 4, 5]),
+    user_data = Depends(get_current_user_from_cookie),
     db: AsyncSession = Depends(get_mysql_session)
 ):
     phone = user_data['phone']
-    transfers = await users_cruds.get_transfers(card_num=phone, db=db)
+    transfers = await users_cruds.get_transfers(card_num=phone, db=db, count=count, page=page)
     return transfers
 
 @router.post('/transfer', response_model=ResponseSchema)
 async def transfer_scores(
     data: TransferScoreRequest,
-    user_data = Depends(get_current_user_with_bearer),
+    user_data = Depends(get_current_user_from_cookie),
     db: AsyncSession = Depends(get_mysql_session)
 ):
     phone = user_data['phone']
@@ -94,7 +98,7 @@ async def transfer_scores(
 
 @router.get('/referal', response_model=ReferalInfo)
 async def get_referal_info(
-    user_data = Depends(get_current_user_with_bearer),
+    user_data = Depends(get_current_user_from_cookie),
     db: AsyncSession = Depends(get_mysql_session)
 ):
     phone = user_data['phone']
@@ -104,7 +108,7 @@ async def get_referal_info(
 @router.patch('/gift/open', response_model=Any)
 async def open_gift(
     gift_id: int,
-    user_data = Depends(get_current_user_with_bearer),
+    user_data = Depends(get_current_user_from_cookie),
     db: AsyncSession = Depends(get_mysql_session)
 ):
     phone = user_data['phone']
@@ -132,7 +136,7 @@ async def open_gift(
 @router.patch('/user/change', response_model=ResponseSchema)
 async def change_user(
     data: ChangeUser,
-    user_data = Depends(get_current_user_with_bearer),
+    user_data = Depends(get_current_user_from_cookie),
     db: AsyncSession = Depends(get_mysql_session)
 ):
     phone = user_data['phone']
@@ -146,30 +150,29 @@ async def change_user(
 @router.post('/phone/change', response_model=ResponseSchema)
 async def change_phone(
     data: CheckPhoneCode,
-    user_data = Depends(get_current_user_with_bearer),
+    response: Response,
+    user_data = Depends(get_current_user_from_cookie),
     session_mysql: AsyncSession = Depends(get_mysql_session),
 ):
-    response = await verify_cruds.get_verify_phone_change_session(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
-    if response:
+    response_ = await verify_cruds.get_verify_phone_change_session(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
+    if response_:
         await verify_cruds.change_verify_phone_change_status(call_id=data.call_id, code=data.code, session_mysql=session_mysql)
         changed = await users_cruds.change_phone(phone=user_data['phone'], new_phone=data.phone, db=session_mysql)
         print(changed)
         if changed:
             user = await check_phone_status(user_phone=data.phone[1:], session_mysql=session_mysql)
             if user:
-                access_token = sing_access_jwt_token(user_id=user.id, phone=user.phone)
-                refresh_token = sing_refresh_jwt_token(user_id=user.id, phone=user.phone)
-                response = JSONResponse(status_code=200, content={
-                    "access_token": access_token,
-                    "refresh_token": refresh_token
-                })
-                return response
+                access_token = sing_access_jwt_token(user_id=user.user_id, phone=user.phone)
+                refresh_token = sing_refresh_jwt_token(user_id=user.user_id, phone=user.phone)
+                response.set_cookie(key="access_token", value=access_token, httponly=True)
+                response.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
+                return ResponseSchema(status_code=200, message="OK")
     return ResponseSchema(status_code=400, message="Error")
 
 @router.patch('/telegram', response_model=Any)
 async def change_telegram(
     send_telegram: bool = Body(..., embed=True),
-    user_data = Depends(get_current_user_with_bearer),
+    user_data = Depends(get_current_user_from_cookie),
     db: AsyncSession = Depends(get_mysql_session)
 ):
     phone = user_data['phone']

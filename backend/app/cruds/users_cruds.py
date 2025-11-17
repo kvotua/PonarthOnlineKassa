@@ -1,13 +1,14 @@
 
 from datetime import datetime, date, timedelta, timezone, time
 import json
+import math
 from sqlalchemy import and_, case, desc, func, or_, select, Result, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.dialects import mysql
 from sqlalchemy.orm import selectinload, aliased
 from fastapi import HTTPException
 
-from app.models.mysql import DiscountCard, Gift, GiftStatus, Orders, UserScore
+from app.models.mysql import DiscountCard, Firm, Gift, GiftStatus, Orders, UserScore
 from app.schemas.users_schemas import ChangeUser, ReferalInfo, UserInfo
 from app.schemas.users_schemas import Gift as GiftSchema
 from app.cruds.verify_cruds import check_phone_in_discound
@@ -301,7 +302,8 @@ async def get_user_scores_by_id(discount_card_id: int, db: AsyncSession) -> int 
         scores = [scores]
     total_score = sum(scores) if scores else 0
     return total_score
-async def get_transfers(card_num: str, db: AsyncSession):
+
+async def get_transfers(card_num: str, db: AsyncSession, count: int, page: int):
     discount_card_id = await get_user_discount_id_by_card(card_num=card_num, db=db)
     if not discount_card_id:
         return []
@@ -321,9 +323,33 @@ async def get_transfers(card_num: str, db: AsyncSession):
             )
         )
         .order_by(UserScore.date_added.desc())
+        .limit(count)
+        .offset((page - 1) * count)
     )
     result = await db.execute(query)
     transfers = result.scalars().all()
+
+    count_stmt = select(func.count()).where(
+        or_(
+            and_(
+                UserScore.transfer_from == discount_card_id,
+                UserScore.card_id == discount_card_id
+            ),
+            and_(
+                UserScore.transfer_to == discount_card_id,
+                UserScore.card_id == discount_card_id
+            )
+        )
+    )
+    total_count = await db.scalar(count_stmt)
+
+    if not total_count:
+        return {
+            "total_pages": 0,
+            "all_transfers": []
+        }
+
+    total_pages = math.ceil(total_count / count)
 
     transfer_history = []
 
@@ -368,7 +394,10 @@ async def get_transfers(card_num: str, db: AsyncSession):
             "receiptNumber": None
         })
 
-    return transfer_history
+    return {
+        "total_pages": total_pages,
+        "all_transfers": transfer_history
+    }
 
 async def get_user_by_card_num(card_num: str, db: AsyncSession):
     stmt_user = select(
@@ -395,7 +424,26 @@ async def get_user_by_card_num(card_num: str, db: AsyncSession):
     
     return user_row
 
-async def get_last_operations(card_num: str, db: AsyncSession):
+async def get_total_operations(card_num: str, db: AsyncSession):
+    discount_card_id = await get_user_discount_id_by_card(card_num=card_num, db=db)
+
+    if not discount_card_id:
+        return 0
+
+    stmt_count = (
+        select(func.count())
+        .select_from(UserScore)
+        .where(
+            UserScore.card_id == discount_card_id,
+            UserScore.base_id == base_id
+        )
+    )
+
+    result = await db.execute(stmt_count)
+    total_operations = result.scalar() or 0
+    return total_operations
+
+async def get_last_operations(card_num: str, db: AsyncSession, count: int, page: int):
     # Получаем ID карты пользователя
     discount_card_id = await get_user_discount_id_by_card(card_num=card_num, db=db)
 
@@ -414,6 +462,19 @@ async def get_last_operations(card_num: str, db: AsyncSession):
         .scalar_subquery()
     )
 
+    order_sum_subq = (
+        select(Orders.price)
+        .where(Orders.id == UserScore.order_id)
+        .scalar_subquery()
+    )
+
+    firm_address_subq = (
+        select(Firm.name)
+        .join(Orders, Orders.firm_id == Firm.id)
+        .where(Orders.id == UserScore.order_id)
+        .scalar_subquery()
+    )
+
     before_scores_subq = (
         select(func.coalesce(func.sum(US_prev.scores), 0))
         .where(
@@ -423,11 +484,34 @@ async def get_last_operations(card_num: str, db: AsyncSession):
         .scalar_subquery()
     )
 
+    count_stmt = select(func.count()).where(
+        UserScore.card_id == discount_card_id,
+        UserScore.base_id == base_id
+    )
+    total_count = await db.scalar(count_stmt)
+
+    if not total_count:
+        return {
+            "total_pages": 0,
+            "last_operations": []
+        }
+
+    total_pages = math.ceil(total_count / count)
+
     stmt_operations = (
         select(
+            UserScore.id,
+            UserScore.order_id,
             UserScore.scores,
             UserScore.date_added,
+            UserScore.status,
             case(
+                (
+                    (UserScore.transfer_from.is_(None)) &
+                    (UserScore.transfer_to.is_(None)) &
+                    (UserScore.order_id > 0),
+                    func.concat('Чек на сумму ', order_sum_subq, ' ₽')
+                ),
                 (
                     (UserScore.transfer_from.is_(None)) & (UserScore.transfer_to.is_(None)) & (UserScore.scores > 0),
                     "Начисление баллов"
@@ -446,18 +530,54 @@ async def get_last_operations(card_num: str, db: AsyncSession):
                 ),
                 else_=""
             ).label("title"),
-            before_scores_subq.label("before_scores")
+            before_scores_subq.label("before_scores"),
+            case(
+                (
+                    (UserScore.transfer_from.is_(None)) & 
+                    (UserScore.transfer_to.is_(None)) & 
+                    (UserScore.order_id > 0),
+                    firm_address_subq
+                ),
+                else_=None
+            ).label("address")
         )
         .where(
             UserScore.card_id == discount_card_id,
             UserScore.base_id == base_id
         )
         .order_by(desc(UserScore.date_added))
+        .limit(count)
+        .offset((page - 1) * count)
     )
 
     result_operations = await db.execute(stmt_operations)
     operations_row = result_operations.mappings().all()
-    return [dict(row) for row in operations_row]
+
+    # --- Объединяем записи с одинаковым order_id ---
+    combined_operations = {}
+    for op in operations_row:
+        order_id = op["order_id"] or f"none_{id(op)}"  # если order_id нет, делаем уникальный ключ
+        if order_id in combined_operations:
+            # суммируем баллы
+            combined_operations[order_id]["scores"] += op["scores"]
+            # можно обновлять дату/титул если нужно (например оставляем самую позднюю)
+            if op["date_added"] > combined_operations[order_id]["date_added"]:
+                combined_operations[order_id]["date_added"] = op["date_added"]
+                combined_operations[order_id]["title"] = op["title"]
+                combined_operations[order_id]["status"] = op["status"]
+                combined_operations[order_id]["address"] = op["address"]
+        else:
+            combined_operations[order_id] = dict(op)
+
+    last_operations = list(combined_operations.values())
+
+    # Сортируем по дате заново после объединения
+    last_operations.sort(key=lambda x: x["date_added"], reverse=True)
+
+    return {
+        "total_pages": total_pages,
+        "last_operations": last_operations
+    }
 
 async def get_user_loyalty_by_id(card_num: str, db: AsyncSession) -> UserInfo:
     stmt_user = select(
@@ -529,9 +649,12 @@ async def get_user_loyalty_by_id(card_num: str, db: AsyncSession) -> UserInfo:
     wait_scores_list = result_score.scalars().all()
     wait_scores = sum(wait_scores_list) if wait_scores_list else 0
 
+    total_operations = await get_total_operations(card_num=card_num, db=db)
+
     return UserInfo(
         **user_row,
         total_score=total_score,
         wait_score=wait_scores,
+        total_operations=total_operations,
         gifts=gifts_list
     )

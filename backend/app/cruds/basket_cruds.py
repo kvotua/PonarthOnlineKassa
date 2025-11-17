@@ -1,4 +1,6 @@
 
+from decimal import Decimal
+import math
 from sqlalchemy import desc, func, select
 from app.models.mysql import Gift, GiftStatus, Good, GoodPrice, Basket, DiscountCard, Orders, UserScore, Users
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -114,7 +116,8 @@ async def get_order_by_id(db: AsyncSession, order_id: int):
         },
         "goods": goods_list,
     }
-async def get_all_baskets_by_card(db: AsyncSession, card_num: str):
+
+async def get_all_baskets_by_card(db: AsyncSession, card_num: str, count: int, page: int):
     six_months_ago = datetime.now() - timedelta(days=180)
 
     order_stmt = (
@@ -134,7 +137,24 @@ async def get_all_baskets_by_card(db: AsyncSession, card_num: str):
             Orders.firm_id == firm_id
         )
         .order_by(desc(Orders.id))
+        .limit(count)
+        .offset((page - 1) * count)
     )
+
+    count_stmt = select(func.count()).where(
+        Orders.card_num == card_num,
+        Orders.date_closed >= six_months_ago,
+        Orders.firm_id == firm_id
+    )
+    total_count = await db.scalar(count_stmt)
+
+    if not total_count:
+        return {
+            "total_pages": 0,
+            "all_orders": []
+        }
+
+    total_pages = math.ceil(total_count / count)
 
     order_result = await db.execute(order_stmt)
     order_rows = order_result.mappings().all()
@@ -216,6 +236,12 @@ async def get_all_baskets_by_card(db: AsyncSession, card_num: str):
                 elif status == GiftStatus.GIVEN:
                     gift_emoji = "🎁"
 
+        new_scores = (
+            Decimal(str(previous_scores)) +
+            Decimal(order['price_save']) +
+            - Decimal(order['scores'])
+        )
+
         all_orders.append({
             "order_id": order_id,
             "user": user,
@@ -226,8 +252,12 @@ async def get_all_baskets_by_card(db: AsyncSession, card_num: str):
             "score_added": order['price_save'],
             "score_subtracted": order['scores'],
             "previous_scores": previous_scores,
+            "new_scores": new_scores,
             "gift_emoji": gift_emoji,
             "goods": goods_list,
         })
 
-    return all_orders
+    return {
+        "total_pages": total_pages,
+        "all_orders": all_orders
+    }

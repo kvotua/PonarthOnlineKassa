@@ -3,7 +3,7 @@ from operator import and_
 
 from app.databases.mysql_db import get_mysql_session
 from app.models.mysql import Good, GoodPrice, Sections, Basket, DiscountCard, Orders
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Any, List
@@ -12,17 +12,19 @@ from app.cruds import basket_cruds
 from app.config import base_id, firm_id
 
 from app.schemas.good_schemas import GoodPriceResponse
-from app.utils import get_current_user_with_bearer
+from app.utils import get_current_user_from_cookie
 
 router = APIRouter(prefix="/basket", tags=['basket'])
 
 @router.get("/all", response_model=Any)
 async def get_all_baskets(
-    user_data=Depends(get_current_user_with_bearer),
+    count: int = Query(10, title="Items count", examples=[10, 15, 25]),
+    page: int = Query(1, title="Page", examples=[1, 2, 3, 4, 5]),
+    user_data=Depends(get_current_user_from_cookie),
     db: AsyncSession = Depends(get_mysql_session)
 ):
     phone = user_data['phone']
-    info = await basket_cruds.get_all_baskets_by_card(db=db, card_num=phone)
+    info = await basket_cruds.get_all_baskets_by_card(db=db, card_num=phone, count=count, page=page)
     return info
     
 

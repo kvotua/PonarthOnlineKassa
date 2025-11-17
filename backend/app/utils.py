@@ -149,6 +149,18 @@ async def get_current_user_with_bearer(credentials: HTTPAuthorizationCredentials
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=e.detail)
     return user_data
 
+async def get_current_user_from_cookie(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+
+    try:
+        user_data = get_access_token_data(token)
+    except HTTPException as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=e.detail)
+    
+    return user_data
+
 async def get_current_user(request: Request):
     auth_header = request.headers.get("Authorization")
 

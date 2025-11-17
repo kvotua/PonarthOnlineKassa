@@ -80,6 +80,7 @@ class UserInfo(BaseModel):
     gifts: Annotated[List[Gift], Field(title="Купоны пользователя", default_factory=list)]
     total_score: Annotated[float, Field(title="User Points", examples=[100, 224, 150])]
     wait_score: Annotated[float, Field(title="User waiting Points", examples=[100, 224, 150])]
+    total_operations: Annotated[int, Field(title="User all operations", examples=[0, 10, 5, 6, 8])]
 
 class InfoUserLoyaltySystem(BaseModel):
     id: Annotated[int, Field(title="ID Discount_card", examples=[1])]
@@ -135,6 +136,10 @@ class TransferScoreRequest(BaseModel):
             except:
                 raise ValueError("Invalid phone number")
         return values
+    
+class PaginationRequest(BaseModel):
+    pages: Optional[int] = Field(10, title="Pages count", examples=[10, 15, 25])
+    page: Optional[int] = Field(1, title="Page", examples=[1, 2, 3, 4, 5])
 
 # class RegisterUserDiscount(BaseModel):
 #     mag_id: Annotated[int]

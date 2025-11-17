@@ -151,6 +151,48 @@ class GoodPrice(Base_mysql):
 
     __table_args__ = (  PrimaryKeyConstraint('id', 'date_added'),  {'comment': 'Таблица цен товаров'},  )
 
+class Firm(Base_mysql):
+    __tablename__ = 'firm'
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    date_added: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    city_id: Mapped[int] = mapped_column(Integer)
+    base_id: Mapped[int] = mapped_column(Integer)
+    firm_sub_id: Mapped[int] = mapped_column(Integer)
+    del_: Mapped[int] = mapped_column("del", Integer)
+    active: Mapped[int] = mapped_column(Integer)
+    name: Mapped[str] = mapped_column(String(150))
+    name_doc: Mapped[str] = mapped_column(String(10))
+    phone: Mapped[str] = mapped_column(String(10))
+    need_pay: Mapped[int] = mapped_column(Integer)
+    need_pay_sum: Mapped[int] = mapped_column(Integer)
+    pay_sum: Mapped[int] = mapped_column(Integer)
+    kassa: Mapped[int] = mapped_column(Integer)
+    kassa_ver: Mapped[int] = mapped_column(Integer)
+    inn: Mapped[str] = mapped_column(String(20))
+    ipad: Mapped[int] = mapped_column(Integer)
+    show_ostatki: Mapped[int] = mapped_column(Integer)
+    auto_revision: Mapped[int] = mapped_column(Integer)
+    marzha: Mapped[int] = mapped_column(Integer)
+    music: Mapped[int] = mapped_column(Integer)
+    terminal_proc: Mapped[float] = mapped_column(Numeric(10, 2))
+    internal: Mapped[int] = mapped_column(Integer)
+    arenda: Mapped[int] = mapped_column(Integer)
+    electro: Mapped[int] = mapped_column(Integer)
+    internet: Mapped[int] = mapped_column(Integer)
+    oxrana: Mapped[int] = mapped_column(Integer)
+    teplo: Mapped[int] = mapped_column(Integer)
+    voda: Mapped[int] = mapped_column(Integer)
+    other: Mapped[int] = mapped_column(Integer)
+    chat_id: Mapped[str] = mapped_column(String(30))
+    token_mark: Mapped[str] = mapped_column(String)
+    certId: Mapped[str] = mapped_column(String(255))
+    fiasId: Mapped[str] = mapped_column(String(255))
+    fsrarId: Mapped[str] = mapped_column(String(255))
+    actnumber: Mapped[int] = mapped_column(BigInteger)
+    sale_gift: Mapped[int] = mapped_column(Integer)
+    sale_gift_quantity: Mapped[int] = mapped_column(Integer)
+    is_sale_gift_quantity: Mapped[bool] = mapped_column(Boolean)
 
 class Sections(Base_mysql):
     __tablename__ = 'sections'

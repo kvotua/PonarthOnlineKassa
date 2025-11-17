@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from app.models.mysql import DiscountCard
 from app.schemas.verify_schemas import Phone, CheckPhoneCode
 from app.cruds import users_cruds, verify_cruds
-from app.utils import get_current_user_with_bearer, send_message, convert_decimal_to_float, generate_info_for_telegram, send_telegram_message
+from app.utils import get_current_user_from_cookie, send_message, convert_decimal_to_float, generate_info_for_telegram, send_telegram_message
 from app.cruds.verify_cruds import add_verify_session, get_verify_session, change_verify_status, check_phone_in_discound, add_verify_change_phone_session, get_verify_phone_change_session
 from app.schemas.response_schemas import CallID, ResponseSchema, json_response
 from app.databases.postgresdb import get_postgres_session
@@ -19,7 +19,7 @@ router = APIRouter(prefix='/verify', tags=["Verify"])
 @router.post('/phone/change/send', response_model=CallID)
 async def send_phone_change_code(
     phone: Phone,
-    user_data=Depends(get_current_user_with_bearer),
+    user_data=Depends(get_current_user_from_cookie),
     session_mysql: AsyncSession = Depends(get_mysql_session),
 ):
     old_phone = user_data['phone']
